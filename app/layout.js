@@ -11,14 +11,11 @@ import Filter from "./_MyComponents/Filter";
 import NavBar from "./_MyComponents/NavBar";
 import SideFilterLayout from "./_MyComponents/SideFilterLayout";
 import { UserProvider } from "./_lib/context";
-export default async function RootLayout({ children, path }) {
- 
-  const filterArray = [
-    { label: "All", value: "All" },
-    { label: "2024", value: 2024 },
-    { label: "2023", value: 2023 },
-    { label: "2022", value: 2022 },
-  ];
+import { cookies } from "next/headers";
+import { Toaster } from "@/components/ui/toaster"; 
+
+export default async function RootLayout({ children,}) {
+
   return (
     <html lang="en">
       <head>
@@ -33,8 +30,11 @@ export default async function RootLayout({ children, path }) {
           rel="stylesheet"
         />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com"  />
-        <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400..700&family=Knewave&display=swap" rel="stylesheet"></link>
+        <link rel="preconnect" href="https://fonts.gstatic.com" />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Caveat:wght@400..700&family=Knewave&display=swap"
+          rel="stylesheet"
+        ></link>
       </head>
       <body>
         <UserProvider>
@@ -45,7 +45,7 @@ export default async function RootLayout({ children, path }) {
             <div className="flex flex-col sm:gap-4 sm:py-4 sm:pl-14">
               <SideSheet />
               <main className="grid  flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 ">
-                
+                <Toaster />
                 {children}
               </main>
             </div>
