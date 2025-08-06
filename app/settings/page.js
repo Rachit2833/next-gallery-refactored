@@ -23,7 +23,7 @@ import React from "react";
 
 const Page = async () => {
   const cookieStore = await cookies();
-  const res = await fetch("http://localhost:2833/user/verify-user", {
+  const res = await fetch("https://next-gallery-by-rachit2833.vercel.app/user/verify-user", {
     method: "POST",
     headers: {
       authorization: `Bearer ${cookieStore.get("session")?.value}`,

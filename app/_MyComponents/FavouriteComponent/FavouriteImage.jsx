@@ -5,7 +5,7 @@ import FavouriteGridWrapper from "../FavouriteGridWrapper";
 async function FavouriteImage({param}) {
    console.log(param.year,"sfjb");
    const cookieStore = await cookies()
-   const data = await fetch(`http://localhost:2833/image?favourite=true&year=${param.year}`,{
+   const data = await fetch(`https://next-gallery-by-rachit2833.vercel.app/image?favourite=true&year=${param.year}`,{
       headers: {
          "Content-Type": "application/json",
          authorization: `Bearer ${cookieStore.get("session").value}`,

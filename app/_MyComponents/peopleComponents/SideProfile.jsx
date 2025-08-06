@@ -14,7 +14,7 @@ function SideProfile({ res }) {
    const [isNameInput, setIsNameInput] = useState(false);
    const pathName = usePathname();
    const pathId = pathName.split('/').pop(); // Assumes the ID is at the end of the path
-   console.log(res,"res")
+   console.log(res,"ressssss")
    return (
       <div className="flex p-2 gap-2 lg:w-[35%] md:w-[70%] items-center">
          {isNameInput ? (

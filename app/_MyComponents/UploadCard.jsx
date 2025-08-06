@@ -18,6 +18,7 @@ import { saveNewImage } from "../_lib/actions";
 import { useUser } from "../_lib/context";
 import { Deletebutton } from "./ImageCard";
 import { Card } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 
 function getSeason() {
    const now = new Date();
@@ -41,7 +42,7 @@ function Uploadcard({
    const [file, setFile] = useState();
    const [fileBlob, setFileBlob] = useState();
    const descriptionPlaceholder = getSeason();
-   const { location, setLocation, lat, long, isPending, getCoordinates } =
+   const { isAutoLocation, setIsAutoLocation,location, setLocation, lat, long, isPending, getCoordinates } =
       useUser();
 
    async function urlToBlob(url) {
@@ -106,26 +107,41 @@ function Uploadcard({
                   </div>
 
                   <div className="mt-2 space-y-3">
+                     {/* Location + Earth Button */}
                      <form
                         className="flex flex-row gap-2 items-center w-full"
-                        onSubmit={getCoordinates}
+                        action={getCoordinates}
                      >
                         <Input
                            className="w-full px-4 py-2 border rounded-md bg-muted text-muted-foreground outline-none"
                            name="LocationName"
                            onChange={handleLocationBlur}
                            value={location}
+                           disabled={isAutoLocation}
                            placeholder="Enter location"
                         />
-
-                        {!isPending ? (
-                           <Earthbutton />
-                        ) : (
-                           <div className="w-9 h-9 border-2 border-border border-t-foreground rounded-full animate-spin" />
-                        )}
+                        <Earthbutton disabled={isAutoLocation} />
                      </form>
-
-
+                     {isAutoLocation && (
+                        <Badge
+                          disabled={isAutoLocation}
+                           variant="outline"
+                           className="flex items-center justify-between w-full px-3 py-1 bg-accent text-sm border"
+                        >
+                           📍 {location}
+                           <button
+                              type="button"
+                              onClick={() => {
+                                 setLocation("")
+                                 setIsAutoLocation(false)
+                              }}
+                              className="ml-2 text-red-500 hover:text-red-700"
+                           >
+                              ✖
+                           </button>
+                        </Badge>
+                     )}
+                     {/* Description */}
                      <Input
                         name="Description"
                         className="w-full px-4 py-2 border rounded-md bg-muted text-muted-foreground outline-none"
@@ -143,6 +159,7 @@ function Uploadcard({
                </Card>
             </div>
 
+            {/* Upload form */}
             <form action={onSubmit} className="mt-6 w-full grid gap-3">
                {fileInput && (
                   <Input
@@ -167,6 +184,7 @@ function Uploadcard({
                <input name="long" value={long || ""} className="hidden" readOnly />
                <input name="Country" value="India" className="hidden" readOnly />
 
+               {/* Submit button */}
                <Deletebutton text={"Submit"} />
 
                <DrawerClose
@@ -183,11 +201,16 @@ function Uploadcard({
 
 export default Uploadcard;
 
-export function Earthbutton({ type }) {
+// ✅ Earth button with spinner
+export function Earthbutton({disabled}) {
    const { pending } = useFormStatus();
    return (
-      <Button type={type || "submit"} disabled={pending} className="h-9 px-3">
-         <Earth className="w-4 h-4" />
+      <Button type="submit" disabled={pending||disabled} className="h-9 px-3">
+         {pending ? (
+            <div className="w-4 h-4 border-2 border-muted border-t-primary rounded-full animate-spin" />
+         ) : (
+            <Earth className="w-4 h-4" />
+         )}
       </Button>
    );
 }

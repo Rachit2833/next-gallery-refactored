@@ -22,7 +22,7 @@ const BodyWrapper = ({children,user}) => {
        </Suspense>
      <Toaster   />
          <Suspense>
-           <LayoutWrapper image={user.profilePicture}>
+           <LayoutWrapper image={user?.profilePicture}>
             {children}
           </LayoutWrapper>
          </Suspense>

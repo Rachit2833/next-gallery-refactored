@@ -19,12 +19,15 @@ const AvatarForm = ({ image, onClose }) => {
         action={async (formData) => {
           const data = new FormData();
           data.append('id', localStorage.getItem('userId'));
-
-          if (formData.get('photo')) {
+          console.log(formData.get('photo').size);
+          if (!formData.get('photo').size>0) {
+            console.log("1");
             data.append('FormType', 1);
             data.append('ImageName', selected);
           } else {
+            console.log("2");
             data.append('FormType', 2);
+            data.append("photo",formData.get("photo"))
           }
 
           try {
@@ -52,6 +55,7 @@ const AvatarForm = ({ image, onClose }) => {
 
         <div className="py-2">
           <Input
+            name="photo"
             type="file"
             accept="image/*"
             onChange={(e) => {

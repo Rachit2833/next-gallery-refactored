@@ -46,6 +46,7 @@ export const UserProvider = ({ children }) => {
   const [isEnabled, setIsEnabled] = useState(null);
   const [isLoadingLink, setIsLoadingLink] = useState(false);
   const [isTest, setIsTest] = useState(false);
+    const [isAutoLocation, setIsAutoLocation] = useState(false)
   const infoRef = useRef();
   const contentRef = useRef();
  useEffect(() => {
@@ -85,8 +86,8 @@ export const UserProvider = ({ children }) => {
     }
     return `${season} ${year}`
   }
-  function getCoordinates(e) {
-    e.preventDefault();
+  function getCoordinates() {
+
     setIsPending(true);
     new Promise((resolve, reject) => {
       navigator.geolocation.getCurrentPosition(resolve, reject);
@@ -102,6 +103,7 @@ export const UserProvider = ({ children }) => {
 
         const res = await getLocationInfo(formData);
         setLocation(`${res.city}, ${res.country}`);
+        setIsAutoLocation(true)
         return {
           name: `${res.city}, ${res.country}`,
           coordinates: [position.coords.latitude, position.coords.longitude]
@@ -220,7 +222,8 @@ export const UserProvider = ({ children }) => {
         videoSrc, setVideoSrc,
         personalDetails, setPersonalDetails,
         selectedAvatar, setSelectedAvatar,
-        isDark, setIsDark
+        isDark, setIsDark,
+        isAutoLocation, setIsAutoLocation
       }}
     >
       {children}

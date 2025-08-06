@@ -36,6 +36,7 @@ import {
   Search,
   ShoppingCart,
   Users2,
+  X,
 } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
@@ -44,8 +45,9 @@ import React, { useEffect, useState } from "react"
 import { useUser } from "../_lib/context"
 import BreadCrums from "./BreadCrumb"
 import SearchLoader from "./Loaders/SearchLoader"
-import { logOutUser } from "../_lib/actions"
+import { logOutUser, searchImages } from "../_lib/actions"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
+
 
 function SideSheet({profileImage}) {
   const { searchVal, setSearchVaL, isDark, setIsDark, searchData, setSearchData, queryState, modelImages, setModelImages, setIsImageOpen, setModelType, } = useUser()
@@ -55,6 +57,16 @@ function SideSheet({profileImage}) {
   const uniqueArray = [...new Set(pathArray)]
   const searchParams = useSearchParams()
   const router = useRouter()
+  function handleParamsObj(paramsObj) {
+  if (!searchParams) return
+  const params = new URLSearchParams(searchParams)
+
+  for (const [key, value] of Object.entries(paramsObj)) {
+    params.set(key, value)
+  }
+
+  router.replace(`${pathName}?${params}`, { scroll: false })
+}
   console.log(profileImage,"hell");
   const navigationItems = [
     {
@@ -91,6 +103,11 @@ function SideSheet({profileImage}) {
     params.set(filterName, filter)
     router.replace(`${pathName}?${params}`, { scroll: false })
   }
+  const removeParam = (key) => {
+    const newParams = new URLSearchParams(searchParams.toString())
+    newParams.delete(key)
+    router.push(`?${newParams.toString()}`)
+  }
 
   useEffect(() => {
     if (!searchVal) {
@@ -100,8 +117,8 @@ function SideSheet({profileImage}) {
       // Remove all search-related params
       const params = new URLSearchParams(searchParams)
       params.delete("query")
-      params.delete("frId")
-      params.delete("cod")
+      // params.delete("frId")
+      // params.delete("cod")
       // Add more keys here as needed
 
       router.replace(`${pathName}?${params}`, { scroll: false })
@@ -110,10 +127,9 @@ function SideSheet({profileImage}) {
 
     async function search() {
       setIsLoading(true)
-      const data = await fetch(
-        `https://next-gallery-refactored-backend-btrh-pvihnvhaj.vercel.app/image/search/?query=${searchVal}`
-      )
-      const res = await data.json()
+      const res= await searchImages(searchVal)
+      console.log("///////////////////////////////////");
+      console.log(res,"///////////////////////////////");
       setSearchData(res)
       setIsLoading(false)
     }
@@ -193,10 +209,12 @@ function SideSheet({profileImage}) {
         className={`p-2 ${searchVal ? "rounded-xl border bg-card text-card-foreground shadow" : ""
           } top-1 absolute right-6`}
       >
+        
         <div className="relative ml-auto flex gap-4 md:grow-0">
           
 
           <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+         
           <Input
             onChange={(e) => {
               setSearchVaL(e.target.value)
@@ -207,6 +225,7 @@ function SideSheet({profileImage}) {
             placeholder="Search..."
             className="w-full rounded-lg bg-background pl-8 md:w-[200px] lg:w-[320px]"
           />
+          
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button
@@ -243,6 +262,26 @@ function SideSheet({profileImage}) {
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
+          {["name", "cod"].map((key) => {
+          const value = searchParams.get(key)
+          return (
+            value && (
+              <Badge
+                key={key}
+                variant="outline"
+                className="flex items-center mt-1 bg-background w-fit gap-1 pr-1"
+              >
+                <span className="capitalize">{key}: {value}</span>
+                <button
+                  onClick={() => removeParam(key)}
+                  className="ml-1 hover:text-red-500"
+                >
+                  <X className="h-3 w-3" />
+                </button>
+              </Badge>
+            )
+          )
+        })}
         {isLoading && searchVal ? (
           <SearchLoader />
         ) : (
@@ -262,7 +301,7 @@ function SideSheet({profileImage}) {
                           router.push("/")
                         }
                         setSearchVaL(item.label)
-                        handleParams(item._id, "frId")
+                        handleParamsObj({ name: item.label, frId: item._id })
                       }}
                     >
                       {item.label}

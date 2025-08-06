@@ -20,7 +20,7 @@ function getCountryCodeByName(countryName) {
 async function MapSideOption({ year, yearRange }) {
   const cookieStore = await cookies();
   const data = await fetch(
-    `http://localhost:2833/stats/countries?year=${year}&yearRange=${yearRange}`,
+    `https://next-gallery-by-rachit2833.vercel.app/stats/countries?year=${year}&yearRange=${yearRange}`,
     {
       headers: {
         "Content-Type": "application/json",

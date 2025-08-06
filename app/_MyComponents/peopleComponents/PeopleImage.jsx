@@ -2,9 +2,9 @@ import { cookies } from "next/headers";
 import ImageCard from "../ImageCard";
 import PeopleWrapper from "./PeopleWrapper";
 async function PeopleImage({ name,param }) {
-console.log(name._id,"jjjkkjk")
+
    const cookieStore = await cookies()
-   const data = await fetch(`http://localhost:2833/image?frId=${name._id}&year=${param.year}&sort=${param.sort}&page=${param.page}`,{
+   const data = await fetch(`https://next-gallery-by-rachit2833.vercel.app/image?frId=${name._id}&year=${param.year}&sort=${param.sort}&page=${param.page}`,{
 
       headers: {
          "Content-Type": "application/json",

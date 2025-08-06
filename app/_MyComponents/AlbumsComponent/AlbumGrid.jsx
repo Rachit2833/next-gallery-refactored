@@ -4,7 +4,7 @@ import NoImagesDoodle from "../NoImagesDoodle";
 
 async function AlbumGrid({ year ,sort}) {
    const cookieStore = await cookies()
-   const res = await fetch(`http://localhost:2833/album?year=${year || "all"}&sort=${sort}`, {
+   const res = await fetch(`https://next-gallery-by-rachit2833.vercel.app/album?year=${year || "all"}&sort=${sort}`, {
 
       headers: {
          "Content-Type": "application/json",
