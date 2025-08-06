@@ -1,6 +1,6 @@
 const faceDescriptors = []; 
 const detectFaceInCapturedImage = async (imageBlob) => {
-  console.log(imageBlob, "1");
+
   const img = new window.Image();
   img.src = imageBlob;
 
@@ -89,7 +89,7 @@ const faceRecognizer = async () => {
 //   return labeledDescriptors;
 // };
  const addNewLabel = async (label, pictureBlob) => {
-   console.log(pictureBlob, "2");
+
 
    // Convert the pictureBlob (a base64 URL) to an actual Blob
    const response = await fetch(pictureBlob);

@@ -40,7 +40,6 @@ function GroupDrawer({inviteId,children,group}) {
                <DrawerFooter className="flex justify-end gap-2">
                 <form action={async()=>{
                     const res=  await addUser([localStorage.getItem('userId')], group._id)
-                    console.log(res,":res");
                      setIsOpen(false)
                 }}>
                      <SubmitButton buttonText="Join" />

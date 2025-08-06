@@ -14,7 +14,6 @@ function PasteCards({res,cod,frId,query,children}) {
    const {  setQueryState, setFetchedImages} = useUser()
 
    useEffect(()=>{
-      console.log("hebjh");
       setFetchedImages(res)
       if(!query){
          const params = new URLSearchParams(searchParams)

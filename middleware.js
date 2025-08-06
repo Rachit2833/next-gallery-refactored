@@ -19,7 +19,7 @@ export async function middleware(req) {
       if (authResponse.ok) {
         // Redirect logged-in user away from /login and /sign-up
         if (pathname === "/login" || pathname === "/sign-up") {
-          console.log("Authenticated user trying to access auth page. Redirecting to /");
+       
           return NextResponse.redirect(new URL("/", req.url));
         }
 
@@ -27,7 +27,7 @@ export async function middleware(req) {
       }
 
       // 🔴 Invalid token — redirect to login
-      console.log("Invalid token, redirecting to /login");
+
       return NextResponse.redirect(new URL("/login", req.url));
 
     } catch (error) {
@@ -38,7 +38,6 @@ export async function middleware(req) {
 
   // 🔴 No token
   if (pathname !== "/login" && pathname !== "/sign-up") {
-    console.log("No token and trying to access protected route. Redirecting to /login");
     return NextResponse.redirect(new URL("/login", req.url));
   }
 

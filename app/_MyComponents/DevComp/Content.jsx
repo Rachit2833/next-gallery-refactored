@@ -8,7 +8,6 @@ function Content({ sessionToken, decodedValue }) {
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(false);
   const { isSelected } = useUser();
-  console.log(isSelected,"selec");
   useEffect(() => {
     let isMounted = true; 
 

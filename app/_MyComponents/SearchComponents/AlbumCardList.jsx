@@ -47,7 +47,6 @@ function AlbumCardList({ album }) {
                   action={async () => {
                      try {
                         const res= await addImagesToAlbum(album._id, selectedImages);
-                        console.log(res,":res");
                         const options = {
                            weekday: "long",
                            year: "numeric",

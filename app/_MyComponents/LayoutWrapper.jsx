@@ -15,14 +15,12 @@ const LayoutWrapper = ({ children,image }) => {
   if (noLayoutRoutes.includes(pathName)) {
     return <>{children}</>;
   }
-console.log(image);
 
   let profilImage
 
   if (!isNaN(Number(image)) && avatarImages[Number(image)]) {
     profilImage = avatarImages[Number(image)];
   }
-  console.log(profilImage,"pimg");
   return (
     <div className="flex min-h-screen w-full flex-col bg-muted/40">
       <NavBar />

@@ -61,7 +61,6 @@ function AddAlbumForm({ setIsOpen, }) {
                      throw new Error(res?.message || "Album creation failed");
                   }
                } catch (error) {
-                  console.log(error, "hello");
                   toast({
                      title: "Album Creation Failed",
                      description: error.message || "Something went wrong!",

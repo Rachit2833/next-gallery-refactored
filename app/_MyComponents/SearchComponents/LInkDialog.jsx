@@ -13,7 +13,6 @@ function LInkDialog({children,}) {
       });
    };
    const { isLoadingLink: isLoading, setIsLoadingLink: setIsLoading, url, setUrl }=useUser()
-   console.log(url)
    return (
       <Dialog>
          {children}

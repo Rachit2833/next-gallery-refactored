@@ -141,7 +141,6 @@ function ContentWrapper({ menu, children, data, userdata, AutoSendMenu }) {
                                        action: <ToastAction altText="Goto schedule to undo">Done</ToastAction>,
                                        });
                                 } catch (error) {
-                                    console.log(error, "hello");
                                   toast({
                                        title: "Failed to generate Link",
                                        description: error.message || "Something went wrong!",
