@@ -12,7 +12,6 @@ async function PeopleImage({ name,param }) {
       },
    })
    const res =  await data.json()
-   console.log(res,"fss");
 
    return (
 

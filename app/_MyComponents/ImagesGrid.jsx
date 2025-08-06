@@ -14,7 +14,6 @@ async function ImagesGrid({ searchParams }) {
   if (page) params.append("page", page);
   if (limit) params.append("limit", limit);
   if (sort) params.append("sort", sort);
-  console.log(sort, "sort in ImagesGrid");
 
 
   const queryString = params.toString();
@@ -29,7 +28,6 @@ async function ImagesGrid({ searchParams }) {
   });
 
   res = await res.json();
-  console.log(res,"resx");
   return (
     <>
       {res?.images?.length > 0 ? (

@@ -4,7 +4,7 @@ import Messages from "./Messages"
 
 function IoMessages() {
    const { messages } = useUser();
-   console.log(messages, "messages");
+
 
    return (
       [...messages].reverse().map((message, index) => (

@@ -67,7 +67,6 @@ function SideSheet({profileImage}) {
 
   router.replace(`${pathName}?${params}`, { scroll: false })
 }
-  console.log(profileImage,"hell");
   const navigationItems = [
     {
       name: "Albums",
@@ -128,8 +127,6 @@ function SideSheet({profileImage}) {
     async function search() {
       setIsLoading(true)
       const res= await searchImages(searchVal)
-      console.log("///////////////////////////////////");
-      console.log(res,"///////////////////////////////");
       setSearchData(res)
       setIsLoading(false)
     }

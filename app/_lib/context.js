@@ -141,7 +141,6 @@ export const UserProvider = ({ children }) => {
     if (!image) return "Image preview";
 
     const { Description, Location } = image;
-    console.log(Description, Location);
     if (personalDetails) {
       const location = Location?.name || "Unknown location";
       return `${Description || "No description"} — Taken at ${location} `;

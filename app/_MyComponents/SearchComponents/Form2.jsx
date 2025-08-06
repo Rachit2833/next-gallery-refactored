@@ -57,7 +57,6 @@ function From2() {
             <div className="flex px-3">
             <Image  className=" -mx-3 border-2 border-white rounded-full w-12 h-12"  alt="People" src={image2} />
                {selectedInGroup.map((id, i) => {
-                  console.log(id, "id", id === localStorage.getItem('userId'));
                   return id !== localStorage.getItem('userId') ? (
                      <Image key={i} className=" -mx-3 border-2 border-white rounded-full w-12 h-12" alt="People" src={image} />
                   ) : null;

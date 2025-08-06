@@ -28,7 +28,6 @@ async function page({ params, searchParams }) {
     },
   });
   const newRes = await res.json();
-  console.log(res,"check");
   return (
     <>
         <SideFilterLayout year={searchParamValue.year} />

@@ -87,7 +87,6 @@ function CameraUi() {
       context.drawImage(videoRef?.current, 0, 0, canvas.width, canvas.height);
       const pictureBlob = canvas.toDataURL("image/png");
       setUrlBlob(pictureBlob);
-      console.log(currentMatches, "Current Matches at capture time");
    };
 
    const faceRecognizer = async () => {
@@ -105,11 +104,9 @@ function CameraUi() {
 
       const faceMatcher = faceInfo.length > 0 ? new faceapi.FaceMatcher(faceInfo) : null;
 
-      console.log(faceInfo, "recognizer");
 
       const drawResults = async () => {
          if (!videoRef.current || videoRef.current.readyState < 2) {
-            console.log("Video not ready yet");
             requestAnimationFrame(drawResults);
             return;
          }

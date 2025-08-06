@@ -19,7 +19,6 @@ async function MessageList({ query,decodedValue }) {
    });
 
    const searchResults = await searchPeopleResponse.json();
-   console.log(searchResults,"sfs");
    const groupResponse = await fetch(`https://next-gallery-refactored-backend-btrh-pvihnvhaj.vercel.app/message/group?_id=${userId}`, {
       headers: {
          "Content-Type": "application/json",

@@ -23,7 +23,7 @@ function LoginForm() {
       <form
         action={async (formData) => {
           const data = await loginUser(formData);
-          console.log(data);
+
           if (data) {
             localStorage.setItem("userId", data.userId);
             router.push("/");

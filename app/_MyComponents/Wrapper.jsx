@@ -10,7 +10,7 @@ function Wrapper({alc, card, params }) {
 
    useEffect(() => {
       const storedVal = localStorage.getItem("userId");
-      console.log(storedVal,"stored");
+
       if (storedVal) {
 
          setVal(storedVal);

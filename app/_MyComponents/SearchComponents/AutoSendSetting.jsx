@@ -52,7 +52,6 @@ function AutoSendSetting({children}) {
                   <form action={async () => await toggleAutoSend(isSelected.rId, isSelected.autoSend.enabled ? 1 : 2,isSelected.idBit)}>
                      <SubmitButton type="submit" onClick={() => {
                         setOpen(false);
-                        console.log("AutoSend Disabled"); // Replace with actual disable logic
                      }}>
                         Disable
                      </SubmitButton>

@@ -17,7 +17,6 @@ function IconButtons({val, params,albumComponent, save, leave = true, share = tr
    const [isLeaveDialogOpen, setLeaveDialogOpen] = useState(false);
    const router = useRouter();
    const { toast } = useToast();
-   console.log(val,"val2");
    const iconButtonStyle = "w-16 h-16 flex justify-center items-center rounded-lg cursor-pointer transition-all duration-300 shadow-lg";
 
    return (

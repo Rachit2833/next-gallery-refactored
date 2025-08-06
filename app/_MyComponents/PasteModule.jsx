@@ -19,7 +19,6 @@ function PasteModule({additionalData=[],setFile}){
                 const blob = item.getAsFile();
                 const imageUrl = URL.createObjectURL(blob);
                 newImages.push({ imageUrl, imageFile: blob, isAdded: false }); // Add 'isAdded' flag for each image
-                console.log("Pasted image URL:", imageUrl);
             }
         }
 
@@ -39,10 +38,8 @@ function PasteModule({additionalData=[],setFile}){
     }, [handlePaste]);
     
     const finalImages = [...imagesPasted,...additionalData]
-    console.log(finalImages);
     
 const handleRemoveImage = (indexToRemove) => {
-   console.log("Hello ");
    const totalImages = [...imagesPasted, ...additionalData];
    const updatedImages = totalImages.filter((_, i) => i !== indexToRemove);
    const updatedPasted = updatedImages.slice(0, imagesPasted.length);

@@ -25,11 +25,9 @@ export async function updateName(formData) {
   }
 }
 export async function updateImageForLabel(formData) {
-  console.log(formData)
   const cookieStore = await cookies();
   const labelId = formData.get("labelId");
   const ImageUrl = formData.get("imageUrl");
-  console.log(labelId, ImageUrl)
   try {
     const res = await fetch(`https://next-gallery-by-rachit2833.vercel.app/label/${labelId}`, {
       method: "PATCH",
@@ -40,7 +38,6 @@ export async function updateImageForLabel(formData) {
       body: JSON.stringify({ ImageUrl }),
     });
     revalidatePath("/people")
-    console.log(res)
     const data = await res.json()
     return data
   } catch (error) {
@@ -127,7 +124,6 @@ export async function saveSharedAlbum(dataX) {
     }
 
     const data = await res.json();
-    console.log(data, "hello");
     revalidatePath("/albums");
 
     return data;
@@ -141,7 +137,6 @@ export async function saveSharedAlbum(dataX) {
 export async function deleteAlbumAction(formData) {
   const cookieStore = await cookies();
   const id = formData.get("albumId");
-  console.log(id);
   try {
     const data = await fetch(`https://next-gallery-by-rachit2833.vercel.app/album/${id}`, {
       method: "DELETE",
@@ -172,7 +167,6 @@ export async function updateFavourite(formData) {
 
     // Check if the request was successful
     if (!data.ok) {
-      console.log(response, "data");
       throw new Error("Failed to update favourite");
     }
 
@@ -184,11 +178,9 @@ export async function updateFavourite(formData) {
 }
 export async function saveNewImage(formData, id) {
   const cookieStore = await cookies();
-  console.log("hello,", formData);
 
   // Parse the people array from formData
   const peoples = JSON.parse(formData.get("People"));
-  console.log("Parsed People:", peoples); // Just for debugging
 
   // Prepare a new FormData to send to backend
   const data = new FormData();
@@ -224,7 +216,6 @@ export async function saveNewImage(formData, id) {
 }
 
 //  let des = await autoSend(id,val.data.People)
-//  console.log(des);
 //  const inp = await fetch("https://next-gallery-by-rachit2833.vercel.app/image/share", {
 //    method: "POST",
 //    headers: {
@@ -398,7 +389,6 @@ export async function removeUser(removePeople, groupId) {
 }
 export async function autoSend(id, friendId) {
   try {
-    console.log(id, "auto Send id");
     const response = await fetch(
       `https://next-gallery-by-rachit2833.vercel.app/friends/verify?id=${id}&friendId=${friendId}`,
       {
@@ -417,7 +407,6 @@ export async function autoSend(id, friendId) {
       return null;
     }
     let descriptorId = [];
-    console.log(data.data, "data.data");
     data.data.forEach((item, i) => {
       if (item.userId === id && item.autoSend?.userId?.enabled) {
         descriptorId.push(item.friendId)
@@ -597,7 +586,6 @@ export async function changeLabel(id, label, idBit, enabled) {
     );
     revalidatePath("/friends");
     if (!response.ok) {
-      console.log(response);
       throw new Error(`Failed to sign up: ${response.statusText}`);
     }
   } catch (error) {
@@ -623,7 +611,6 @@ export async function toggleAutoSend(id, enabled, idBit) {
     );
     revalidatePath("/friends");
     if (!response.ok) {
-      console.log(response);
       throw new Error(`Failed to sign up: ${response.statusText}`);
     }
   } catch (error) {
@@ -646,7 +633,6 @@ export async function deleteSharedImages(id, userId) {
     );
     revalidatePath("/");
     if (!response.ok) {
-      console.log(response, "response");
       throw new Error(`Failed to sign up: ${response.statusText}`);
     }
   } catch (error) {
@@ -666,7 +652,6 @@ export async function deleteManyImages(idArray) {
       body: JSON.stringify({ idArray }),
     });
     const data = await res.json()
-    console.log(data, "ghjgj");
 
     if (!res.ok) {
 
@@ -679,7 +664,6 @@ export async function deleteManyImages(idArray) {
 }
 export async function generateShareLink(sharedById, imgIds) {
   try {
-    console.log(sharedById, imgIds);
     const cookieStore = await cookies();
     const response = await fetch("https://next-gallery-by-rachit2833.vercel.app/image/share", {
       method: "POST",
@@ -701,7 +685,6 @@ export async function generateShareLink(sharedById, imgIds) {
 }
 export async function saveLinkImages(ids, userid) {
   try {
-    console.log(userid);
     if (ids.length === 0) return
     const cookieStore = await cookies();
     const res = await fetch("https://next-gallery-by-rachit2833.vercel.app/image/share/images", {
@@ -716,7 +699,6 @@ export async function saveLinkImages(ids, userid) {
       throw new Error(data?.message || "Failed to save images");
     }
     const data = await res.json();
-    console.log(data);
   } catch (error) {
     console.error(error);
     throw error
@@ -735,11 +717,9 @@ export async function addImagesToAlbum(id, photoArray) {
       body: JSON.stringify({ photoArray }),
     });
     if (!res.ok) {
-      console.log(res, ":res");
       throw new Error(`Failed to sign up: ${res.statusText}`);
     }
     const data = await res.json()
-    console.log(data, ":data");
     return data
   } catch (error) {
     console.error(error);
@@ -747,7 +727,6 @@ export async function addImagesToAlbum(id, photoArray) {
 }
 export async function generateShareLinkAlbum(albumId, shareById) {
   try {
-    console.log(123)
     const cookieStore = await cookies();
     const response = await fetch("https://next-gallery-by-rachit2833.vercel.app/album/share", {
       method: "POST",
@@ -761,7 +740,6 @@ export async function generateShareLinkAlbum(albumId, shareById) {
       throw new Error(`Failed to sign up: ${response.statusText}`);
     }
     const data = await response.json();
-    console.log(data, "data");
     const url = `http://localhost:3000/share?id=${data.data._id}&sharedId=${shareById}&type=album`;
     return url;
   } catch (error) {
@@ -794,7 +772,6 @@ export async function saveMassImages(formData) {
   try {
     const cookieStore = await cookies();
     const token = cookieStore.get("session")?.value;
-    console.log(formData);
     const res = await fetch("https://next-gallery-by-rachit2833.vercel.app/image/mass", {
       method: "POST",
       headers: {
@@ -804,7 +781,6 @@ export async function saveMassImages(formData) {
       body: formData,
     });
     const data = await res.json()
-    console.log(data, "hejhrweo");
 
     if (!res.ok) {
       const errText = await res.text();
@@ -813,7 +789,6 @@ export async function saveMassImages(formData) {
     }
 
 
-    console.log("Upload successful");
   } catch (error) {
     console.error("Upload error:", error.message);
   }
@@ -828,7 +803,6 @@ export async function saveMassImages(formData) {
         },
       });
     const storedDescriptors = await response.json();
-    console.log("Stored Descriptors:", storedDescriptors);
    
     return storedDescriptors;
   };
@@ -851,7 +825,6 @@ export async function searchImages(searchVal) {
       throw new Error(`Upload failed: ${res.statusText}`);
     }
     const data = await res.json()
-    console.log(data, "hejhrweo");
     return data
   } catch (error) {
     console.error("Upload error:", error.message);
@@ -863,7 +836,6 @@ export async function updateImage(formData) {
     const id = formData.get("id");
     const formType = formData.get("FormType");
     const token = cookieStore.get("session")?.value; // or wherever you're storing it
-    console.log(formData);
     let res;
 
     if (formType === "1") {

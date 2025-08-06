@@ -8,9 +8,7 @@ import { useSearchParams } from "next/navigation";
 function LabelSelector({ children, item }) {
    const { isOpen, setIsOpen, isSelected } = useUser();
    const isSelectedItem = isSelected?.autoSend?.descriptorId === item._id;
-   console.log(isSelectedItem,"isSelectedItem")
    const isExpanded = isOpen === item._id;
-   console.log(item,"label");
    return (
       <>
          <div

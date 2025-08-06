@@ -91,8 +91,6 @@ function AlbumCard({ item, shared }) {
                         onClick={async () => {
                            setIsLoading(true);
                            const res = await generateShareLinkAlbum(item._id, localStorage.getItem("userId"));
-                           console.log(res)
-                           console.log(res, "a");
                            setUrl(res);
                            setIsLoading(false);
                         }}
@@ -105,11 +103,9 @@ function AlbumCard({ item, shared }) {
                   try {
                      delete item._id;
                      delete item.__v;
-                     console.log("Before saving album", item);
 
                      const response = await saveSharedAlbum(item);
 
-                     console.log("Album saved successfully", response);
 
                      toast({
                         title: "Album Saved!",

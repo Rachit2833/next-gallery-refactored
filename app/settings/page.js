@@ -1,9 +1,5 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { cookies } from "next/headers";
-import { avatarImages } from "../_lib/avatar";
-import AppSideBar from "../_MyComponents/AppSideBar";
-import { EditableField } from "../_MyComponents/EditableField";
-import { AvatarDialog } from "../_MyComponents/AvatarDialog";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import {
   Tooltip,
@@ -11,15 +7,11 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import {
-  Sheet,
-  SheetContent,
-  SheetTrigger,
-} from "@/components/ui/sheet";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { cookies } from "next/headers";
+import { avatarImages } from "../_lib/avatar";
+import { AvatarDialog } from "../_MyComponents/AvatarDialog";
+import { EditableField } from "../_MyComponents/EditableField";
 import PrivacyControlSection from "../_MyComponents/PrivacyControlSection";
-import { Menu } from "lucide-react";
-import React from "react";
 
 const Page = async () => {
   const cookieStore = await cookies();

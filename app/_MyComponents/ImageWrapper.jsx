@@ -7,7 +7,6 @@ import { useEffect, useOptimistic } from "react";
 import { updateFavourite } from "../_lib/actions";
 
 function ImageWrapper({ res, cod, left }) {
-  console.log("image Wrapper");
   const { setFetchedImages, setImageLeft } = useUser();
   const [optimisticImages, optimisticChange] = useOptimistic(res, (prev, { bookingId, type }) => {
   
@@ -18,13 +17,9 @@ function ImageWrapper({ res, cod, left }) {
     }
     return prev;
   });
-    console.log(res,"hello world xxxx");
-    console.log("/////////////////////////////////////////////////////////////////////////////////");
-    console.log(optimisticImages,"hello world xxxxxxxxx");
 
   async function toggleFav(formData,type) {
     const id = formData.get("imageId");
-    console.log(type, id, "toggleFav");
     if (!id) return;
     optimisticChange({ bookingId: id, type: "favorite" });
     await updateFavourite(formData);

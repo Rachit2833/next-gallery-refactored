@@ -3,7 +3,6 @@ import ImageCard from "../ImageCard";
 import { CloudCog } from "lucide-react";
 import FavouriteGridWrapper from "../FavouriteGridWrapper";
 async function FavouriteImage({param}) {
-   console.log(param.year,"sfjb");
    const cookieStore = await cookies()
    const data = await fetch(`https://next-gallery-by-rachit2833.vercel.app/image?favourite=true&year=${param.year}`,{
       headers: {
@@ -12,7 +11,6 @@ async function FavouriteImage({param}) {
       },
    })
    const res =  await data.json()
-   console.log(res,"fss");
 
    return (
       

@@ -8,7 +8,6 @@ import { SubmitButton } from "./LeaveDialog";
 
 function SettingDialog({ children, title, description, action, buttonText }) {
    const { setIsSelected, selectedInGroup } = useUser()
-   console.log("Running SettingDialog");
    return (
       <Dialog>
 

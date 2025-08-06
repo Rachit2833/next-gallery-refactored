@@ -22,7 +22,6 @@ const saveImage = (folderName, imageName, imageData) => {
 
   // Write the buffer to the file
   fs.writeFileSync(filePath, buffer);
-  console.log(`Image saved: ${filePath}`);
 };
 
 

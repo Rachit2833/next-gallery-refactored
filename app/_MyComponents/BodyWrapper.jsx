@@ -9,11 +9,9 @@ import { themes } from '../_lib/themes';
 const BodyWrapper = ({children,user}) => {
     const {selectedTheme, setSelectedTheme,isDark, setIsDark, personalDetails, setPersonalDetails} =useUser()
    useEffect(()=>{
-    console.log("hello",user?.seoPrivacy);
      setPersonalDetails(user?.seoPrivacy)
 
    },[user])
-   console.log(user,"pd");
   return (
       <body className={`${themes[selectedTheme].lightClass} ${isDark?"dark":""}`}>
       

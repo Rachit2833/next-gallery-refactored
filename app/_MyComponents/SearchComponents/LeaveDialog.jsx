@@ -9,7 +9,6 @@ import { useFormStatus } from "react-dom";
 
 function LeaveDialog({children,title,description,action,buttonText,isLeaveDialogOpen, setLeaveDialogOpen}) {
    const {setIsSelected,selectedInGroup,}=useUser()
-   console.log("Running LeaveDialog");
    return (
       <Dialog open={isLeaveDialogOpen} onOpenChange={setLeaveDialogOpen}>
 

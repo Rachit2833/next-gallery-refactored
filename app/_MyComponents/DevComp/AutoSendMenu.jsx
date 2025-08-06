@@ -20,7 +20,7 @@ async function AutoSendMenu({searchParam,children}) {
       },
    });
    const people = await response.json();
-   console.log(people,"people");
+
    return (
       <Dialog>
         {children}
