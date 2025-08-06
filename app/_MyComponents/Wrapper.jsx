@@ -9,9 +9,10 @@ function Wrapper({alc, card, params }) {
    const { setUserId } = useUser()
 
    useEffect(() => {
-      // Access localStorage only on client side
       const storedVal = localStorage.getItem("userId");
+      console.log(storedVal,"stored");
       if (storedVal) {
+
          setVal(storedVal);
          setUserId(storedVal);
       }
@@ -19,10 +20,8 @@ function Wrapper({alc, card, params }) {
 
    return (
       <>
-         <div className="flex items-center">
-            <SideFilterLayout text="Add Images" year={params.year} />
-         </div>
-         <MainSlide params={params} val={val} albumComponent={alc} card={card} />
+         <SideFilterLayout text="Add Images" year={params.year} />
+         <MainSlide params={params} val={val} albumComponent={alc||<></>} card={card} />
       </>
    )
 }

@@ -7,9 +7,10 @@ import { useEffect, useOptimistic } from "react";
 import { updateFavourite } from "../_lib/actions";
 
 function ImageWrapper({ res, cod, left }) {
+  console.log("image Wrapper");
   const { setFetchedImages, setImageLeft } = useUser();
-
   const [optimisticImages, optimisticChange] = useOptimistic(res, (prev, { bookingId, type }) => {
+  
     if (type === "favorite") {
       return prev.map((item) =>
         item._id === bookingId ? { ...item, Favourite: !item.Favourite } : item
@@ -17,6 +18,9 @@ function ImageWrapper({ res, cod, left }) {
     }
     return prev;
   });
+    console.log(res,"hello world xxxx");
+    console.log("/////////////////////////////////////////////////////////////////////////////////");
+    console.log(optimisticImages,"hello world xxxxxxxxx");
 
   async function toggleFav(formData,type) {
     const id = formData.get("imageId");
@@ -32,9 +36,10 @@ function ImageWrapper({ res, cod, left }) {
   }, [res, left]);
 
   return (
-    <div className="grid md:grid-cols-3 sm:grid-cols-2 grid-cols-2 gap-4">
+    
+    <div className="grid md:grid-cols-3 sm:grid-cols-2 grid-cols-1 gap-4">
       {cod ? (
-        <SearchGrid />
+        <SearchGrid  optimisticImages={optimisticImages}/>
       ) : (
         optimisticImages?.map((item) =>
           item.sharedBy ? (

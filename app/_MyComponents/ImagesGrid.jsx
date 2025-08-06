@@ -16,13 +16,12 @@ async function ImagesGrid({ searchParams }) {
   if (sort) params.append("sort", sort);
   console.log(sort, "sort in ImagesGrid");
 
+
   const queryString = params.toString();
   const cookieStore = await cookies();
 
-  const url = `https://next-gallery-refactored-backend-btrh-pvihnvhaj.vercel.app/image${queryString ? `?${queryString}` : ""}`;
-
+  const url = `https://next-gallery-by-rachit2833.vercel.app/image${queryString ? `?${queryString}` : ""}`;
   let res = await fetch(url, {
-    next: { revalidate: 60 },
     headers: {
       "Content-Type": "application/json",
       authorization: `Bearer ${cookieStore.get("session")?.value || ""}`,
@@ -30,7 +29,7 @@ async function ImagesGrid({ searchParams }) {
   });
 
   res = await res.json();
-
+  console.log(res,"resx");
   return (
     <>
       {res?.images?.length > 0 ? (

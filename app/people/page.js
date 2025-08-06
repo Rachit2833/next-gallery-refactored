@@ -10,11 +10,15 @@ import Friends from "../_MyComponents/peopleComponents/Friends";
 import PeopleAvatar from "../_MyComponents/peopleComponents/PeopleAvatar";
 import PeopleAvatarFull from "../_MyComponents/peopleComponents/PeopleAvatarFull";
 
-export const revalidate = 0;
+export const metadata = {
+  title: "People",
+  description: "View all the people detected in your photo collection using smart face recognition.",
+};
+
 function Page() {
   return (
     <>
-      <Card>
+      <Card  className="w-full max-w-screen-2xl mx-auto overflow-hidden">
         <CardHeader className="border-b-4">
           <CardTitle>Capture Moments, Share Memories</CardTitle>
           <CardDescription>

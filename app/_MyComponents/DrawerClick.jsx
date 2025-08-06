@@ -1,257 +1,296 @@
-'use client'
+"use client"
 
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import {
-   Dialog,
-   DialogContent,
-   DialogDescription,
-   DialogHeader,
-   DialogTitle,
-   DialogTrigger,
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle
+} from "@/components/ui/card"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger
 } from "@/components/ui/dialog"
 import {
-   Drawer,
-   DrawerContent,
-   DrawerDescription,
-   DrawerHeader,
-   DrawerTitle,
-   DrawerTrigger
+  Drawer,
+  DrawerContent,
+  DrawerDescription,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerTrigger
 } from "@/components/ui/drawer"
 import { Input } from "@/components/ui/input"
 import { Separator } from "@/components/ui/separator"
 import { Earth, PlusCircle } from "lucide-react"
 import { useUser } from "../_lib/context"
 import AddAlbumForm from "./AlbumsComponent/AddAlbumForm"
-import ImageAlbumAddLayout from "./AlbumsComponent/ImageAlbumAddLayout"
 import PasteModule from "./PasteModule"
 import ToggleButton from "./ToggleButton"
-import Uploadcard from "./UploadCard"
-import { saveMassImages, saveNewImage } from "../_lib/actions"
+import Uploadcard, { Earthbutton } from "./UploadCard"
+import { saveMassImages, getLocationInfo } from "../_lib/actions"
+import { Badge } from "@/components/ui/badge"
+import { SubmitButton } from "./SignUpForm"
 
 function DrawerClick({ name, formType = "Image" }) {
-   const {
-      isOn,
-      setIsOn,
-      imagesPasted,
-      setImagesPasted,
-      getSeasons,
-      location,
-      setLocation,
-      lat,
-      long,
-      getCoordinates,
-      isPending
-   } = useUser()
+  const {
+    isOn,
+    setIsOn,
+    imagesPasted,
+    setImagesPasted,
+    getSeasons,
+    lat,
+    long,
+    isPending,
+    isAutoLocation, setIsAutoLocation,
+    location, setLocation
+  } = useUser()
 
-   const [isDrawerOpen, setDrawerOpen] = useState(false)
-   const [uploadType, setUploadType] = useState(1)
-   const [file, setFile] = useState([])
-   const [globalDescription, setGlobalDescription] = useState(getSeasons || "")
-   const [isSaving, setIsSaving] = useState(false)
+  const [isDrawerOpen, setDrawerOpen] = useState(false)
+  const [uploadType, setUploadType] = useState(1)
+  const [file, setFile] = useState([])
 
-   const handleFileChange = (e) => {
-      const files = Array.from(e.target.files);
-      const updatedFileUrls = files.map((file) => ({
-         imageFile: file,
-         imageUrl: URL.createObjectURL(file)
-      }));
-      setFile((prevFile) => [...prevFile, ...updatedFileUrls]);
-   };
+  const [globalDescription, setGlobalDescription] = useState(getSeasons || "")
+  const [isSaving, setIsSaving] = useState(false)
 
-const handleSave = async () => {
-  const allImages = [...imagesPasted, ...file]; // From pasted and uploaded
-  setIsSaving(true);
+  const handleFileChange = (e) => {
+    const files = Array.from(e.target.files)
+    const updatedFileUrls = files.map((file) => ({
+      imageFile: file,
+      imageUrl: URL.createObjectURL(file)
+    }))
+    setFile((prevFile) => [...prevFile, ...updatedFileUrls])
+  }
 
-  const formData = new FormData();
+  const handleSave = async () => {
+    const allImages = [...imagesPasted, ...file]
+    setIsSaving(true)
 
-  allImages.forEach((img, index) => {
-    const imageFile = img?.imageFile;
-    if (imageFile instanceof File || imageFile instanceof Blob) {
-      formData.append("images", imageFile);
-    } else {
-      console.warn(`Skipped image at index ${index}`, img);
+    const formData = new FormData()
+    allImages.forEach((img) => {
+      const imageFile = img?.imageFile
+      if (imageFile instanceof File || imageFile instanceof Blob) {
+        formData.append("images", imageFile)
+      }
+    })
+
+    formData.append("LocationName", location)
+    formData.append("Description", globalDescription || "No description provided")
+    formData.append("Country", "India")
+    formData.append("Favourite", "false")
+    formData.append("detection", "true")
+    formData.append("People", JSON.stringify([]))
+
+    try {
+      await saveMassImages(formData)
+      setImagesPasted([])
+      setFile([])
+    } catch (err) {
+      console.error("Error saving image:", err)
     }
-  });
 
-  formData.append("LocationName", location);
-  formData.append("Description", globalDescription || "No description provided");
-  formData.append("Country", "India");
-  formData.append("Favourite", "false");
-  formData.append("detection", "true");
-
-  const people = []; // You can fill this as needed
-  formData.append("People", JSON.stringify(people));
-
-  // DEBUG: log FormData contents
-  for (const [key, value] of formData.entries()) {
-    console.log(key, value);
+    setIsSaving(false)
+    setDrawerOpen(false)
   }
 
-  try {
-    await saveMassImages(formData);
-  } catch (err) {
-    console.error("Error saving image:", err);
+  const handleGetCoordinates = async () => {
+    try {
+      const position = await new Promise((resolve, reject) =>
+        navigator.geolocation.getCurrentPosition(resolve, reject)
+      )
+
+      const formData = new FormData()
+      formData.append("latitude", position.coords.latitude)
+      formData.append("longitude", position.coords.longitude)
+
+      const res = await getLocationInfo(formData)
+      setLocation(`${res.city}, ${res.country}`)
+      setIsAutoLocation(true)
+    } catch (error) {
+      console.error("Geolocation error:", error)
+    }
   }
 
-  setIsSaving(false);
-  setDrawerOpen(false);
-};
+  return (
+    <div className="relative">
+      <Drawer open={isDrawerOpen} onOpenChange={() => setDrawerOpen(!isDrawerOpen)}>
+        <DrawerTrigger
+          onClick={() => setDrawerOpen(true)}
+          className="h-7 px-3 text-xs gap-1 bg-primary text-primary-foreground shadow hover:bg-primary/90 inline-flex items-center justify-center whitespace-nowrap rounded-md font-medium transition-colors"
+        >
+          <PlusCircle className="h-3.5 w-3.5" />
+          {name}
+        </DrawerTrigger>
 
+        <DrawerContent className={formType === "Album" ? "min-h-[25rem]" : "min-h-[45rem]"}>
+          {formType === "Image" ? (
+            <>
+              <div className="w-full flex justify-between items-center gap-4 px-4 py-2 sm:px-8">
+                <h1
+                  onClick={() => setUploadType(1)}
+                  className={`flex-1 text-center cursor-pointer pb-1 transition-all duration-300 ease-in-out ${
+                    uploadType === 1
+                      ? "border-b-4 border-foreground text-foreground font-semibold"
+                      : "border-b-4 border-transparent text-muted-foreground"
+                  }`}
+                >
+                  Single Upload
+                </h1>
 
+                <div className="h-6 w-px bg-border" />
 
-   return (
-      <div className="relative">
-         <Drawer open={isDrawerOpen} onOpenChange={() => setDrawerOpen(!isDrawerOpen)}>
-            <DrawerTrigger
-               onClick={() => setDrawerOpen(true)}
-               className="h-7 px-3 text-xs gap-1 bg-primary text-primary-foreground shadow hover:bg-primary/90 inline-flex items-center justify-center whitespace-nowrap rounded-md font-medium transition-colors"
-            >
-               <PlusCircle className="h-3.5 w-3.5" />
-               {name}
-            </DrawerTrigger>
+                <h1
+                  onClick={() => setUploadType(2)}
+                  className={`flex-1 text-center cursor-pointer pb-1 transition-all duration-300 ease-in-out ${
+                    uploadType === 2
+                      ? "border-b-4 border-foreground text-foreground font-semibold"
+                      : "border-b-4 border-transparent text-muted-foreground"
+                  }`}
+                >
+                  Multiple Upload
+                </h1>
+              </div>
 
-            <DrawerContent className={formType === "Album" ? "min-h-[25rem]" : "min-h-[45rem]"}>
-               {formType === "Image" ? (
-                  <>
-                     <div className="w-[95%] flex justify-evenly items-center gap-8 mx-auto">
-                        <h1
-                           onClick={() => setUploadType(1)}
-                           className={`text-center w-1/2 cursor-pointer pb-1 transition-all duration-300 ease-in-out ${uploadType === 1
-                              ? "border-b-4 border-black text-black font-semibold"
-                              : "border-b-4 border-transparent text-gray-500"
-                              }`}
-                        >
-                           Single Upload
-                        </h1>
+              <Separator />
 
-                        <div className="h-6 w-px bg-gray-400" />
+              {uploadType === 1 ? (
+                <Uploadcard isDrawerOpen={isDrawerOpen} setDrawerOpen={setDrawerOpen} />
+              ) : (
+                <>
+                  <DrawerHeader className="relative px-4">
+                    <DrawerTitle className="text-center text-base sm:text-lg">
+                      Select Images from your Local Storage or Paste (Ctrl+V)
+                    </DrawerTitle>
 
-                        <h1
-                           onClick={() => setUploadType(2)}
-                           className={`text-center w-1/2 cursor-pointer pb-1 transition-all duration-300 ease-in-out ${uploadType === 2
-                              ? "border-b-4 border-black text-black font-semibold"
-                              : "border-b-4 border-transparent text-gray-500"
-                              }`}
-                        >
-                           Multiple Upload
-                        </h1>
-                     </div>
+                    <Dialog>
+                      <DialogTrigger className="absolute right-4 top-4 inline-flex items-center justify-center gap-2 h-9 px-4 py-2 bg-primary text-primary-foreground text-sm font-medium rounded-md shadow hover:bg-primary/90">
+                        Save
+                      </DialogTrigger>
 
-                     <Separator />
+                      <DialogContent className="h-[40rem] overflow-auto">
+                        <DialogHeader>
+                          <DialogTitle>Save Images</DialogTitle>
+                          <DialogDescription>
+                            This will save all images selected by you
+                          </DialogDescription>
 
-                     {uploadType === 1 ? (
-                        <Uploadcard isDrawerOpen={isDrawerOpen} setDrawerOpen={setDrawerOpen} />
-                     ) : (
-                        <>
-                           <DrawerHeader className="relative">
-                              <DrawerTitle className="text-center">
-                                 Select Images from your Local Storage or Paste (Ctrl+V)
-                              </DrawerTitle>
+                          {isOn && (
+                            <Card>
+                              <CardHeader>
+                                <CardTitle>Enter the Details for Images</CardTitle>
+                                <CardDescription>Common details for all images</CardDescription>
+                              </CardHeader>
 
-                              <Dialog>
-                                 <DialogTrigger className="absolute right-4 top-4 inline-flex items-center justify-center gap-2 h-9 px-4 py-2 bg-primary text-white text-sm font-medium rounded-md shadow hover:bg-primary/90">
-                                    Save
-                                 </DialogTrigger>
+                              <CardContent>
+                                <Input
+                                  name="Title"
+                                  type="text"
+                                  placeholder="Describe Your Image"
+                                  value={globalDescription}
+                                  onChange={(e) => setGlobalDescription(e.target.value)}
+                                  className="w-full px-4 py-2 border rounded-md bg-muted text-muted-foreground outline-none"
+                                />
 
-                                 <DialogContent className="h-[40rem] overflow-auto">
-                                    <DialogHeader>
-                                       <DialogTitle>Save Images</DialogTitle>
-                                       <DialogDescription>
-                                          This will save all images selected by you
-                                       </DialogDescription>
+                                <span className="my-4 block">Give Location Access</span>
 
-                                       {isOn && (
-                                          <Card>
-                                             <CardHeader>
-                                                <CardTitle>Enter the Details for Images</CardTitle>
-                                                <CardDescription>Common details for all images</CardDescription>
-                                             </CardHeader>
+                                <div className="flex flex-col gap-4 my-4">
+                                  <div className="flex items-center gap-2">
+                                    <Input
+                                      name="Location"
+                                      type="text"
+                                      placeholder="Location Of Your Image"
+                                      onChange={(e) => setLocation(e.target.value)}
+                                      value={location}
+                                      disabled={isAutoLocation}
+                                      className="w-full px-4 py-2 border rounded-md bg-muted text-muted-foreground outline-none disabled:opacity-70 disabled:cursor-not-allowed"
+                                    />
 
-                                             <CardContent>
-                                                <Input
-                                                   name="Title"
-                                                   type="text"
-                                                   placeholder="Describe Your Image"
-                                                   value={globalDescription}
-                                                   onChange={(e) => setGlobalDescription(e.target.value)}
-                                                   className="border border-gray-300 p-2 rounded-lg"
-                                                />
+                                   <form action={handleGetCoordinates}>
+                                      <Earthbutton disabled={isAutoLocation} />
+                                   </form>
+                                  </div>
 
-                                                <span className="my-4 block">Give Location Access</span>
+                                  {isAutoLocation && (
+                                    <Badge
+                                      variant="outline"
+                                      className="flex items-center justify-between w-full px-3 py-1 bg-accent text-sm border"
+                                    >
+                                      📍 {location}
+                                      <button
+                                        type="button"
+                                        onClick={() => {
+                                          setLocation("")
+                                          setIsAutoLocation(false)
+                                        }}
+                                        className="ml-2 text-red-500 hover:text-red-700"
+                                      >
+                                        ✖
+                                      </button>
+                                    </Badge>
+                                  )}
+                                </div>
+                              </CardContent>
+                            </Card>
+                          )}
 
-                                                <div className="flex gap-4 my-4 items-center justify-between">
-                                                   <Input
-                                                      name="Location"
-                                                      type="text"
-                                                      placeholder="Location Of Your Image"
-                                                      onChange={(e) => setLocation(e.target.value)}
-                                                      value={location}
-                                                      className="border border-gray-300 p-2 rounded-lg"
-                                                   />
+                          <div className="flex flex-col sm:flex-row justify-between items-center gap-4 my-8">
+                            <ToggleButton />
+                            <div className="flex gap-3 w-full sm:w-auto justify-end">
+                              <Button
+                                variant="secondary"
+                                className="w-full sm:w-auto"
+                                onClick={() => setDrawerOpen(false)}
+                              >
+                                Cancel
+                              </Button>
+                              <Button
+                                className="w-full sm:w-auto"
+                                onClick={handleSave}
+                                disabled={isSaving}
+                              >
+                                {isSaving ? "Saving..." : "Save"}
+                              </Button>
+                            </div>
+                          </div>
+                        </DialogHeader>
+                      </DialogContent>
+                    </Dialog>
 
-                                                   <Button
-                                                      onClick={getCoordinates}
-                                                      disabled={isPending}
-                                                      className="disabled:bg-white disabled:text-black"
-                                                   >
-                                                      <Earth />
-                                                   </Button>
-                                                </div>
-                                             </CardContent>
-                                          </Card>
-                                       )}
+                    <DrawerDescription className="text-center text-sm mt-2">
+                      Description and Location are editable below
+                    </DrawerDescription>
 
-                                       <div className="flex justify-between my-8">
-                                          <div className="flex justify-start gap-4">
-                                             <ToggleButton />
-                                          </div>
+                    <Input
+                      name="photo"
+                      onChange={handleFileChange}
+                      multiple
+                      className="sm:w-[35rem] mx-auto mt-4 w-full px-0 py-0 border rounded-md bg-muted text-muted-foreground
+                     file:px-4 file:py-2 file:rounded-none file:border-none file:bg-accent 
+                     file:text-accent-foreground file:m-0 file:mr-4 file:rounded-l-md file:shadow-none"
+                      type="file"
+                    />
+                  </DrawerHeader>
 
-                                          <div className="flex justify-end gap-4">
-                                             <Button variant="outline" onClick={() => setDrawerOpen(false)}>
-                                                Cancel
-                                             </Button>
-                                             <Button onClick={handleSave} disabled={isSaving}>
-                                                {isSaving ? "Saving..." : "Save"}
-                                             </Button>
-                                          </div>
-                                       </div>
-                                    </DialogHeader>
-                                 </DialogContent>
-                              </Dialog>
-
-                              <DrawerDescription className="text-center">
-                                 Description and Location are editable below
-                              </DrawerDescription>
-
-                              <Input
-                                 name="photo"
-                                 onChange={handleFileChange}
-                                 multiple
-                                 className="border border-input mx-auto bg-transparent h-9 flex w-[25rem] rounded-md file:h-9 file:bg-primary file:text-white file:text-sm file:font-medium"
-                                 type="file"
-                              />
-                           </DrawerHeader>
-
-                           {/* SCROLLABLE MULTI UPLOAD AREA */}
-                           <div className="max-h-[40rem] overflow-auto px-4 py-2 border rounded-md mt-4 ">
-                              <div className="grid md:grid-cols-3 sm:grid-cols-2 grid-cols-2 gap-4">
-                                 <PasteModule additionalData={file} />
-                              </div>
-                           </div>
-                        </>
-                     )}
-                  </>
-               ) : formType === "Album" ? (
-                  <AddAlbumForm setIsOpen={setDrawerOpen} />
-               ) : (
-                  <ImageAlbumAddLayout />
-               )}
-            </DrawerContent>
-         </Drawer>
-      </div>
-   )
+                  <div className="max-h-[30rem] overflow-auto px-2 py-2 border border-border rounded-md mt-4 bg-background">
+                    <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                      <PasteModule additionalData={file} setFile={setFile} />
+                    </div>
+                  </div>
+                </>
+              )}
+            </>
+          ) : formType === "Album" ? (
+            <AddAlbumForm setIsOpen={setDrawerOpen} />
+          ) : null}
+        </DrawerContent>
+      </Drawer>
+    </div>
+  )
 }
 
 export default DrawerClick

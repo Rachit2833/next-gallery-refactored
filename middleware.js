@@ -3,13 +3,11 @@ import { NextResponse } from "next/server";
 export async function middleware(req) {
   const token = req.cookies.get("session")?.value;
   const { pathname } = req.nextUrl;
-
-  console.log("Middleware executed:", pathname);
-
-  // ✅ If token exists, verify it first
   if (token) {
     try {
-      const authResponse = await fetch("https://next-gallery-refactored-backend-btrh-pvihnvhaj.vercel.app/user/verify-user", {
+      // https://next-gallery-by-rachit2833.vercel.app/user/verify-user", {
+      //   method: "POST",
+      const authResponse = await fetch("https://next-gallery-by-rachit2833.vercel.app/user/verify-user", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

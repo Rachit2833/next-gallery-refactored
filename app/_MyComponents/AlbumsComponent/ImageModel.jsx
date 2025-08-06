@@ -1,160 +1,131 @@
-"use client"
+"use client";
 
-import { useUser } from "@/app/_lib/context"
-import image1 from "@/app/dune.jpg"
-import { AspectRatio } from "@/components/ui/aspect-ratio"
-import { Button } from "@/components/ui/button"
-import Image from "next/image"
-import { usePathname, useRouter, useSearchParams } from "next/navigation"
-import { useEffect, useRef } from "react"
+import { useUser } from "@/app/_lib/context";
+import image1 from "@/public/Images/dune.jpg";
+import { Button } from "@/components/ui/button";
+import { ChevronLeft, ChevronRight, X } from "lucide-react";
+import Image from "next/image";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 function ImageModel() {
-   const abc = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAADCAIAAAA7ljmRAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAMklEQVR4nAEnANj/AAwNOwENPwEAMQQDNwD+///L2eTO2ub+//8A/v395ejt5enu/v39Q/QXhr/juNAAAAAASUVORK5CYII="
-   const {
-      fetchedImages,
-      setFetchedImages,
-      isImageOpen,
-      setIsImageOpen,
-      modelImages,
-      setModelImages,
-      imageLeft,
-   } = useUser()
+  const abc =
+    "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAADCAIAAAA7ljmRAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAMklEQVR4nAEnANj/AAwNOwENPwEAMQQDNwD+///L2eTO2ub+//8A/v395ejt5enu/v39Q/QXhr/juNAAAAAASUVORK5CYII=";
 
-   const imageNum = fetchedImages?.indexOf(modelImages)
-   const params = useSearchParams()
-   const router = useRouter()
-   const pathname = usePathname()
-   const page = parseInt(params.get("page") || "1")
+  const {
+    getAltText,
+    modelType,
+    isImageOpen,
+    setIsImageOpen,
+    modelImages,
+    setModelImages,
+    fetchedImages,
+    imageLeft,
+    personalDetails,
+  } = useUser();
 
-   const isBackNavigating = useRef(false)
-   const isFrontNavigating = useRef(false)
+  const params = useSearchParams();
+  const router = useRouter();
+  const pathname = usePathname();
+  const page = parseInt(params.get("page") || "1");
 
-   function handleParams(paramName, filter) {
-      const param = new URLSearchParams(params.toString())
-      param.set(paramName, filter.toString())
-      router.replace(`${pathname}?${param.toString()}`, { scroll: false })
-   }
+  const imageNum = fetchedImages?.findIndex(
+    (img) => img._id === modelImages?._id
+  );
 
-   useEffect(() => {
-      if (isBackNavigating.current && fetchedImages.length > 0) {
-         setModelImages(fetchedImages[fetchedImages.length - 1])
-         isBackNavigating.current = false
-      }
-      if (isFrontNavigating.current && fetchedImages.length > 0) {
-         console.log("fetching updating");
-         setModelImages(fetchedImages[0])
-         isFrontNavigating.current = false
-      }
-   }, [fetchedImages])
+  const handleParams = (paramName, value) => {
+    const param = new URLSearchParams(params.toString());
+    param.set(paramName, value.toString());
+    router.replace(`${pathname}?${param.toString()}`, { scroll: false });
+  };
 
-   return (
-      <>
-         {isImageOpen ? (
-            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-75">
-               <div className="relative w-[80%] h-[80%] bg-white rounded-lg shadow-lg overflow-hidden">
-                  {/* Close Button */}
-                  <Button
-                     onClick={() => setIsImageOpen(false)}
-                     variant="outline"
-                     className="absolute top-4 right-4 z-10"
-                  >
-                     Close
-                  </Button>
+  const handleNext = () => {
+    if (imageNum !== fetchedImages.length - 1) {
+      setModelImages(fetchedImages[imageNum + 1]);
+    } else if (imageLeft > 0) {
+      handleParams("page", page + 1);
+    }
+  };
 
-                  {/* Forward Button */}
-                  <Button
-                     onClick={() => {
-                        console.log(1);
-                        console.log(imageNum , fetchedImages.length - 1,imageLeft);
-                        if (imageNum !== fetchedImages.length-1) {
-                           console.log(2);
-                           setModelImages(fetchedImages[imageNum + 1])
-                        } else if (imageLeft > 0) {
-                           console.log(3);
-                           isFrontNavigating.current = true
-                           handleParams("page", page + 1)
-                        }
-                     }}
-                     variant="outline"
-                     className="absolute bottom-1/2 right-4 z-10"
-                  >
-                     forward
-                  </Button>
+  const handlePrevious = () => {
+    if (imageNum > 0) {
+      setModelImages(fetchedImages[imageNum - 1]);
+    } else if (page >= 2) {
+      handleParams("page", page - 1);
+    }
+  };
 
-                  {/* Back Button */}
-                  <Button
-                     onClick={() => {
-                        if (imageNum !== 0) {
-                           setModelImages(fetchedImages[imageNum - 1])
-                        } else if (page >= 2) {
-                           isBackNavigating.current = true
-                           handleParams("page", page - 1)
-                        }
-                     }}
-                     variant="outline"
-                     className="absolute bottom-1/2 left-4 z-10"
-                  >
-                     back
-                  </Button>
+  if (!isImageOpen) return null;
 
-                  {/* Image counter */}
-                  <div className="flex gap-2 text-white font-bold w-36 bg-transparent h-12 border-2 rounded-lg justify-center items-center absolute bottom-4 left-1/2 -translate-x-1/2 z-10">
-                     <span className="text-center">{imageNum + 1}</span>
-                     <span className="text-center">/</span>
-                     <span className="text-center">{fetchedImages?.length}</span>
-                  </div>
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4">
+      <div className="relative w-full max-w-4xl max-h-[85vh] rounded-lg overflow-hidden flex items-center justify-center">
+        <div
+          className="relative w-full h-auto aspect-video bg-cover bg-center"
+          style={{
+            backgroundImage: `url(${modelImages?.blurredImage || abc})`,
+          }}
+        >
+          {/* Image */}
+          <Image
+            priority
+            src={modelImages?.ImageUrl || image1}
+            alt={getAltText(modelImages, personalDetails)}
+            fill
+            className="rounded-lg object-contain"
+            placeholder="blur"
+            blurDataURL={modelImages?.blurredImage || abc}
+          />
 
-                  {/* Image Display */}
-                  <AspectRatio
-                     style={{
-                        backgroundImage: `url(${modelImages?.blurredImage || abc})`,
-                        backgroundSize: "cover",
-                        backgroundPosition: "center",
-                     }}
-                     ratio={16 / 9}
-                     className="sm:block hidden relative w-full h-full"
-                  >
-                     <Image
-                        priority
-                        src={
-                           modelImages?.ImageUrl === "https://example.com/image1.jpg"
-                              ? "https://plus.unsplash.com/premium_photo-1675337267945-3b2fff5344a0?w=900&auto=format&fit=crop&q=60"
-                              : modelImages?.ImageUrl || image1
-                        }
-                        alt="Dune"
-                        fill
-                        objectFit="contain"
-                        className="rounded-lg"
-                        placeholder="blur"
-                        blurDataURL={modelImages?.blurredImage || abc}
-                     />
-                  </AspectRatio>
+          {/* Close Button */}
+          <Button
+            onClick={() => setIsImageOpen(false)}
+            variant="ghost"
+            size="icon"
+            className="absolute top-3 right-3 z-10 h-8 w-8 p-1 bg-black/60 text-white hover:bg-black/80"
+          >
+            <X className="w-4 h-4" />
+          </Button>
 
-                  <AspectRatio
-                     style={{
-                        backgroundImage: `url(${modelImages?.blurredImage || abc})`,
-                        backgroundSize: "cover",
-                        backgroundPosition: "center",
-                     }}
-                     ratio={1 / 8}
-                     className="block sm:hidden relative w-full h-full"
-                  >
-                     <Image
-                        priority
-                        src={modelImages?.ImageUrl || image1}
-                        alt="Dune"
-                        fill
-                        objectFit="contain"
-                        className="rounded-lg"
-                        placeholder="blur"
-                        blurDataURL={modelImages?.blurredImage || abc}
-                     />
-                  </AspectRatio>
-               </div>
-            </div>
-         ) : null}
-      </>
-   )
+          {modelType === 1 && (
+            <>
+              {/* Next */}
+              <Button
+                onClick={handleNext}
+                variant="ghost"
+                size="icon"
+                className="absolute top-1/2 right-3 -translate-y-1/2 z-10 h-8 w-8 p-1 bg-black/60 text-white hover:bg-black/80"
+                disabled={
+                  imageNum === fetchedImages.length - 1 && imageLeft === 0
+                }
+              >
+                <ChevronRight className="w-4 h-4" />
+              </Button>
+
+              {/* Previous */}
+              <Button
+                onClick={handlePrevious}
+                variant="ghost"
+                size="icon"
+                className="absolute top-1/2 left-3 -translate-y-1/2 z-10 h-8 w-8 p-1 bg-black/60 text-white hover:bg-black/80"
+                disabled={imageNum === 0 && page < 2}
+              >
+                <ChevronLeft className="w-4 h-4" />
+              </Button>
+
+              {/* Counter */}
+              {imageNum >= 0 && (
+                <div className="absolute bottom-3 left-1/2 -translate-x-1/2 z-10 bg-black/50 text-white px-3 py-1 rounded text-xs font-medium flex items-center gap-1">
+                  <span>{imageNum + 1}</span>
+                  <span>/</span>
+                  <span>{fetchedImages?.length}</span>
+                </div>
+              )}
+            </>
+          )}
+        </div>
+      </div>
+    </div>
+  );
 }
 
-export default ImageModel
+export default ImageModel;
