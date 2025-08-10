@@ -37,7 +37,13 @@ const BodyWrapper = ({ children, user, params }) => {
   if (!isNaN(Number(image)) && avatarImages[Number(image)]) {
     profilImage = avatarImages[Number(image)];
   }
-  console.log(uniqueArray);
+  const noLayoutRoutes = ['/login', '/sign-up', '/not-found'];
+
+
+  if (noLayoutRoutes.includes(pathName)) {
+    return <body className={`${themes[selectedTheme].lightClass} ${isDark ? "dark" : ""} flex min-h-screen w-full flex-col bg-muted/40`}>{children}</body>;
+  }
+
   return (
     <body className={`${themes[selectedTheme].lightClass} ${isDark ? "dark" : ""} flex min-h-screen w-full flex-col bg-muted/40`}>
 
