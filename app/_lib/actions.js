@@ -642,8 +642,9 @@ export async function deleteSharedImages(id, userId) {
 }
 export async function deleteManyImages(idArray) {
   try {
+
     const cookieStore = await cookies();
-    const res = await fetch(`https://next-gallery-by-rachit2833.vercel.app/image/all`, {
+    const res = await fetch(`http://localhost:2833/image/all`, {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",

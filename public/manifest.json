@@ -1,0 +1,43 @@
+{
+  "name": "NextGallery",
+  "short_name": "NextGallery",
+  "theme_color": "#8936FF",
+  "background_color": "#2EC6FE",
+  "display": "standalone",
+  "start_url": "/?source=pwa",
+  "scope": "/",
+  "orientation": "any",
+  "dir": "auto",
+  "lang": "en-GB",
+  "icons": [
+    {
+      "src": "icon512_maskable.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "icon512_rounded.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ],
+   "form_factor": ["wide"],
+  "screenshots": [
+    {
+      "src": "/dune2.jpg",
+      "sizes": "540x960",
+      "type": "image/jpg",
+      "label": "Mobile view",
+      "form_factor": "narrow"
+    },
+    {
+      "src": "/dune1.jpg",
+      "sizes": "1280x720",
+      "type": "image/jpg",
+      "label": "Desktop view",
+      "form_factor": "wide"
+    }
+  ]
+}

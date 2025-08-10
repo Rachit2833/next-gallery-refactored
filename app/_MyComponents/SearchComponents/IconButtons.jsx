@@ -90,6 +90,7 @@ function IconButtons({val, params,albumComponent, save, leave = true, share = tr
                      <LeaveDialog
                         isLeaveDialogOpen={isLeaveDialogOpen} setLeaveDialogOpen={setLeaveDialogOpen}
                         action={async () => {
+
                            await deleteManyImages(selectedImages);
                         }}
                         title={"Delete Image?"}

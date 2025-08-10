@@ -1,6 +1,9 @@
-/** @type {import('next').NextConfig} */
+// next.config.mjs
 import withPlaiceholder from '@plaiceholder/next';
-const nextConfig = {
+import withPWA from 'next-pwa';
+
+/** @type {import('next').NextConfig} */
+const baseConfig = {
   images: {
     remotePatterns: [
       {
@@ -57,12 +60,6 @@ const nextConfig = {
         port: "",
         pathname: "/**",
       },
-      {
-        protocol: "https",
-        hostname: "plus.unsplash.com",
-        port: "",
-        pathname: "/**",
-      },
     ],
   },
   experimental: {
@@ -72,4 +69,15 @@ const nextConfig = {
   },
 };
 
-export default withPlaiceholder(nextConfig);
+// Apply PWA first, then Plaiceholder
+const withPWAConfig = withPWA({
+  dest: "public",
+  register: true,
+  skipWaiting: true,
+  disable: process.env.NODE_ENV === "development"
+});
+
+// Compose both plugins with the base config
+const finalConfig = withPlaiceholder(withPWAConfig(baseConfig));
+
+export default finalConfig;

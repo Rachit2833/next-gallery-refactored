@@ -34,7 +34,9 @@ export default async   function RootLayout({ children}) {
   return (
     <html lang="en" >
       <head >
+        {/* <link ref="manifest" href="../manifest.json" /> */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="manifest" href="/manifest.json" />
         <link
           rel="preconnect"
           href="https://fonts.gstatic.com"
@@ -51,6 +53,7 @@ export default async   function RootLayout({ children}) {
           href="https://fonts.googleapis.com/css2?family=Caveat:wght@400..700&family=Knewave&display=swap"
           rel="stylesheet"
         ></link>
+
 
       </head>
         <UserProvider>
