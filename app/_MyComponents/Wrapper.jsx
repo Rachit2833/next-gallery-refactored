@@ -20,7 +20,7 @@ function Wrapper({alc, card, params }) {
 
    return (
       <>
-         <SideFilterLayout text="Add Images" year={params.year} />
+ 
          <MainSlide params={params} val={val} albumComponent={alc||<></>} card={card} />
       </>
    )

@@ -16,14 +16,12 @@ export const metadata = {
    return (
      <>
 
-         <SideFilterLayout formType="Album" text="Add Album" year={query?.year||"All"} />
-
        <Suspense key={[year, sort]} fallback={<AlbumLoaders />}>
          <Card x-chunk="dashboard-06-chunk-0"  className="w-full max-w-screen-2xl mx-auto overflow-hidden">
            <CardHeader>
-                  <CardTitle>Your Saved Images</CardTitle>
+                  <CardTitle>Your Saved Album</CardTitle>
                   <CardDescription>
-                     Paste your Copied Images Here Or Directly Add Images
+                    Manage All your Albums here
                   </CardDescription>
                </CardHeader>
                <CardContent>

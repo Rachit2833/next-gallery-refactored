@@ -1,30 +1,114 @@
 'use client'
-import React, { Suspense, useEffect } from 'react';
-import {  useUser } from '../_lib/context';
-import ImageModel from './AlbumsComponent/ImageModel';
-import { Toaster } from '@/components/ui/toaster';
-import LayoutWrapper from './LayoutWrapper';
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb";
+import { Button } from '@/components/ui/button';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { PanelRight } from 'lucide-react';
+import { usePathname } from 'next/navigation';
+import React, { useEffect, useState } from 'react';
+import { avatarImages } from '../_lib/avatar';
+import { useUser } from '../_lib/context';
 import { themes } from '../_lib/themes';
+import ImageModel from './AlbumsComponent/ImageModel';
+import LayoutWrapper from './LayoutWrapper';
+import MainSearchBar from './MainSearchBar';
+import NavBar from './NavBar';
+import SideSheet from './SideSheet';
+import SideFilterLayout from "./SideFilterLayout";
+const BodyWrapper = ({ children, user, params }) => {
+  const { selectedTheme, setSelectedTheme, isDark, setIsDark, personalDetails, setPersonalDetails } = useUser()
+  const [isSheetOpen, setIsSheetOpen] = useState(false)
+  const image = user?.profilePicture
+  const pathName = usePathname()
+  const pathArray = pathName.split("/")
+  const uniqueArray = [...new Set(pathArray)]
+  useEffect(() => {
+    setPersonalDetails(user?.seoPrivacy)
 
-const BodyWrapper = ({children,user}) => {
-    const {selectedTheme, setSelectedTheme,isDark, setIsDark, personalDetails, setPersonalDetails} =useUser()
-   useEffect(()=>{
-     setPersonalDetails(user?.seoPrivacy)
+  }, [user])
+  let profilImage
 
-   },[user])
+  if (!isNaN(Number(image)) && avatarImages[Number(image)]) {
+    profilImage = avatarImages[Number(image)];
+  }
+  console.log(uniqueArray);
   return (
-      <body className={`${themes[selectedTheme].lightClass} ${isDark?"dark":""}`}>
-      
-       <Suspense>
-           <ImageModel />
-       </Suspense>
-     <Toaster   />
-         <Suspense>
-           <LayoutWrapper image={user?.profilePicture}>
-            {children}
-          </LayoutWrapper>
-         </Suspense>
-      </body>
+    <body className={`${themes[selectedTheme].lightClass} ${isDark ? "dark" : ""} flex min-h-screen w-full flex-col bg-muted/40`}>
+
+      <NavBar />
+      <SideSheet open={isSheetOpen} onOpenChange={setIsSheetOpen} profileImage={profilImage || image} />
+      <header className="sm:my-2 sm:ml-16 z-30 border-b bg-background px-4 sm:static sm:border-0 sm:bg-transparent sm:px-6">
+        {/* Row 1 */}
+        <div className="flex h-14 items-center gap-4 sm:h-auto">
+          <Button
+            onClick={() => setIsSheetOpen(true)}
+            size="icon"
+            variant="outline"
+            className="sm:hidden"
+          >
+            <PanelRight className="h-5 w-5" />
+            <span className="sr-only">Toggle Menu</span>
+          </Button>
+
+          <Breadcrumb className="hidden md:flex">
+            <BreadcrumbList>
+              {uniqueArray.map((item, i) => (
+                <React.Fragment key={i}>
+                  <BreadcrumbItem>
+                    {i === uniqueArray.length - 1 ? (
+                      <BreadcrumbPage>{item || "Home"}</BreadcrumbPage>
+                    ) : (
+                      <BreadcrumbLink href={item === "" ? "/" : `/${item}`}>
+                        {item || "Home"}
+                      </BreadcrumbLink>
+                    )}
+                  </BreadcrumbItem>
+                  {uniqueArray[i + 1] && <BreadcrumbSeparator />}
+                </React.Fragment>
+              ))}
+            </BreadcrumbList>
+          </Breadcrumb>
+
+          <Tabs
+            value={isDark ? "dark" : "light"}
+            onValueChange={(value) => {
+              setIsDark(value === "dark");
+              localStorage.setItem("dark", value === "dark");
+            }}
+          >
+            <TabsList className="bg-muted p-0.5 h-8">
+              <TabsTrigger value="light" className="w-8 h-7 text-lg">
+                🌞
+              </TabsTrigger>
+              <TabsTrigger value="dark" className="w-8 h-7 text-lg">
+                🌙
+              </TabsTrigger>
+            </TabsList>
+          </Tabs>
+
+          <MainSearchBar profileImage={profilImage || image} />
+        </div>
+
+        {/* Row 2 */}
+        <div className="mt-4">
+          <SideFilterLayout text="Add Images" year={params.year} />
+        </div>
+      </header>
+
+
+      {/* <Toaster /> */}
+
+      <LayoutWrapper image={user?.profilePicture}>
+        <ImageModel />
+        {children}
+      </LayoutWrapper>
+    </body>
   );
 };
 

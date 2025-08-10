@@ -83,6 +83,7 @@ function ImageCard({ image, text, editSelection, name, toggleFav }) {
   }
 
   return (
+    <article>
     <Card
       onDragStart={() => setIsTest(image?._id)}
       onDoubleClick={onSelect}
@@ -99,7 +100,7 @@ function ImageCard({ image, text, editSelection, name, toggleFav }) {
         </Button>
       )}
 
-      <div
+      <figure
         className="relative select-none w-full h-[9rem] sm:h-[12rem] lg:h-[15rem] rounded-t-lg cursor-pointer overflow-hidden"
         onClick={() => {
           setIsImageOpen(true);
@@ -115,7 +116,7 @@ function ImageCard({ image, text, editSelection, name, toggleFav }) {
             filter: "blur(12px)",
           }}
         />
-        <div className="absolute inset-0 z-10 bg-gradient-to-t from-background/80 to-transparent" />
+        {/* <div className="absolute inset-0 z-10 bg-gradient-to-t from-background/80 to-transparent" /> */}
         <Image
           src={
             image?.ImageUrl === "https://example.com/image1.jpg" || !image?.ImageUrl
@@ -130,14 +131,14 @@ function ImageCard({ image, text, editSelection, name, toggleFav }) {
           placeholder="blur"
           blurDataURL={image.blurredImage || abc}
         />
-      </div>
+      </figure>
 
       <ContextMenu>
         <ContextMenuTrigger>
           <div className="overflow-y-auto max-h-24 mt-2 select-none">
             <CardDescription>{image?.Location?.name}</CardDescription>
             <p className="text-center">{image?.Description}</p>
-            <div className="text-xs text-muted-foreground mt-4 sm:block hidden">
+            <footer className="text-xs text-muted-foreground mt-4 sm:block hidden">
               <p>
                 By{" "}
                 <span className="font-semibold cursor-pointer hover:underline">
@@ -145,7 +146,7 @@ function ImageCard({ image, text, editSelection, name, toggleFav }) {
                 </span>{" "}
                 {logTimeDifference("2024-09-29T10:00:00")}
               </p>
-            </div>
+            </footer>
           </div>
         </ContextMenuTrigger>
 
@@ -252,6 +253,7 @@ function ImageCard({ image, text, editSelection, name, toggleFav }) {
         </ContextMenuContent>
       </ContextMenu>
     </Card>
+  </article>
   );
 }
 

@@ -19,7 +19,7 @@ export const metadata = {
   // creator: "Rachit Rawat",
   // themeColor: "#ffffff",
 };
-export default async   function RootLayout({ children}) {
+export default async   function RootLayout({ children,params}) {
     const cookieStore = await cookies();
      const res = await fetch("https://next-gallery-by-rachit2833.vercel.app/user/verify-user", {
        method: "POST",
@@ -54,7 +54,7 @@ export default async   function RootLayout({ children}) {
 
       </head>
         <UserProvider>
-      <BodyWrapper user={user?.user}>
+      <BodyWrapper params={params} user={user?.user}>
         {children}
       </BodyWrapper>
       </UserProvider>
