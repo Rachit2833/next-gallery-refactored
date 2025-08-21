@@ -38,7 +38,7 @@ export default async   function RootLayout({ children,params}) {
         <link
           rel="preconnect"
           href="https://fonts.gstatic.com"
-          crossOrigin="true"
+           crossOrigin="anonymous"
         />
         
         <link
@@ -50,7 +50,7 @@ export default async   function RootLayout({ children,params}) {
         <link
           href="https://fonts.googleapis.com/css2?family=Caveat:wght@400..700&family=Knewave&display=swap"
           rel="stylesheet"
-        ></link>
+        />
 
       </head>
         <UserProvider>

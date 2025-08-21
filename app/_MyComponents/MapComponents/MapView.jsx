@@ -96,7 +96,7 @@ function MapView({ imageCard, Location, sideField, param }) {
 
         <CardContent className="grid grid-cols-1 xl:grid-cols-6 gap-4 relative">
           {/* Map (always full width on mobile, spans 4 cols on xl) */}
-          <div className="col-span-1 xl:col-span-4">
+          <article className="col-span-1 xl:col-span-4">
             <Map>
               {LocationsCod.map((item, i) => (
                 <Marker
@@ -112,10 +112,10 @@ function MapView({ imageCard, Location, sideField, param }) {
                 </Marker>
               ))}
             </Map>
-          </div>
+          </article>
 
           {/* Summary Panel — only visible on xl+ */}
-          <div className="hidden xl:block col-span-2">
+          <aside className="hidden xl:block col-span-2">
             <Card className="h-full">
               <CardContent className="m-4 p-0 space-y-4">
               <div className=" sm:flex  items-center">
@@ -132,12 +132,12 @@ function MapView({ imageCard, Location, sideField, param }) {
                 </Suspense>
               </CardContent>
             </Card>
-          </div>
+          </aside>
         </CardContent>
       </Card>
 
       {/* Trigger for Summary Drawer (mobile only) */}
-      <div className="fixed bottom-4 right-4 xl:hidden z-50">
+      <aside className="fixed bottom-4 right-4 xl:hidden z-50">
         <Drawer open={showSummaryDrawer} onOpenChange={setShowSummaryDrawer}>
           <DrawerTrigger asChild>
             <Button variant="outline">View Summary</Button>
@@ -152,7 +152,7 @@ function MapView({ imageCard, Location, sideField, param }) {
             </Suspense>
           </DrawerContent>
         </Drawer>
-      </div>
+      </aside>
 
       {/* Sheet on marker click (xl only) */}
       <Sheet open={showSheet} onOpenChange={(open) => (open ? setShowSheet(true) : handleClose())}>

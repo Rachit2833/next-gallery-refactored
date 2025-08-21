@@ -30,8 +30,9 @@ export default function RefreshButton() {
   }
 
   return (
-    <div className="relative w-fit">
+    <div className="relative w-fit z-0">
       <Button
+        aria-label="refresh"
         size="icon"
         variant="outline"
         onClick={handleRefresh}

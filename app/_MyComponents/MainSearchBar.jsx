@@ -30,30 +30,32 @@ import SearchLoader from "./Loaders/SearchLoader"
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
 
 import { useUser } from "../_lib/context"
-import React, {  useState } from "react";
+import React, { useState } from "react";
 
 
-const MainSearchBar = ({profileImage}) => {
+const MainSearchBar = ({ profileImage }) => {
     const { searchVal, setSearchVaL, isDark, setIsDark, searchData, setSearchData, queryState, modelImages, setModelImages, setIsImageOpen, setModelType, } = useUser()
     const [isLoading, setIsLoading] = useState(false)
     const pathName = usePathname()
     const searchParams = useSearchParams()
     const router = useRouter()
-    
-    function handleParamsObj(paramsObj) {
+    const pathArray = pathName.split("/")
+    function handleParams(filter, filterName) {
         if (!searchParams) return
         const params = new URLSearchParams(searchParams)
-
-        for (const [key, value] of Object.entries(paramsObj)) {
-            params.set(key, value)
-        }
-
+        params.set(filterName, filter)
         router.replace(`${pathName}?${params}`, { scroll: false })
     }
+    const removeParam = (key) => {
+        const newParams = new URLSearchParams(searchParams.toString())
+        newParams.delete(key)
+        router.push(`?${newParams.toString()}`)
+    }
+
     return (
         <div
             className={`p-2 ${searchVal ? "rounded-xl border bg-card text-card-foreground shadow" : ""
-                } top-1 absolute right-6`}
+                } top-1 absolute right-6 z-50`}
         >
 
             <div className="relative ml-auto flex gap-4 md:grow-0">
@@ -133,7 +135,7 @@ const MainSearchBar = ({profileImage}) => {
             ) : (
                 <div
                     className={`${searchVal ? "" : "hidden"
-                        } gap-2 h-[85%] my-2 grid grid-rows-auto`}
+                        } gap-2 h-[85%]  my-2 grid grid-rows-auto`}
                 >
                     {searchData?.peopleData?.length !== 0 ? (
                         <Card className="p-2">

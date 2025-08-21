@@ -136,7 +136,7 @@ function ImageCard({ image, text, editSelection, name, toggleFav }) {
       <ContextMenu>
         <ContextMenuTrigger>
           <div className="overflow-y-auto max-h-24 mt-2 select-none">
-            <CardDescription>{image?.Location?.name}</CardDescription>
+            <p>{image?.Location?.name}</p>
             <p className="text-center">{image?.Description}</p>
             <footer className="text-xs text-muted-foreground mt-4 sm:block hidden">
               <p>

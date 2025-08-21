@@ -33,13 +33,14 @@ function AlbumCard({ item, shared }) {
    }
    const isNumeric = (val) => !isNaN(val) && Number.isInteger(Number(val));
    return (
-      <Card className="relative min-h-[20rem] sm:min-h-[24rem] lg:min-h-[30rem]">
-         <div className="absolute z-10 top-6 sm:top-12 left-4 sm:left-8">
-            <h1 className="text-[1.5rem] sm:text-[2rem] text- ">{item.Name}</h1>
+     <article>
+       <Card className="relative min-h-[20rem] sm:min-h-[24rem] lg:min-h-[30rem]">
+        <figure>
+          <div className="absolute z-10 top-6 sm:top-12 left-4 sm:left-8">
+            <h2 className="text-[1.5rem] sm:text-[2rem] text- ">{item.Name}</h2>
             <p className=" mt-2 text-[1rem] sm:text-[1.2rem]">
                {item.Description}
             </p>
-            <p className=" text-[0.9rem] sm:text-[1rem]"></p>
          </div>
 
 
@@ -56,6 +57,7 @@ function AlbumCard({ item, shared }) {
             objectFit="cover"
             placeholder={item.blurredImage || abc}
          />
+        </figure>
 
 
          <div className="  absolute flex flex-row items-center justify-center gap-4 z-20 bottom-6 sm:bottom-12 right-4 sm:right-8">
@@ -64,7 +66,7 @@ function AlbumCard({ item, shared }) {
                <>
                   <AlertDialog open={isOpen} onOpenChange={setIsOpen}>
                      <AlertDialogTrigger asChild className="flex items-center p-2 sm:p-4 bg-transparent border-2 border-white text-white text-[0.9rem] sm:text-[1rem] hover:bg-white hover:text-black transition-colors h-9 px-4 py-2 rounded-md">
-                        <Button variant="outline"><Trash2 /></Button>
+                        <Button aria-label="delete" variant="outline"><Trash2 /></Button>
                      </AlertDialogTrigger>
 
                      <AlertDialogContent>
@@ -87,6 +89,7 @@ function AlbumCard({ item, shared }) {
                   </AlertDialog>
                   <LInkDialog>
                      <DialogTrigger
+                     aria-label="share"
                         className=" rounded-md h-9 px-4 py-2 flex items-center p-2 sm:p-4 bg-transparent border-2 border-white text-white text-[0.9rem] sm:text-[1rem] hover:bg-white hover:text-black transition-colors"
                         onClick={async () => {
                            setIsLoading(true);
@@ -125,11 +128,12 @@ function AlbumCard({ item, shared }) {
                }} > <SubmitButtonTransparent buttonText="Save" />
 
                </form>}
-            <Button onClick={() => router.push(`/albums/${item._id}`)} className="flex items-center p-2 sm:p-4 bg-transparent border-2 border-white text-white text-[0.9rem] sm:text-[1rem] hover:bg-white hover:text-black transition-colors">
+            <Button aria-label="visit" onClick={() => router.push(`/albums/${item._id}`)} className="flex items-center p-2 sm:p-4 bg-transparent border-2 border-white text-white text-[0.9rem] sm:text-[1rem] hover:bg-white hover:text-black transition-colors">
                Visit <ChevronRight className="ml-2" />
             </Button>
          </div>
       </Card>
+     </article>
    )
 }
 

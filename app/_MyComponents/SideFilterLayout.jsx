@@ -12,6 +12,7 @@ import { useUser } from "../_lib/context";
 import DrawerClick from "./DrawerClick";
 import Filter from "./Filter";
 import RefreshButton from "./RefreshButton";
+import ModesButton from "./ModesButton";
 
 function SideFilterLayout({ year, text, formType }) {
   const router = useRouter();
@@ -67,6 +68,7 @@ function SideFilterLayout({ year, text, formType }) {
     <div className=" sm:flex  items-center">
       {pathname !== "/memory-map" && pathname !== "/post" && (
         <>
+        
           <Filter
             paramName="year"
             values={filterArray}
@@ -75,7 +77,9 @@ function SideFilterLayout({ year, text, formType }) {
           />
           <div className="ml-auto flex mt-6 sm:mt-0 justify-evenly  sm:items-center gap-2">
             {/* Dark/Light Mode Toggle */}
-        
+         <div className="block md:hidden" >
+            <ModesButton  isDark={isDark} setIsDark={setIsDark} />
+          </div>
 
             <RefreshButton />
 
@@ -123,6 +127,7 @@ function SideFilterLayout({ year, text, formType }) {
 
             {/* Add Form Button */}
           {!pathname.startsWith('/albums/') && <DrawerClick name={text} formType={formType} />}
+           
           </div>
         </>
       )}

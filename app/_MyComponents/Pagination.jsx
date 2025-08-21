@@ -37,7 +37,7 @@ export function PagePagination({ totalPagesLeft }) {
          <PaginationContent
             className="p-3 bg-muted border rounded-xl shadow-sm flex-nowrap overflow-x-auto whitespace-nowrap space-x-2 scrollbar-thin scrollbar-thumb-muted-foreground/20 scrollbar-track-transparent"
          >
-            {/* Previous Icon Button */}
+            {/* Previous Icon Button (same style as Next) */}
             <PaginationItem
                onClick={() =>
                   currentPage > 1 && handleParams("page", currentPage - 1)
@@ -45,7 +45,7 @@ export function PagePagination({ totalPagesLeft }) {
                className={`${buttonClasses} ${
                   currentPage === 1
                      ? disabledButtonClasses
-                     : " text-primary-foreground hover:bg-primary/90"
+                     : "bg-primary text-primary-foreground hover:bg-primary/90"
                }`}
             >
                <ChevronLeft className="w-4 h-4" />
