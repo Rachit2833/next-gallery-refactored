@@ -23,16 +23,7 @@ function SideSheet({open,onOpenChange}) {
   const uniqueArray = [...new Set(pathArray)]
   const searchParams = useSearchParams()
   const router = useRouter()
-  function handleParamsObj(paramsObj) {
-  if (!searchParams) return
-  const params = new URLSearchParams(searchParams)
-
-  for (const [key, value] of Object.entries(paramsObj)) {
-    params.set(key, value)
-  }
-
-  router.replace(`${pathName}?${params}`, { scroll: false })
-}
+ 
   const navigationItems = [
     {
       name: "Albums",
@@ -62,17 +53,6 @@ function SideSheet({open,onOpenChange}) {
   ]
 
 
-  function handleParams(filter, filterName) {
-    if (!searchParams) return
-    const params = new URLSearchParams(searchParams)
-    params.set(filterName, filter)
-    router.replace(`${pathName}?${params}`, { scroll: false })
-  }
-  const removeParam = (key) => {
-    const newParams = new URLSearchParams(searchParams.toString())
-    newParams.delete(key)
-    router.push(`?${newParams.toString()}`)
-  }
 
   useEffect(() => {
     if (!searchVal) {

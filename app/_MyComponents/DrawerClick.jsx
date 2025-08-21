@@ -131,29 +131,28 @@ function DrawerClick({ name, formType = "Image" }) {
           {formType === "Image" ? (
             <>
               <div className="w-full flex justify-between items-center gap-4 px-4 py-2 sm:px-8">
-                <h1
+                <button
                   onClick={() => setUploadType(1)}
-                  className={`flex-1 text-center cursor-pointer pb-1 transition-all duration-300 ease-in-out ${
-                    uploadType === 1
+                  className={`flex-1 text-center cursor-pointer pb-1 transition-all duration-300 ease-in-out ${uploadType === 1
                       ? "border-b-4 border-foreground text-foreground font-semibold"
                       : "border-b-4 border-transparent text-muted-foreground"
-                  }`}
+                    }`}
                 >
                   Single Upload
-                </h1>
+                </button>
 
                 <div className="h-6 w-px bg-border" />
 
-                <h1
+                <button
                   onClick={() => setUploadType(2)}
-                  className={`flex-1 text-center cursor-pointer pb-1 transition-all duration-300 ease-in-out ${
-                    uploadType === 2
+                  className={`flex-1 text-center cursor-pointer pb-1 transition-all duration-300 ease-in-out ${uploadType === 2
                       ? "border-b-4 border-foreground text-foreground font-semibold"
                       : "border-b-4 border-transparent text-muted-foreground"
-                  }`}
+                    }`}
                 >
                   Multiple Upload
-                </h1>
+                </button>
+
               </div>
 
               <Separator />
@@ -210,9 +209,9 @@ function DrawerClick({ name, formType = "Image" }) {
                                       className="w-full px-4 py-2 border rounded-md bg-muted text-muted-foreground outline-none disabled:opacity-70 disabled:cursor-not-allowed"
                                     />
 
-                                   <form action={handleGetCoordinates}>
+                                    <form action={handleGetCoordinates}>
                                       <Earthbutton disabled={isAutoLocation} />
-                                   </form>
+                                    </form>
                                   </div>
 
                                   {isAutoLocation && (

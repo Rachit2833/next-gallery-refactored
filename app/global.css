@@ -818,3 +818,24 @@ body {
   background-image: radial-gradient(white 1px, transparent 1px);
   background-size: 20px 20px;
 }
+@layer base {
+  :focus {
+    @apply outline-none;
+  }
+
+  :focus-visible {
+    @apply outline-none ring-2 ring-red-500 ring-offset-2 ring-offset-background rounded-[var(--radius)] transition-shadow duration-150;
+  }
+}
+@layer base {
+  :focus-visible {
+    @apply outline-none ring-2 ring-red-500 ring-offset-2 ring-offset-background rounded-[var(--radius)] shadow-[0_0_8px_theme(colors.red.500)] transition-shadow duration-150;
+  }
+}
+@layer components {
+  :focus-visible {
+    @apply outline-none ring-2 ring-red-500 ring-offset-2 ring-offset-background rounded-[var(--radius)] transition-shadow duration-150 !important;
+  }
+}
+
+
