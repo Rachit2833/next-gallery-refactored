@@ -16,7 +16,7 @@ import Link from "next/link";
 
 async function signUpUser(formData) {
   try {
-    const response = await fetch("http://localhost:2833/user", {
+    const response = await fetch("https://next-gallery-by-rachit2833.vercel.app/user", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
