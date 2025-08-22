@@ -15,7 +15,7 @@ import LoadingButton from "./LoadingButton";
 import { useRouter } from "next/navigation";
 async function loginUser(formData) {
   try {
-    const res = await fetch("http://localhost:2833/user/login", {
+    const res = await fetch("https://next-gallery-by-rachit2833.vercel.app/user/login", {
       method: "POST",
       body: JSON.stringify({
         email: formData.get("email"),
