@@ -11,23 +11,52 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
-import { loginUser } from "../_lib/actions";
 import LoadingButton from "./LoadingButton";
 import { useRouter } from "next/navigation";
+async function loginUser(formData) {
+  try {
+    const res = await fetch("http://localhost:2833/user/login", {
+      method: "POST",
+      body: JSON.stringify({
+        email: formData.get("email"),
+        password: formData.get("password"),
+      }),
+      headers: { "Content-Type": "application/json" },
+      credentials: "include", // crucial for cookies
+    });
+
+    if (!res.ok) {
+      const errData = await res.json();
+      throw new Error(errData.error || "Login failed");
+    }
+
+    const data = await res.json();
+    return data;
+  } catch (err) {
+    console.error(err);
+    return { error: err.message };
+  }
+}
 
 function LoginForm() {
+
   const router = useRouter();
 
   return (
     <Card className="w-full max-w-md md:shadow-lg md:rounded-2xl border">
       <form
-        action={async (formData) => {
+        onSubmit={async (e) => {
+          e.preventDefault();
+          const formData = new FormData(e.target);
           const data = await loginUser(formData);
-
-          if (data) {
-            localStorage.setItem("userId", data.userId);
-            router.push("/");
+          console.log(data,"bjkkj");
+          if (data.error) {
+            alert(data.error);
+            return;
           }
+
+          localStorage.setItem("userId", data.user.id);
+          router.push("/");
         }}
       >
         <CardHeader>

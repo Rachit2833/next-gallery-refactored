@@ -36,11 +36,11 @@ function ImageWrapper({ res, cod, left }) {
       {cod ? (
         <SearchGrid  optimisticImages={optimisticImages}/>
       ) : (
-        optimisticImages?.map((item) =>
+        optimisticImages?.map((item,index) =>
           item.sharedBy ? (
             <SharedImageCard toggleFav={toggleFav} sharedData={item._id} key={item._id} image={item} />
           ) : (
-            <ImageCard toggleFav={toggleFav} key={item._id} image={item} />
+            <ImageCard index={index} toggleFav={toggleFav} key={item._id} image={item} />
           )
         )
       )}

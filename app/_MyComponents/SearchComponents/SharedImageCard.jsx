@@ -119,7 +119,7 @@ function SharedImageCard({ sharedData, image, toggleFav }) {
           fill
           className="rounded-t-lg z-20 object-cover sm:object-contain"
           quality={10}
-          loading="lazy"
+          fetchPriority="high"
           placeholder="blur"
           blurDataURL={image.blurredImage || defaultBlur}
         />

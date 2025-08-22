@@ -47,18 +47,22 @@ export const UserProvider = ({ children }) => {
   const [isLoadingLink, setIsLoadingLink] = useState(false);
   const [isTest, setIsTest] = useState(false);
     const [isAutoLocation, setIsAutoLocation] = useState(false)
+    const [isHydrated, setIsHydrated] = useState(false);
   const infoRef = useRef();
   const contentRef = useRef();
- useEffect(() => {
-    try {
-      const storedTheme = localStorage.getItem("theme");
-      const dark = localStorage.getItem("dark");
-      setIsDark(dark === "true");
-      setSelectedTheme(storedTheme ? parseInt(storedTheme) : 0);
-    } catch (e) {
-      console.error("localStorage error", e);
-    }
-  }, []);
+
+useEffect(() => {
+  try {
+    const storedTheme = localStorage.getItem("theme");
+    const dark = localStorage.getItem("dark");
+    setIsDark(dark === "true");
+    setSelectedTheme(storedTheme ? parseInt(storedTheme) : 0);
+  } catch (e) {
+    console.error("localStorage error", e);
+  } finally {
+    setIsHydrated(true); // now allow render
+  }
+}, []);
   const addNewLabel = async (data) => {
     const res = await fetch('https://next-gallery-refactored-backend-btrh-pvihnvhaj.vercel.app/labels', {
       method: 'POST',
@@ -222,7 +226,8 @@ export const UserProvider = ({ children }) => {
         personalDetails, setPersonalDetails,
         selectedAvatar, setSelectedAvatar,
         isDark, setIsDark,
-        isAutoLocation, setIsAutoLocation
+        isAutoLocation, setIsAutoLocation,
+        isHydrated, setIsHydrated
       }}
     >
       {children}
