@@ -30,6 +30,8 @@ export default async   function RootLayout({ children,params}) {
        cache: "no-store",
      });
      const user = await res.json();
+
+
   
   return (
     <html lang="en" >

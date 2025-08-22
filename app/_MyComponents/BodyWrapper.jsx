@@ -23,7 +23,7 @@ import SideSheet from './SideSheet';
 import SideFilterLayout from "./SideFilterLayout";
 import ModesButton from "./ModesButton";
 const BodyWrapper = ({ children, user, params }) => {
-  const { selectedTheme, setSelectedTheme, isDark, setIsDark, personalDetails, setPersonalDetails } = useUser()
+  const { selectedTheme, setSelectedTheme, isDark, setIsDark, personalDetails, setPersonalDetails,isHydrated, setIsHydrated } = useUser()
   const [isSheetOpen, setIsSheetOpen] = useState(false)
   const image = user?.profilePicture
   const pathName = usePathname()
@@ -39,11 +39,14 @@ const BodyWrapper = ({ children, user, params }) => {
     profilImage = avatarImages[Number(image)];
   }
   const noLayoutRoutes = ['/login', '/sign-up', '/not-found',"/portfolio"];
-
-
+  
+// if (!isHydrated) {
+//   return null; // or a tiny loader, empty div, etc.
+// }
   if (noLayoutRoutes.includes(pathName)) {
     return <body className={`${themes[selectedTheme].lightClass} ${isDark ? "dark" : ""} flex min-h-screen w-full flex-col `}>{children}</body>;
   }
+  
 
   return (
     <body className={`${themes[selectedTheme].lightClass} ${isDark ? "dark" : ""} flex min-h-screen w-full flex-col `}>
