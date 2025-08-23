@@ -8,10 +8,10 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { cookies } from "next/headers";
-import { avatarImages } from "../_lib/avatar";
-import { AvatarDialog } from "../_MyComponents/AvatarDialog";
-import { EditableField } from "../_MyComponents/EditableField";
-import PrivacyControlSection from "../_MyComponents/PrivacyControlSection";
+import { avatarImages } from "@/app/_lib/avatar";
+import { AvatarDialog } from "@/app/_MyComponents/AvatarDialog";
+import { EditableField } from "@/app/_MyComponents/EditableField";
+import PrivacyControlSection from "@/app/_MyComponents/PrivacyControlSection";
 
 const Page = async () => {
   const cookieStore = await cookies();

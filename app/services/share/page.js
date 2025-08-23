@@ -1,7 +1,7 @@
 import { Suspense } from "react";
-import ShareImages from "../_MyComponents/SearchComponents/ShareImages";
-import ShareWrapper from "../_MyComponents/SearchComponents/ShareWrapper";
-import ImageLoader from "../_MyComponents/Loaders/ImageLoader";
+import ShareImages from "@/app/_MyComponents/SearchComponents/ShareImages";
+import ShareWrapper from "@/app/_MyComponents/SearchComponents/ShareWrapper";
+import ImageLoader from "@/app/_MyComponents/Loaders/ImageLoader";
 
 export const metadata = {
   title: "Share",
