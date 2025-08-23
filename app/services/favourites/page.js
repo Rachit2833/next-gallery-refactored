@@ -1,5 +1,5 @@
-import FavouriteImage from "../_MyComponents/FavouriteComponent/FavouriteImage";
-import Wrapper from "../_MyComponents/Wrapper";
+import FavouriteImage from "@/app/_MyComponents/FavouriteComponent/FavouriteImage";
+import Wrapper from "@/app/_MyComponents/Wrapper";
 export const metadata = {
   title: "Favourites",
   description: "Your favourite images collected in one place. Relive your most loved memories on NextGallery.",

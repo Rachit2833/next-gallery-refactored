@@ -15,40 +15,40 @@ import { searchImages } from "../_lib/actions"
 import { useUser } from "../_lib/context"
 
 
-function SideSheet({open,onOpenChange}) {
-  const { searchVal, setSearchVaL, isDark, setIsDark, searchData, setSearchData, queryState, modelImages, setModelImages, setIsImageOpen, setModelType, } = useUser()
+function SideSheet({ open, onOpenChange }) {
+  const { searchVal, setSearchData,  } = useUser()
   const [isLoading, setIsLoading] = useState(false)
   const pathName = usePathname()
   const pathArray = pathName.split("/")
   const uniqueArray = [...new Set(pathArray)]
   const searchParams = useSearchParams()
   const router = useRouter()
- 
+
   const navigationItems = [
     {
       name: "Albums",
       icon: Package,
-      href: "/albums",
+      href: "services/albums",
     },
     {
       name: "People & Sharing",
       icon: Users2,
-      href: "/people",
+      href: "services/people",
     },
     {
       name: "Favourites",
       icon: Home,
-      href: "/favourites",
+      href: "services/favourites",
     },
     {
       name: "Memory-Map",
       icon: LineChart,
-      href: "/memory-map",
+      href: "services/memory-map",
     },
     {
       name: "Post",
       icon: ImageIcon,
-      href: "/post",
+      href: "services/post",
     },
   ]
 
@@ -58,21 +58,15 @@ function SideSheet({open,onOpenChange}) {
     if (!searchVal) {
       setSearchData(null)
       setIsLoading(false)
-
-      // Remove all search-related params
       const params = new URLSearchParams(searchParams)
       params.delete("query")
-      // params.delete("frId")
-      // params.delete("cod")
-      // Add more keys here as needed
-
       router.replace(`${pathName}?${params}`, { scroll: false })
       return
     }
 
     async function search() {
       setIsLoading(true)
-      const res= await searchImages(searchVal)
+      const res = await searchImages(searchVal)
       setSearchData(res)
       setIsLoading(false)
     }
@@ -81,12 +75,10 @@ function SideSheet({open,onOpenChange}) {
   }, [searchVal])
 
 
-  return pathName !== "/login" &&
-    pathName !== "/sign-up" &&
-    pathName !== "/not-found" ? (
+  return (
     <aside className=" hidden sm:block  ">
       <Sheet open={open} onOpenChange={onOpenChange}>
-      
+
         <SheetContent side="left" className="sm:max-w-xs">
           <SheetTitle />
           <nav className="grid gap-6 text-lg font-medium">
@@ -117,11 +109,8 @@ function SideSheet({open,onOpenChange}) {
           </nav>
         </SheetContent>
       </Sheet>
-
-        
-     
     </aside>
-  ) : null
+  )
 }
 
 export default SideSheet

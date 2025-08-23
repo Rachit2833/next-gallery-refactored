@@ -23,12 +23,13 @@ import SideSheet from './SideSheet';
 import SideFilterLayout from "./SideFilterLayout";
 import ModesButton from "./ModesButton";
 const BodyWrapper = ({ children, user, params }) => {
-  const { selectedTheme, setSelectedTheme, isDark, setIsDark, personalDetails, setPersonalDetails,isHydrated, setIsHydrated } = useUser()
+  const { selectedTheme, isDark, setIsDark, setPersonalDetails, isHydrated, setIsHydrated } = useUser()
   const [isSheetOpen, setIsSheetOpen] = useState(false)
   const image = user?.profilePicture
   const pathName = usePathname()
   const pathArray = pathName.split("/")
   const uniqueArray = [...new Set(pathArray)]
+
   useEffect(() => {
     setPersonalDetails(user?.seoPrivacy)
 
@@ -38,18 +39,8 @@ const BodyWrapper = ({ children, user, params }) => {
   if (!isNaN(Number(image)) && avatarImages[Number(image)]) {
     profilImage = avatarImages[Number(image)];
   }
-  const noLayoutRoutes = ['/login', '/sign-up', '/not-found',"/portfolio"];
-  
-// if (!isHydrated) {
-//   return null; // or a tiny loader, empty div, etc.
-// }
-  if (noLayoutRoutes.includes(pathName)) {
-    return <body className={`${themes[selectedTheme].lightClass} ${isDark ? "dark" : ""} flex min-h-screen w-full flex-col `}>{children}</body>;
-  }
-  
-
   return (
-    <body className={`${themes[selectedTheme].lightClass} ${isDark ? "dark" : ""} flex min-h-screen w-full flex-col `}>
+    <>
 
       <NavBar />
       <SideSheet open={isSheetOpen} onOpenChange={setIsSheetOpen} profileImage={profilImage || image} />
@@ -65,40 +56,40 @@ const BodyWrapper = ({ children, user, params }) => {
             <PanelRight className="h-5 w-5" />
             <span className="sr-only">Toggle Menu</span>
           </Button>
-
           <Breadcrumb className="hidden md:flex">
             <BreadcrumbList>
-              {uniqueArray.map((item, i) => (
-                <React.Fragment key={i}>
-                  <BreadcrumbItem>
-                    {i === uniqueArray.length - 1 ? (
-                      <BreadcrumbPage>{item || "Home"}</BreadcrumbPage>
-                    ) : (
-                      <BreadcrumbLink href={item === "" ? "/" : `/${item}`}>
-                        {item || "Home"}
+              {uniqueArray.map((item, i) => {
+                const href = item === "services" ? "/services" : `/${item}`;
+
+                return (
+                  <React.Fragment key={i}>
+                    <BreadcrumbItem>
+                      <BreadcrumbLink href={href}>
+                        {item}
                       </BreadcrumbLink>
-                    )}
-                  </BreadcrumbItem>
-                  {uniqueArray[i + 1] && <BreadcrumbSeparator />}
-                </React.Fragment>
-              ))}
+                    </BreadcrumbItem>
+                    {i < uniqueArray.length - 1 && <BreadcrumbSeparator />}
+                  </React.Fragment>
+                );
+              })}
             </BreadcrumbList>
           </Breadcrumb>
 
-           <div className="md:block hidden" >
-            <ModesButton  isDark={isDark} setIsDark={setIsDark} />
-           </div>
+
+          <div className="md:block hidden" >
+            <ModesButton isDark={isDark} setIsDark={setIsDark} />
+          </div>
 
           <MainSearchBar profileImage={profilImage || image} />
-          
+
         </div>
 
         {/* Row 2 */}
         <div className="mt-4 ">
           <SideFilterLayout text="Add Images" year={params.year} />
-          
+
         </div>
-       
+
       </header>
 
 
@@ -108,7 +99,7 @@ const BodyWrapper = ({ children, user, params }) => {
         <ImageModel />
         {children}
       </LayoutWrapper>
-    </body>
+    </>
   );
 };
 

@@ -1,12 +1,11 @@
 import { NextResponse } from "next/server";
 
 export async function middleware(req) {
+  
   const token = req.cookies.get("session")?.value;
   const { pathname } = req.nextUrl;
   if (token) {
     try {
-      // https://next-gallery-by-rachit2833.vercel.app/user/verify-user", {
-      //   method: "POST",
       const authResponse = await fetch("https://next-gallery-by-rachit2833.vercel.app/user/verify-user", {
         method: "POST",
         headers: {
