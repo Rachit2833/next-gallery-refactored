@@ -1,7 +1,7 @@
 import { cookies } from "next/headers";
-import MapSideImages from "../_MyComponents/MapComponents/MapSideImages";
-import MapSideOption from "../_MyComponents/MapComponents/MapSideOption";
-import MapWrapper from "../_MyComponents/MapComponents/MapWrapper";
+import MapSideImages from "@/app/_MyComponents/MapComponents/MapSideImages";
+import MapSideOption from "@/app/_MyComponents/MapComponents/MapSideOption";
+import MapWrapper from "@/app/_MyComponents/MapComponents/MapWrapper";
 
 export const metadata = {
   title: "Memory Map",

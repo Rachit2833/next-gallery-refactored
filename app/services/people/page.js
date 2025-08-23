@@ -6,9 +6,9 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import Friends from "../_MyComponents/peopleComponents/Friends";
-import PeopleAvatar from "../_MyComponents/peopleComponents/PeopleAvatar";
-import PeopleAvatarFull from "../_MyComponents/peopleComponents/PeopleAvatarFull";
+import Friends from "@/app/_MyComponents/peopleComponents/Friends";
+import PeopleAvatar from "@/app/_MyComponents/peopleComponents/PeopleAvatar";
+import PeopleAvatarFull from "@/app/_MyComponents/peopleComponents/PeopleAvatarFull";
 
 export const metadata = {
   title: "People",

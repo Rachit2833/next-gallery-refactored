@@ -1,8 +1,7 @@
 
 import { Suspense } from "react";
-import AlbumGrid from "../_MyComponents/AlbumsComponent/AlbumGrid";
-import AlbumLoaders from "../_MyComponents/Loaders/AlbumLoaders";
-import SideFilterLayout from "../_MyComponents/SideFilterLayout";
+import AlbumGrid from "@/app/_MyComponents/AlbumsComponent/AlbumGrid";
+import AlbumLoaders from "@/app/_MyComponents/Loaders/AlbumLoaders";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 export const metadata = {
   title: "Albums",

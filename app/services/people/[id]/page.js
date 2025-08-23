@@ -30,7 +30,6 @@ async function page({ params, searchParams }) {
   const newRes = await res.json();
   return (
     <>
-        <SideFilterLayout year={searchParamValue.year} />
       <Card  className="w-full max-w-screen-2xl mx-auto overflow-hidden">
         <CardHeader >
           <SideProfile res={newRes[0]} />

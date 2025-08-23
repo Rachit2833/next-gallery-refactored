@@ -1,65 +1,40 @@
-
-import "./global.css";
-import ImageModel from "./_MyComponents/AlbumsComponent/ImageModel";
-import LayoutWrapper from "./_MyComponents/LayoutWrapper";
 import { UserProvider } from "./_lib/context";
-import { Toaster } from "@/components/ui/toaster";
+import "./global.css";
 
-import { Suspense } from "react";
-import BodyWrapper from "./_MyComponents/BodyWrapper";
-import { cookies } from "next/headers";
-export const metadata = {
- title: {
-    template: "%s / NextGallery",
-    default: " Welcome / NextGallery",
-  },
-  description: "A modern photo gallery application for organizing and viewing your memories.",
-  // keywords: ["photo gallery", "image management", "albums", "memories", "Next.js gallery"],
-  // authors: [{ name: "Rachit2833", url: "https://github.com/Rachit2833" }],
-  // creator: "Rachit Rawat",
-  // themeColor: "#ffffff",
-};
-export default async   function RootLayout({ children,params}) {
-    const cookieStore = await cookies();
-     const res = await fetch("https://next-gallery-by-rachit2833.vercel.app/user/verify-user", {
-       method: "POST",
-       headers: {
-         authorization: `Bearer ${cookieStore.get("session")?.value}`,
-       },
-       credentials: "include",
-       cache: "no-store",
-     });
-     const user = await res.json();
-
-
-  
+export default function RootLayout({ children }) {
   return (
-    <html lang="en" >
-      <head >
+ <html lang="en" className="">
+      <head className="">
+        {/* Fonts */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link
-          rel="preconnect"
-          href="https://fonts.gstatic.com"
-           crossOrigin="anonymous"
-        />
-        
-        <link
-          href="https://fonts.googleapis.com/css2?family=Caveat:wght@400..700&display=swap"
-          rel="stylesheet"
-        />
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Caveat:wght@400..700&family=Knewave&display=swap"
-          rel="stylesheet"
-        />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400..700&display=swap" rel="stylesheet" />
+        <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400..700&family=Knewave&display=swap" rel="stylesheet" />
 
+        {/* Preload theme script (runs before hydration) */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                try {
+                  const theme = localStorage.getItem("theme") || "default";
+                  const isDark = localStorage.getItem("isDark") === "true";
+                  const themes = ${JSON.stringify(require("./_lib/themes").themes)};
+                  const themeClasses = themes[theme]?.lightClass || themes["default"].lightClass;
+                  document.documentElement.className = themeClasses + (isDark ? " dark" : "");
+                } catch(e) {
+                  console.error(e);
+                }
+              })();
+            `,
+          }}
+        />
       </head>
+      <body>
         <UserProvider>
-      <BodyWrapper params={params} user={user?.user}>
-        {children}
-      </BodyWrapper>
-      </UserProvider>
+{children}
+        </UserProvider>
+      </body>
     </html>
   );
 }

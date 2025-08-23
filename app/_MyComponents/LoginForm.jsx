@@ -15,7 +15,7 @@ import LoadingButton from "./LoadingButton";
 import { useRouter } from "next/navigation";
 async function loginUser(formData) {
   try {
-    const res = await fetch("https://next-gallery-refactored-zxm4.vercel.app/api/login", {
+    const res = await fetch(`/api/login`, {
       method: "POST",
       body: JSON.stringify({
         email: formData.get("email"),
@@ -57,7 +57,7 @@ function LoginForm() {
           }
 
           localStorage.setItem("userId", data.user.id);
-          router.push("/");
+          router.push("/services/");
         }}
       >
         <CardHeader>

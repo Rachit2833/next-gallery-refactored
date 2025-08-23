@@ -1,6 +1,6 @@
-import Wrapper from "./_MyComponents/Wrapper";
-import ImagesGrid from "./_MyComponents/ImagesGrid";
-import AlbumList from "./_MyComponents/SearchComponents/AlbumList";
+import Wrapper from "@/app/_MyComponents/Wrapper";
+import ImagesGrid from "@/app/_MyComponents/ImagesGrid";
+import AlbumList from "@/app/_MyComponents/SearchComponents/AlbumList";
 
 
 export default async function page({ searchParams }) {
