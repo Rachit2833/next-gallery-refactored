@@ -15,14 +15,14 @@ import LoadingButton from "./LoadingButton";
 import { useRouter } from "next/navigation";
 async function loginUser(formData) {
   try {
-    const res = await fetch("https://next-gallery-by-rachit2833.vercel.app/user/login", {
+    const res = await fetch("https://next-gallery-refactored-zxm4.vercel.app/api/login", {
       method: "POST",
       body: JSON.stringify({
         email: formData.get("email"),
         password: formData.get("password"),
       }),
       headers: { "Content-Type": "application/json" },
-      credentials: "include", // crucial for cookies
+      credentials: "include", // ✅ crucial for cookies
     });
 
     if (!res.ok) {
@@ -37,6 +37,7 @@ async function loginUser(formData) {
     return { error: err.message };
   }
 }
+
 
 function LoginForm() {
 
