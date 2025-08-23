@@ -8,7 +8,6 @@ export const metadata = {
 function Page() {
   return (
     <div className="flex justify-center items-center min-h-screen px-4">
-    <h1>Testing </h1>
       <LoginForm />
     </div>
   );
