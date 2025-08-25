@@ -5,6 +5,7 @@ import AlbumList from "@/app/_MyComponents/SearchComponents/AlbumList";
 
 export default async function page({ searchParams }) {
   const params = await searchParams
+  
   return (
     <Wrapper
       params={params}

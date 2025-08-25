@@ -5,7 +5,7 @@ import { Card, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { ScrollArea } from "@radix-ui/react-scroll-area"
 async function SearchModel() {
-   const data = await fetch("https://next-gallery-by-rachit2833.vercel.app/image/search")
+   const data = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/image/search`)
    let searchData=true
    return (
       <div className={`${searchData ? null : " hidden"} gap-2  h-[85%] my-2 grid grid-rows-auto`}>

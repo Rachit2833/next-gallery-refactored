@@ -6,7 +6,7 @@ export async function middleware(req) {
   const { pathname } = req.nextUrl;
   if (token) {
     try {
-      const authResponse = await fetch("https://next-gallery-by-rachit2833.vercel.app/user/verify-user", {
+      const authResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/user/verify-user`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
