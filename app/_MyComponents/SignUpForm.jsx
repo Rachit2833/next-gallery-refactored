@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useTransition, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import {
@@ -29,11 +29,10 @@ async function signUpUser(formData) {
 
     if (!res.ok) {
       const errData = await res.json();
-      throw new Error(errData.error || "Login failed");
+      throw new Error(errData.error || "Sign-up failed");
     }
 
-    const data = await res.json();
-    return data;
+    return await res.json();
   } catch (err) {
     console.error(err);
     return { error: err.message };
@@ -42,25 +41,28 @@ async function signUpUser(formData) {
 
 export default function SignUpForm() {
   const router = useRouter();
-  const [pending, setPending] = useState(false);
+  const [isPending, startTransition] = useTransition();
   const [error, setError] = useState("");
 
-  
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
 
-  return (
-    <form onSubmit={async (e) => {
-      e.preventDefault();
-      const formData = new FormData(e.target);
+    startTransition(async () => {
       const data = await signUpUser(formData);
-      console.log(data, "bjkkj");
+
       if (data.error) {
-        alert(data.error);
+        setError(data.error);
         return;
       }
 
       localStorage.setItem("userId", data.user.id);
       router.push("/services/");
-    }} className="max-w-md mx-auto p-4">
+    });
+  };
+
+  return (
+    <form onSubmit={handleSubmit} className="max-w-md mx-auto p-4">
       <CardHeader>
         <CardTitle>Sign Up</CardTitle>
         <CardDescription>Welcome, let's get you started</CardDescription>
@@ -85,8 +87,8 @@ export default function SignUpForm() {
         <Button variant="outline" type="reset">
           Cancel
         </Button>
-        <Button variant="default" type="submit" disabled={pending}>
-          {pending ? (
+        <Button variant="default" type="submit" disabled={isPending}>
+          {isPending ? (
             <div className="w-6 h-6 border-4 border-gray-300 border-t-blue-500 rounded-full animate-spin" />
           ) : (
             <>
