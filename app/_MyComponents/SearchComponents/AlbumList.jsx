@@ -5,7 +5,7 @@ import AlbumCardList from "./AlbumCardList";
 async function AlbumList() {
 
       const cookieStore = await cookies()
-      const res = await fetch(`https://next-gallery-by-rachit2833.vercel.app/album?year=all`,{
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/album?year=all`,{
    
          headers: {
             "Content-Type": "application/json",

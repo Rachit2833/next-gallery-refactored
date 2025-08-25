@@ -21,7 +21,7 @@ async function page({ params, searchParams }) {
   const cookieStore = await cookies();
   const searchParamValue = await searchParams;
   const {sort,page,year}=searchParams
-  const res = await fetch(`https://next-gallery-by-rachit2833.vercel.app/label/${param.id}`, {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/label/${param.id}`, {
     headers: {
       "Content-Type": "application/json",
       authorization: `Bearer ${cookieStore.get("session").value}`,

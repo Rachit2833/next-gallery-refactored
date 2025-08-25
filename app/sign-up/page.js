@@ -6,6 +6,7 @@ export const metadata = {
 };
 
 export default function page() {
+
   return (
 <div className="flex justify-center items-center min-h-screen px-4">
       <Card className="w-[30rem] ">

@@ -16,29 +16,27 @@ import Link from "next/link";
 
 async function signUpUser(formData) {
   try {
-    const response = await fetch("https://next-gallery-by-rachit2833.vercel.app/user", {
+    const res = await fetch(`/api/sign-up`, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
       body: JSON.stringify({
         name: formData.get("name"),
         email: formData.get("email"),
         password: formData.get("password"),
       }),
-      credentials: "include", // Important to receive HTTP-only cookie
+      headers: { "Content-Type": "application/json" },
+      credentials: "include", // ✅ crucial for cookies
     });
 
-    const data = await response.json();
-
-    if (!response.ok) {
-      throw new Error(data.message || "Failed to sign up");
+    if (!res.ok) {
+      const errData = await res.json();
+      throw new Error(errData.error || "Login failed");
     }
 
+    const data = await res.json();
     return data;
-  } catch (error) {
-    console.error("Signup error:", error);
-    throw error;
+  } catch (err) {
+    console.error(err);
+    return { error: err.message };
   }
 }
 
@@ -47,30 +45,22 @@ export default function SignUpForm() {
   const [pending, setPending] = useState(false);
   const [error, setError] = useState("");
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setPending(true);
-    setError("");
-
-    const formData = new FormData(e.target);
-
-    try {
-      const data = await signUpUser(formData);
-      if (data) {
-        // Store user ID locally
-        localStorage.setItem("userId", data.user._id);
-        // Redirect to home page
-        router.push("/");
-      }
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setPending(false);
-    }
-  };
+  
 
   return (
-    <form onSubmit={handleSubmit} className="max-w-md mx-auto p-4">
+    <form onSubmit={async (e) => {
+      e.preventDefault();
+      const formData = new FormData(e.target);
+      const data = await signUpUser(formData);
+      console.log(data, "bjkkj");
+      if (data.error) {
+        alert(data.error);
+        return;
+      }
+
+      localStorage.setItem("userId", data.user.id);
+      router.push("/services/");
+    }} className="max-w-md mx-auto p-4">
       <CardHeader>
         <CardTitle>Sign Up</CardTitle>
         <CardDescription>Welcome, let's get you started</CardDescription>

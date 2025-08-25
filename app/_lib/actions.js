@@ -11,7 +11,7 @@ export async function updateName(formData) {
   const name = formData.get("labelName");
   const id = formData.get("id");
   try {
-    const res = await fetch(`https://next-gallery-by-rachit2833.vercel.app/label/${id}`, {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/label/${id}`, {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
@@ -29,7 +29,7 @@ export async function updateImageForLabel(formData) {
   const labelId = formData.get("labelId");
   const ImageUrl = formData.get("imageUrl");
   try {
-    const res = await fetch(`https://next-gallery-by-rachit2833.vercel.app/label/${labelId}`, {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/label/${labelId}`, {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
@@ -48,7 +48,7 @@ export async function deleteImagesAction(formData) {
   const cookieStore = await cookies();
   const imageId = formData.get("imageId");
   try {
-    const res = await fetch(`https://next-gallery-by-rachit2833.vercel.app/image?img_id=${imageId}`, {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/image?img_id=${imageId}`, {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",
@@ -79,7 +79,7 @@ export async function createNewAlbum(formData) {
       formDataToSend.append("images", photo);
     }
 
-    const res = await fetch("https://next-gallery-by-rachit2833.vercel.app/album", {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/album`, {
       method: "POST",
       headers: {
         authorization: `Bearer ${cookieStore.get("session")?.value ?? ""}`,
@@ -106,7 +106,7 @@ export async function saveSharedAlbum(dataX) {
   const cookieStore = await cookies();
 
   try {
-    const res = await fetch("https://next-gallery-by-rachit2833.vercel.app/album/share/save", {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/album/share/save`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -138,7 +138,7 @@ export async function deleteAlbumAction(formData) {
   const cookieStore = await cookies();
   const id = formData.get("albumId");
   try {
-    const data = await fetch(`https://next-gallery-by-rachit2833.vercel.app/album/${id}`, {
+    const data = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/album/${id}`, {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",
@@ -155,7 +155,7 @@ export async function updateFavourite(formData) {
   const id = formData.get("imageId");
   const favValue = formData.get("favValue") === "true"; // Ensures boolean conversion
   try {
-    const data = await fetch(`https://next-gallery-by-rachit2833.vercel.app/image/${id}`, {
+    const data = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/image/${id}`, {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
@@ -197,7 +197,7 @@ export async function saveNewImage(formData, id) {
   data.append("People", JSON.stringify(peoples));
 
   try {
-    const res = await fetch("https://next-gallery-by-rachit2833.vercel.app/image/mass", {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/image/mass`, {
       headers: {
         authorization: `Bearer ${cookieStore.get("session").value}`,
       },
@@ -216,7 +216,7 @@ export async function saveNewImage(formData, id) {
 }
 
 //  let des = await autoSend(id,val.data.People)
-//  const inp = await fetch("https://next-gallery-by-rachit2833.vercel.app/image/share", {
+//  const inp = await fetch(/image/share", {
 //    method: "POST",
 //    headers: {
 //      "Content-Type": "application/json",
@@ -249,7 +249,7 @@ export async function handleSubmitMessage(formData) {
 
   try {
     const messageData = Object.fromEntries(formData.entries());
-    const response = await fetch("https://next-gallery-by-rachit2833.vercel.app/message", {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/message`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -274,7 +274,7 @@ export async function handleLoginTemporary(formData) {
   try {
     const userId = formData.get("id")
     if (userId) {
-      const response = await fetch("https://next-gallery-by-rachit2833.vercel.app/login", {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/login`, {
         method: "POST", // Corrected method case
         headers: {
           "Content-Type": "application/json", // Added headers to specify JSON format
@@ -296,7 +296,7 @@ export async function addGroup(formData, selectedUser, userId) {
       formData.append("people", userId);
     });
     const response = await fetch(
-      `https://next-gallery-by-rachit2833.vercel.app/message/group?_id=${userId}`,
+      `${process.env.NEXT_PUBLIC_API_URL}/message/group?_id=${userId}`,
       {
         method: "POST",
         body: formData,
@@ -323,7 +323,7 @@ export async function sendGroupMessage(groupId, senderId, formData) {
     receiverId: groupId._id,
     content: formData.get("content"),
   };
-  const res = await fetch("https://next-gallery-by-rachit2833.vercel.app/message/group/message", {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/message/group/message`, {
     method: "POST",
     body: JSON.stringify(obj),
     headers: {
@@ -342,7 +342,7 @@ export async function handleGroupLeave(userId, groupId, isAdmin) {
       removeUser: [userId]
     };
 
-    const response = await fetch(`https://next-gallery-by-rachit2833.vercel.app/message/group?groupId=${groupId}`, {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/message/group?groupId=${groupId}`, {
       method: "PATCH",
       body: JSON.stringify(obj1),
       headers: {
@@ -366,7 +366,7 @@ export async function removeUser(removePeople, groupId) {
     };
 
     const response = await fetch(
-      `https://next-gallery-by-rachit2833.vercel.app/message/group?groupId=${groupId}`,
+      `${process.env.NEXT_PUBLIC_API_URL}/message/group?groupId=${groupId}`,
       {
         method: "PATCH",
         body: JSON.stringify(obj1),
@@ -390,7 +390,7 @@ export async function removeUser(removePeople, groupId) {
 export async function autoSend(id, friendId) {
   try {
     const response = await fetch(
-      `https://next-gallery-by-rachit2833.vercel.app/friends/verify?id=${id}&friendId=${friendId}`,
+      `${process.env.NEXT_PUBLIC_API_URL}/friends/verify?id=${id}&friendId=${friendId}`,
       {
         method: "GET",
         headers: {
@@ -429,7 +429,7 @@ export async function addUser(addPeople, groupId) {
       addUser: addPeople,
     };
     const response = await fetch(
-      `https://next-gallery-by-rachit2833.vercel.app/message/group?groupId=${groupId}`,
+      `${process.env.NEXT_PUBLIC_API_URL}/message/group?groupId=${groupId}`,
       {
         method: "PATCH",
         body: JSON.stringify(obj1),
@@ -500,7 +500,7 @@ export async function changeLabel(id, label, idBit, enabled) {
   try {
     const cookieStore = await cookies();
     const response = await fetch(
-      `https://next-gallery-by-rachit2833.vercel.app/friends/autoSend?relationId=${id}`,
+      `${process.env.NEXT_PUBLIC_API_URL}/friends/autoSend?relationId=${id}`,
       {
         method: "PATCH",
         headers: {
@@ -525,7 +525,7 @@ export async function toggleAutoSend(id, enabled, idBit) {
   try {
     const cookieStore = await cookies();
     const response = await fetch(
-      `https://next-gallery-by-rachit2833.vercel.app/friends/autoSend?relationId=${id}`,
+      `${process.env.NEXT_PUBLIC_API_URL}/friends/autoSend?relationId=${id}`,
       {
         method: "PATCH",
         headers: {
@@ -548,7 +548,7 @@ export async function toggleAutoSend(id, enabled, idBit) {
 export async function deleteSharedImages(id, userId) {
   try {
     const cookieStore = await cookies();
-    const response = await fetch(`https://next-gallery-by-rachit2833.vercel.app/image/share?id=${id}&sharedId=${userId}`,
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/image/share?id=${id}&sharedId=${userId}`,
       {
         method: "DELETE",
         headers: {
@@ -570,7 +570,7 @@ export async function deleteSharedImages(id, userId) {
 export async function deleteManyImages(idArray) {
   try {
     const cookieStore = await cookies();
-    const res = await fetch(`https://next-gallery-by-rachit2833.vercel.app/image/all`, {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/image/all`, {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",
@@ -592,7 +592,7 @@ export async function deleteManyImages(idArray) {
 export async function generateShareLink(sharedById, imgIds) {
   try {
     const cookieStore = await cookies();
-    const response = await fetch("https://next-gallery-by-rachit2833.vercel.app/image/share", {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/image/share`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -614,7 +614,7 @@ export async function saveLinkImages(ids, userid) {
   try {
     if (ids.length === 0) return
     const cookieStore = await cookies();
-    const res = await fetch("https://next-gallery-by-rachit2833.vercel.app/image/share/images", {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/image/share/images`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -635,7 +635,7 @@ export async function saveLinkImages(ids, userid) {
 export async function addImagesToAlbum(id, photoArray) {
   const cookieStore = await cookies()
   try {
-    const res = await fetch(`https://next-gallery-by-rachit2833.vercel.app/album/${id}`, {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/album/${id}`, {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
@@ -655,7 +655,7 @@ export async function addImagesToAlbum(id, photoArray) {
 export async function generateShareLinkAlbum(albumId, shareById) {
   try {
     const cookieStore = await cookies();
-    const response = await fetch("https://next-gallery-by-rachit2833.vercel.app/album/share", {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/album/share`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -677,7 +677,7 @@ export async function generateShareLinkAlbum(albumId, shareById) {
 export async function generateGroupInvite(inviteId, shareById) {
   try {
     const cookieStore = await cookies();
-    const res = await fetch(`https://next-gallery-by-rachit2833.vercel.app/message/group/invite`, {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/message/group/invite`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -699,7 +699,7 @@ export async function saveMassImages(formData) {
   try {
     const cookieStore = await cookies();
     const token = cookieStore.get("session")?.value;
-    const res = await fetch("https://next-gallery-by-rachit2833.vercel.app/image/mass", {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/image/mass`, {
       method: "POST",
       headers: {
         authorization: `Bearer ${token}`,
@@ -723,7 +723,7 @@ export async function saveMassImages(formData) {
  export const checkLabels = async () => {
     const cookieStore = await cookies();
     const identifiers = [];
-    const response = await fetch("https://next-gallery-by-rachit2833.vercel.app/labels",
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/labels`,
       {
         headers: {
           authorization: `Bearer ${cookieStore.get("session").value}`,
@@ -738,7 +738,7 @@ export async function searchImages(searchVal) {
   try {
     const cookieStore = await cookies();
     const res = await fetch(
-      `https://next-gallery-by-rachit2833.vercel.app/image/search/?query=${searchVal}`,
+      `${process.env.NEXT_PUBLIC_API_URL}/image/search/?query=${searchVal}`,
       {
         headers: {
           authorization: `Bearer ${cookieStore.get("session").value}`,
@@ -767,7 +767,7 @@ export async function updateImage(formData) {
 
     if (formType === "1") {
       // Send JSON data
-      res = await fetch(`https://next-gallery-by-rachit2833.vercel.app/user/avatarUpdate/${id}`, {
+      res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/user/avatarUpdate/${id}`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
@@ -779,7 +779,7 @@ export async function updateImage(formData) {
       });
     } else {
       // Send form data directly
-      res = await fetch(`https://next-gallery-by-rachit2833.vercel.app/user/${id}`, {
+      res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/user/${id}`, {
         method: "PATCH",
         headers: {
           authorization: `Bearer ${token}`,

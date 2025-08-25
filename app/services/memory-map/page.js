@@ -12,7 +12,7 @@ export default async function page({searchParams}) {
   const cookieStore = await cookies();
   let searchURLParams = await searchParams;
   const res = await fetch(
-    `https://next-gallery-by-rachit2833.vercel.app/image/location?yearRange=${searchURLParams.yearRange}`,
+    `${process.env.NEXT_PUBLIC_API_URL}/image/location?yearRange=${searchURLParams.yearRange}`,
     {
   
       headers: {

@@ -19,7 +19,7 @@ async function ImagesGrid({ searchParams }) {
   const queryString = params.toString();
   const cookieStore = await cookies();
 
-  const url = `https://next-gallery-by-rachit2833.vercel.app/image${queryString ? `?${queryString}` : ""}`;
+  const url = `${process.env.NEXT_PUBLIC_API_URL}/image${queryString ? `?${queryString}` : ""}`;
   let res = await fetch(url, {
     headers: {
       "Content-Type": "application/json",

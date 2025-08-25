@@ -4,7 +4,7 @@ import PeopleWrapper from "./PeopleWrapper";
 async function PeopleImage({ name,param }) {
 
    const cookieStore = await cookies()
-   const data = await fetch(`https://next-gallery-by-rachit2833.vercel.app/image?frId=${name._id}&year=${param.year}&sort=${param.sort}&page=${param.page}`,{
+   const data = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/image?frId=${name._id}&year=${param.year}&sort=${param.sort}&page=${param.page}`,{
 
       headers: {
          "Content-Type": "application/json",

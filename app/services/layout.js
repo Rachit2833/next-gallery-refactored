@@ -14,7 +14,7 @@ export const metadata = {
 };
 export default async function RootLayout({ children, params }) {
   const cookieStore = await cookies();
-  const res = await fetch("https://next-gallery-by-rachit2833.vercel.app/user/verify-user", {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/user/verify-user`, {
     method: "POST",
     headers: {
       authorization: `Bearer ${cookieStore.get("session")?.value}`,

@@ -7,7 +7,7 @@ import { cookies } from "next/headers";
 async function PeopleAvatar() {
     const abc = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAADCAIAAAA7ljmRAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAMklEQVR4nAEnANj/AAwNOwENPwEAMQQDNwD+///L2eTO2ub+//8A/v395ejt5enu/v39Q/QXhr/juNAAAAAASUVORK5CYII="
    const cookieStore = await cookies()
-   const response = await fetch("https://next-gallery-by-rachit2833.vercel.app/labels", {
+   const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/labels`, {
   
       headers: {
          "Content-Type": "application/json",
