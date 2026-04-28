@@ -11,13 +11,13 @@ import { useState } from "react"
 import { addGroup } from "@/app/_lib/actions"
 
 function GroupMenu() {
-   const { groupMenu, setGroupMenu, selectedInGroup } = useUser();
+   const { groupMenu, setGroupMenu, selectedInGroup ,user } = useUser();
    const [imageSelected, setImageSelected] = useState(null);
    const [userId, setUserId] = useState(null);
 
    // Get userId safely
    useState(() => {
-      setUserId(localStorage.getItem("userId"));
+      setUserId(user._id);
    }, []);
 
    const handleFileChange = (e) => {

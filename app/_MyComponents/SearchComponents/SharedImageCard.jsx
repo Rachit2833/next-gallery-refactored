@@ -30,7 +30,14 @@ import {
   AvatarFallback,
   AvatarImage,
 } from "@/components/ui/avatar";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
+import { avatarImages } from "@/app/_lib/avatar";
 
 const defaultBlur =
   "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAADCAIAAAA7ljmRAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAMklEQVR4nAEnANj/AAwNOwENPwEAMQQDNwD+///L2eTO2ub+//8A/v395ejt5enu/v39Q/QXhr/juNAAAAAASUVORK5CYII=";
@@ -57,7 +64,14 @@ function SharedImageCard({ sharedData, image, toggleFav }) {
     handleDownload,
     personalDetails,
     getAltText,
-  } = useUser();
+    user } = useUser();
+  const sharedUser = image?.sharedBy;
+  let profileImage = sharedUser?.profilePicture;
+
+  // same logic as BodyWrapper
+  if (!isNaN(Number(profileImage)) && avatarImages[Number(profileImage)]) {
+    profileImage = avatarImages[Number(profileImage)];
+  }
 
   const isSelected = selectedImages.some((item) => item.id === image?._id);
 
@@ -72,7 +86,7 @@ function SharedImageCard({ sharedData, image, toggleFav }) {
       ]);
     }
   }
-
+  console.log(image?.sharedBy);
   return (
     <Card
       ref={cardRef}
@@ -132,22 +146,38 @@ function SharedImageCard({ sharedData, image, toggleFav }) {
               <CardDescription className="select-none">
                 {image?.Location?.name}
               </CardDescription>
-              <Avatar className="h-8 w-8">
-                <AvatarImage
-                  src="https://github.com/shadcn.png"
-                  alt="@shadcn"
-                />
-                <AvatarFallback>CN</AvatarFallback>
-              </Avatar>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Avatar className="h-8 w-8 cursor-pointer">
+                      <AvatarImage
+                        src={profileImage || sharedUser?.profilePicture}
+                        alt={sharedUser?.name || "User"}
+                      />
+                      <AvatarFallback>
+                        {sharedUser?.name
+                          ?.split(" ")
+                          .map((n) => n[0])
+                          .join("")
+                          .toUpperCase() || "U"}
+                      </AvatarFallback>
+                    </Avatar>
+                  </TooltipTrigger>
+
+                  <TooltipContent>
+                    <p>Shared by {sharedUser?.name || "Unknown"}</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
             </div>
             <p className="text-center select-none">{image?.Description}</p>
             <div className="text-xs text-muted-foreground mt-4 sm:block hidden select-none">
               <p>
-                By{" "}
+                Shared By{" "}
                 <span className="font-semibold cursor-pointer hover:underline">
                   {image?.sharedBy?.name || "Unknown"}
                 </span>{" "}
-                {logTimeDifference("2024-09-29T10:00:00")}
+                {/* {logTimeDifference("2024-09-29T10:00:00")} */}
               </p>
             </div>
           </div>
@@ -176,7 +206,7 @@ function SharedImageCard({ sharedData, image, toggleFav }) {
               <AlertDialogFooter>
                 <form
                   action={() =>
-                    deleteSharedImages(sharedData, localStorage.getItem("userId"))
+                    deleteSharedImages(sharedData, user._id)
                   }
                 >
                   <input type="hidden" name="imageId" value={image?._id} />

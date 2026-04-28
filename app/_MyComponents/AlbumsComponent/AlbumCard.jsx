@@ -1,8 +1,22 @@
 "use client"
-import { deleteAlbumAction, generateShareLinkAlbum, saveSharedAlbum } from "@/app/_lib/actions"
+
+import {
+  deleteAlbumAction,
+  generateShareLinkAlbum,
+  saveSharedAlbum,
+} from "@/app/_lib/actions"
 import { useUser } from "@/app/_lib/context"
-import image from "@/public/Images/dune.jpg";
-import { AlertDialog, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog"
+import fallbackImage from "@/public/Images/dune.jpg"
+import {
+  AlertDialog,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { DialogTrigger } from "@/components/ui/dialog"
@@ -10,148 +24,194 @@ import { ToastAction } from "@/components/ui/toast"
 import { useToast } from "@/hooks/use-toast"
 import { ChevronRight, Share2, Trash2 } from "lucide-react"
 import Image from "next/image"
-import { usePathname, useRouter, useSearchParams } from "next/navigation"
+import { useRouter } from "next/navigation"
 import { useState } from "react"
-import { useFormStatus } from "react-dom"
 import { Deletebutton } from "../ImageCard"
 import LInkDialog from "../SearchComponents/LInkDialog"
-import { fallbackAlbumCovers } from "@/app/_lib/avatar";
+import { fallbackAlbumCovers } from "@/app/_lib/avatar"
+import LoadingButton from "../LoadingButton"
+
+const overlayButton =
+  "bg-black/40 text-white backdrop-blur-sm border border-white/30 \
+   hover:bg-white hover:text-black transition-colors h-10"
+
+const iconClass = "h-5 w-5"
 
 function AlbumCard({ item, shared }) {
-   const [isOpen, setIsOpen] = useState(false);
-   const { isLoadingLink: isLoading, personalDetails, setIsLoadingLink: setIsLoading, selectedImages, url, setUrl, isTest, setIsTest, userID, getAltText } = useUser()
-   const abc = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAADCAIAAAA7ljmRAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAMklEQVR4nAEnANj/AAwNOwENPwEAMQQDNwD+///L2eTO2ub+//8A/v395ejt5enu/v39Q/QXhr/juNAAAAAASUVORK5CYII="
-   const router = useRouter()
-   const pathname = usePathname()
-   const searchParams = useSearchParams()
-   const options = { weekday: "long", year: "numeric", month: "long", day: "numeric", hour: "numeric", minute: "numeric", hour12: true, };
-   const description = new Date().toLocaleString("en-US", options);
-   const { toast } = useToast()
-   async function submitDeleteForm(formData) {
-      await deleteAlbumAction(formData)
-      setIsOpen(false)
-   }
-   const isNumeric = (val) => !isNaN(val) && Number.isInteger(Number(val));
-   return (
-     <article>
-       <Card className="relative min-h-[20rem] sm:min-h-[24rem] lg:min-h-[30rem]">
-        <figure>
-          <div className="absolute z-10 top-6 sm:top-12 left-4 sm:left-8">
-            <h2 className="text-[1.5rem] sm:text-[2rem] text- ">{item.Name}</h2>
-            <p className=" mt-2 text-[1rem] sm:text-[1.2rem]">
-               {item.Description}
-            </p>
-         </div>
+  const [isOpen, setIsOpen] = useState(false)
 
+  const {
+    personalDetails,
+    setIsLoadingLink,
+    setUrl,
+    user,
+    getAltText,
+  } = useUser()
 
+  const router = useRouter()
+  const { toast } = useToast()
 
-         <Image
-            className="rounded-xl z-0"
+  const isNumeric = (val) => !isNaN(val) && Number.isInteger(Number(val))
+
+  async function submitDeleteForm(formData) {
+    await deleteAlbumAction(formData)
+    setIsOpen(false)
+  }
+
+  return (
+    <article>
+      <Card className="relative overflow-hidden min-h-[20rem] sm:min-h-[24rem] lg:min-h-[30rem] rounded-xl">
+        {/* IMAGE */}
+        <figure className="absolute inset-0">
+          <Image
             src={
-               isNumeric(item.ImageUrl)
-                  ? fallbackAlbumCovers[parseInt(item.ImageUrl)]
-                  : item.ImageUrl || image
+              isNumeric(item.ImageUrl)
+                ? fallbackAlbumCovers[Number(item.ImageUrl)]
+                : item.ImageUrl || fallbackImage
             }
-            alt={getAltText(image, personalDetails)}
-            layout="fill"
-            objectFit="cover"
-            placeholder={item.blurredImage || abc}
-         />
+            alt={getAltText(fallbackImage, personalDetails)}
+            fill
+            className="object-cover"
+            placeholder="blur"
+            blurDataURL={item.blurredImage}
+          />
+
+          {/* SCRIM */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent" />
         </figure>
 
+        {/* TEXT */}
+        <div className="absolute z-10 top-6 sm:top-12 left-4 sm:left-8">
+          <div className="max-w-[22rem] rounded-lg bg-background/60 backdrop-blur-sm border border-white/20 px-4 py-3">
+            <h2 className="text-foreground text-[1.5rem] sm:text-[2rem] font-semibold">
+              {item.Name}
+            </h2>
+            {item.Description && (
+              <p className="mt-1 text-muted-foreground text-[0.95rem] sm:text-[1.05rem]">
+                {item.Description}
+              </p>
+            )}
+          </div>
+        </div>
 
-         <div className="  absolute flex flex-row items-center justify-center gap-4 z-20 bottom-6 sm:bottom-12 right-4 sm:right-8">
+        {/* ACTIONS */}
+        <div className="absolute z-20 bottom-6 sm:bottom-12 right-4 sm:right-8 flex items-center gap-3">
+          {!shared ? (
+            <>
+              {/* DELETE */}
+              <AlertDialog open={isOpen} onOpenChange={setIsOpen}>
+                <AlertDialogTrigger asChild>
+                  <Button
+                    aria-label="Delete album"
+                    size="icon"
+                    className={`${overlayButton} `}
+                  >
+                    <Trash2 className={iconClass} />
+                  </Button>
+                </AlertDialogTrigger>
 
-            {!shared ?
-               <>
-                  <AlertDialog open={isOpen} onOpenChange={setIsOpen}>
-                     <AlertDialogTrigger asChild className="flex items-center p-2 sm:p-4 bg-transparent border-2 border-white text-white text-[0.9rem] sm:text-[1rem] hover:bg-white hover:text-black transition-colors h-9 px-4 py-2 rounded-md">
-                        <Button aria-label="delete" variant="outline"><Trash2 /></Button>
-                     </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>
+                      Are you absolutely sure?
+                    </AlertDialogTitle>
+                    <AlertDialogDescription>
+                      This action cannot be undone. This will permanently delete
+                      your album.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
 
-                     <AlertDialogContent>
-                        <AlertDialogHeader>
-                           <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-                           <AlertDialogDescription>
-                              This action cannot be undone. This will permanently delete your
-                              album from you and your friends who haven't saved the album
-                           </AlertDialogDescription>
-                        </AlertDialogHeader>
-                        <AlertDialogFooter>
-                           <form action={submitDeleteForm} >
-                              <input type="hidden" name="albumId" value={item._id} />
-                              <AlertDialogCancel className=" mx-2">Cancel</AlertDialogCancel>
-                              <Deletebutton />
-                           </form>
-                        </AlertDialogFooter>
-                     </AlertDialogContent>
+                  <AlertDialogFooter className="flex items-center justify-end gap-2">
 
-                  </AlertDialog>
-                  <LInkDialog>
-                     <DialogTrigger
-                     aria-label="share"
-                        className=" rounded-md h-9 px-4 py-2 flex items-center p-2 sm:p-4 bg-transparent border-2 border-white text-white text-[0.9rem] sm:text-[1rem] hover:bg-white hover:text-black transition-colors"
-                        onClick={async () => {
-                           setIsLoading(true);
-                           const res = await generateShareLinkAlbum(item._id, localStorage.getItem("userId"));
-                           setUrl(res);
-                           setIsLoading(false);
-                        }}
-                     >
-                        <Share2 />
-                     </DialogTrigger>
-                  </LInkDialog>
-               </> :
-               <form action={async () => {
-                  try {
-                     delete item._id;
-                     delete item.__v;
+                    <AlertDialogCancel className="border rounded-md bg-muted text-muted-foreground">
+                      Cancel
+                    </AlertDialogCancel>
 
-                     const response = await saveSharedAlbum(item);
+                    <form action={deleteAlbumAction}>
+                      <input type="hidden" name="albumId" value={item._id} />
 
+                      <Deletebutton />
+                    </form>
 
-                     toast({
-                        title: "Album Saved!",
-                        description: "Your album has been saved successfully.",
-                        action: <ToastAction altText="Goto schedule to undo">Done</ToastAction>,
-                     });
-                     router.push("/albums")
-                  } catch (error) {
-                     console.error("Caught Error:", error);
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
 
-                     toast({
-                        title: "Something went wrong",
-                        description: error.message || "An unexpected error occurred.",
-                        action: <ToastAction altText="Try Again">Retry</ToastAction>,
-                     });
-                  }
-               }} > <SubmitButtonTransparent buttonText="Save" />
+              {/* SHARE */}
+              <LInkDialog>
+                <DialogTrigger asChild>
+                  <Button
+                    aria-label="Share album"
+                    size="icon"
+                    className={`${overlayButton} w-10`}
+                    onClick={async () => {
+                      setIsLoadingLink(true)
+                      const res = await generateShareLinkAlbum(
+                        item._id,
+                        user._id
+                      )
+                      setUrl(res)
+                      setIsLoadingLink(false)
+                    }}
+                  >
+                    <Share2 className={iconClass} />
+                  </Button>
+                </DialogTrigger>
+              </LInkDialog>
+            </>
+          ) : (
+            <form
+              action={async () => {
+                try {
+                  delete item._id
+                  delete item.__v
+                  await saveSharedAlbum(item)
 
-               </form>}
-            <Button aria-label="visit" onClick={() => router.push(`/albums/${item._id}`)} className="flex items-center p-2 sm:p-4 bg-transparent border-2 border-white text-white text-[0.9rem] sm:text-[1rem] hover:bg-white hover:text-black transition-colors">
-               Visit <ChevronRight className="ml-2" />
-            </Button>
-         </div>
+                  toast({
+                    title: "Album Saved!",
+                    description:
+                      "Your album has been saved successfully.",
+                    action: (
+                      <ToastAction altText="Done">
+                        Done
+                      </ToastAction>
+                    ),
+                  })
+
+                  router.push("/services/albums")
+                } catch (error) {
+                  toast({
+                    title: "Something went wrong",
+                    description:
+                      error.message || "Unexpected error",
+                    action: (
+                      <ToastAction altText="Retry">
+                        Retry
+                      </ToastAction>
+                    ),
+                  })
+                }
+              }}
+            >
+              <Button className={`${overlayButton} px-5`}>
+                Save
+              </Button>
+            </form>
+          )}
+
+          {/* VISIT */}
+          <Button
+            aria-label="Visit album"
+            onClick={() => router.push(`/services/albums/${item._id}`)}
+            className={`${overlayButton} px-5 flex items-center gap-2`}
+          >
+            Visit
+            <ChevronRight className={iconClass} />
+          </Button>
+        </div>
       </Card>
-     </article>
-   )
+    </article>
+  )
 }
-
 
 export default AlbumCard
-export function SubmitButtonTransparent({ size, variant, buttonText }) {
-   const { pending } = useFormStatus();
-   const { selectedInGroup } = useUser()
-
-   return (
-      <Button variant={variant} size={size || "default"} type="submit" className="flex items-center p-2 sm:p-4 bg-transparent border-2 border-white text-white text-[0.9rem] sm:text-[1rem] hover:bg-white hover:text-black transition-colors" disabled={pending}>
-         {pending ? (
-            <>
-               <div className="w-8 h-8 border-4 border-gray-300 border-t-blue-500 rounded-full animate-spin"></div>
-            </>
-         ) : (
-            buttonText || "Leave"
-         )}
-      </Button>
-   );
-}

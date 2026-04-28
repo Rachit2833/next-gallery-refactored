@@ -3,7 +3,7 @@ import { useUser } from "@/app/_lib/context"
 import Messages from "./Messages"
 
 function IoMessages() {
-   const { messages } = useUser();
+   const { messages ,user } = useUser();
 
 
    return (

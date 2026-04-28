@@ -10,7 +10,7 @@ import SelectPeople from "./SelectPeople";
 function Form1({ res,  }) {
   
   const users = res.filter((item,i)=>{
-      return item._id !== localStorage.getItem("userId")
+      return item._id !== user._id
   })
    return (
       <>

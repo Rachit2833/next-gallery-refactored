@@ -1,23 +1,19 @@
 'use client'
 
-import { createNewAlbum } from "@/app/_lib/actions";
-import { Button } from "@/components/ui/button";
+
 import {
-   Drawer,
-   DrawerContent,
    DrawerDescription,
    DrawerFooter,
    DrawerHeader,
-   DrawerTitle,
-   DrawerTrigger,
+   DrawerTitle
 } from "@/components/ui/drawer";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { PlusCircle } from "lucide-react";
-import { useState, useTransition } from "react";
-import { SubmitButton } from "../SignUpForm";
-import { useToast } from "@/hooks/use-toast";
+
 import { ToastAction } from "@/components/ui/toast";
+import { useToast } from "@/hooks/use-toast";
+import { SubmitButton } from "../SearchComponents/LeaveDialog";
+import { createNewAlbum } from "@/app/_lib/actions";
 
 function AddAlbumForm({ setIsOpen, }) {
    const { toast } = useToast()
@@ -50,16 +46,12 @@ function AddAlbumForm({ setIsOpen, }) {
 
                   const res = await createNewAlbum(formData);
 
-                  if (res?.message === "Album Saved") {
-                     setIsOpen(false);
-                     toast({
-                        title: "Album Creating Started",
-                        description: description,
-                        action: <ToastAction altText="Goto schedule to undo">Done</ToastAction>,
-                     });
-                  } else {
-                     throw new Error(res?.message || "Album creation failed");
-                  }
+                  setIsOpen(false);
+                  toast({
+                     title: "New album created successfully",
+                     description: description,
+                     action: <ToastAction altText="Goto schedule to undo">Done</ToastAction>,
+                  });
                } catch (error) {
                   toast({
                      title: "Album Creation Failed",
@@ -74,6 +66,7 @@ function AddAlbumForm({ setIsOpen, }) {
                      <Label htmlFor="Title">Title</Label>
                      <Input
                         required
+                        maxLength={20}
                         name="Title"
                         className="w-full px-4 py-2 border rounded-md bg-muted text-muted-foreground outline-none"
                         id="Title"
@@ -97,11 +90,11 @@ function AddAlbumForm({ setIsOpen, }) {
                      </Label>
                      <Input
                         name="photo"
-                        className=" sm:w-[35rem] mx-auto  w-full px-0 py-0  border  rounded-md bg-muted text-muted-foreground
-             file:px-4 file:py-2 file:rounded-none file:border-none file:bg-accent 
-             file:text-accent-foreground file:m-0 file:mr-4 file:rounded-l-md file:shadow-none"
                         id="Cover-Image"
                         type="file"
+                        className="mx-auto mt-4 w-full px-0 py-0 border rounded-md bg-muted text-muted-foreground
+                     file:px-4 file:py-2 file:rounded-none file:border-none file:bg-accent 
+                     file:text-accent-foreground file:m-0 file:mr-4 file:rounded-l-md file:shadow-none"
                      />
                   </div>
                </div>

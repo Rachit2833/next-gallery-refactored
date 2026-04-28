@@ -1,8 +1,8 @@
 import { cookies } from "next/headers"
 import ImageCard from "../ImageCard"
 
-async function MapSideImages({search}) {
-   const cookieStore = cookies()
+async function MapSideImages({cookieStore,search}) {
+  
     let res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/image/loc?cod=${search}`,{
        headers: {
           "Content-Type": "application/json",

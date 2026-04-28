@@ -13,31 +13,27 @@ import { Button } from "@/components/ui/button";
 
 function IconButtons({val, params,albumComponent, save, leave = true, share = true, link = true, album = true }) {
 
-   const { selectedImages, setIsLoadingLink: setIsLoading, url, setUrl,setSelectedImages } = useUser();
+   const { selectedImages, setIsLoadingLink: setIsLoading, url, setUrl,setSelectedImages ,user } = useUser();
    const [isLeaveDialogOpen, setLeaveDialogOpen] = useState(false);
    const router = useRouter();
    const { toast } = useToast();
    const iconButtonStyle = "w-16 h-16 flex justify-center items-center rounded-lg cursor-pointer transition-all duration-300 shadow-lg";
-
+   const ids= selectedImages.map(img => img.id);
    return (
       <>
 
-         <div className="w-1/4 flex  gap-4 fixed bottom-4 left-[40%] z-20">
+         <div className="w-1/4 flex  gap-4 fixed bottom-4 left-[40%] z-50">
             <Card className="p-4 bg-transparent flex justify-center items-center">
                <div className="flex flex-wrap gap-4 justify-center items-center">
                   {save && (
                      <Button
                         onClick={async () => {
                          try {
-                            await saveLinkImages(selectedImages, params.sharedId);
+                            await saveLinkImages(ids, params.sharedId);
                             toast({
                                title: "Images Saved Successfully",
-                               description: "Friday, February 10, 2023 at 5:57 PM",
-                               action: <ToastAction altText="Goto schedule to undo">Undo</ToastAction>,
                             });
-                           //  setTimeout(() => {
-                           //     router.push("/");
-                           //  }, 2000);
+                               router.push("/services");
                          } catch (error) {
                             console.error(error);
                             toast({
@@ -91,6 +87,7 @@ function IconButtons({val, params,albumComponent, save, leave = true, share = tr
                         isLeaveDialogOpen={isLeaveDialogOpen} setLeaveDialogOpen={setLeaveDialogOpen}
                         action={async () => {
                            await deleteManyImages(selectedImages);
+                           setSelectedImages([])
                         }}
                         title={"Delete Image?"}
                         description={"Are you sure you want to delete these images?"}

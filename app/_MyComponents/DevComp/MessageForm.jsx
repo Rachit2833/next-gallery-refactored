@@ -6,7 +6,7 @@ import { CardFooter } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 
 function MessageForm() {
-  const currentUserId = localStorage.getItem("userId")
+  const currentUserId = user._id
   const { socket, setMessages, isSelected, isInfoOpen, setIsInfoOpen,messages } =useUser()
    async function sendMessage(formData){
        const data = await sendGroupMessage(isSelected, currentUserId, formData)

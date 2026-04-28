@@ -6,10 +6,10 @@ import { useEffect, useState } from "react"
 
 function Wrapper({alc, card, params }) {
    const [val, setVal] = useState(null);
-   const { setUserId } = useUser()
+   const { setUserId ,user } = useUser()
 
    useEffect(() => {
-      const storedVal = localStorage.getItem("userId");
+      const storedVal = user?._id;
 
       if (storedVal) {
 

@@ -21,10 +21,10 @@ import {
 import { saveAs } from "file-saver";
 import { Check, CheckIcon, MoveRight } from "lucide-react";
 import Image from "next/image";
-import { usePathname } from "next/navigation";
+import { useParams, usePathname } from "next/navigation";
 import { useRef } from "react";
 import { useFormStatus } from "react-dom";
-import { deleteImagesAction, updateImageForLabel } from "../_lib/actions";
+import { deleteImagesAction, removeImagesFromAlbumAction, updateImageForLabel } from "../_lib/actions";
 import { useUser } from "../_lib/context";
 import {
   Avatar,
@@ -32,6 +32,7 @@ import {
   AvatarImage,
 } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
+import { toast } from "@/hooks/use-toast";
 
 function logTimeDifference(dateString) {
   const now = new Date();
@@ -47,12 +48,17 @@ function logTimeDifference(dateString) {
   else return `Added ${diffDays} days ago`;
 }
 
-function ImageCard({ image, text, editSelection, name, toggleFav, index }) {
+function ImageCard({ image, text, editSelection, name, toggleFav, index, }) {
+
   const abc =
     "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAADCAIAAAA7ljmRAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAMklEQVR4nAEnANj/AAwNOwENPwEAMQQDNwD+///L2eTO2ub+//8A/v395ejt5enu/v39Q/QXhr/juNAAAAAASUVORK5CYII=";
 
   const cardRef = useRef(null);
   const currentPath = usePathname();
+
+
+const params = useParams();
+const albumId = params?.id;
   const {
     setIsImageOpen,
     modelImages,
@@ -62,8 +68,7 @@ function ImageCard({ image, text, editSelection, name, toggleFav, index }) {
     setIsTest,
     handleDownload,
     getAltText,
-    personalDetails,
-  } = useUser();
+    personalDetails, user } = useUser();
 
   const isSelected = selectedImages.some((item) => item.id === image?._id);
 
@@ -82,6 +87,20 @@ function ImageCard({ image, text, editSelection, name, toggleFav, index }) {
     }
   }
 
+  async function handleRemoveFromAlbum(formData) {
+    const res = await removeImagesFromAlbumAction(formData);
+
+    if (res?.success) {
+      toast({ title: "Removed from album ✅" });
+    } else {
+      toast({
+        title: "Error",
+        description: res?.error || "Something went wrong",
+        variant: "destructive",
+      });
+    }
+  }
+
   return (
     <article>
       <Card
@@ -89,7 +108,7 @@ function ImageCard({ image, text, editSelection, name, toggleFav, index }) {
         onDoubleClick={onSelect}
         ref={cardRef}
         className={cn(
-          "transition-colors duration-100 ease-in-out mx-auto relative rounded-lg p-4 w-full max-w-xs lg:max-w-sm select-none",
+          "transition-colors  duration-100 ease-in-out mx-auto relative rounded-lg p-4 w-full max-w-xs lg:max-w-sm select-none",
           image?.Favourite && "bg-muted",
           isSelected ? "border-4 border-primary shadow-glow" : "shadow-soft"
         )}
@@ -110,7 +129,7 @@ function ImageCard({ image, text, editSelection, name, toggleFav, index }) {
           <div
             className="absolute inset-0 z-0"
             style={{
-              backgroundImage: `url(${image.blurredImage || abc})`,
+              backgroundImage: `url(${image.blurredImage})`,
               backgroundSize: "cover",
               backgroundPosition: "center",
               filter: "blur(12px)",
@@ -144,7 +163,7 @@ function ImageCard({ image, text, editSelection, name, toggleFav, index }) {
                 <p>
                   By{" "}
                   <span className="font-semibold cursor-pointer hover:underline">
-                    Author Name
+                    { }
                   </span>{" "}
                   {logTimeDifference("2024-09-29T10:00:00")}
                 </p>
@@ -213,27 +232,56 @@ function ImageCard({ image, text, editSelection, name, toggleFav, index }) {
               </AlertDialog>
             )}
 
-            <ContextMenuItem>Share</ContextMenuItem>
+
 
             <AlertDialog>
               <AlertDialogTrigger className="relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none focus:bg-accent w-full">
-                {`/${currentPath.split("/")[1]}` === "/albums"
+                {`/${currentPath.split("/")[2]}` === "/albums"
                   ? "Remove From Album"
                   : "Delete"}
               </AlertDialogTrigger>
+
               <AlertDialogContent>
                 <AlertDialogHeader>
-                  <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                  <AlertDialogTitle>
+                    {`/${currentPath.split("/")[2]}` === "/albums"
+                      ? "Remove image from this album?"
+                      : "Are you absolutely sure?"}
+                  </AlertDialogTitle>
+
                   <AlertDialogDescription>
-                    This action cannot be undone. This will permanently delete this
-                    image from our servers.
+                    {`/${currentPath.split("/")[2]}` === "/albums"
+                      ? "This will only remove the image from this album. The image will still exist in your library."
+                      : "This action cannot be undone. This will permanently delete this image from our servers."}
                   </AlertDialogDescription>
                 </AlertDialogHeader>
+
                 <AlertDialogFooter>
-                  <form action={deleteImagesAction}>
+                  <form
+                    action={
+                      `/${currentPath.split("/")[2]}` === "/albums"
+                        ? handleRemoveFromAlbum
+                        : deleteImagesAction
+                    }
+                  >
                     <input type="hidden" value={image?._id} name="imageId" />
-                    <AlertDialogCancel className="mx-2">Cancel</AlertDialogCancel>
-                    <Deletebutton />
+
+                    {/* 🔥 only for remove */}
+                    {`/${currentPath.split("/")[2]}` === "/albums" && (
+                      <input type="hidden" value={albumId} name="albumId" />
+                    )}
+
+                    <AlertDialogCancel className="mx-2">
+                      Cancel
+                    </AlertDialogCancel>
+
+                    <Deletebutton
+                      text={
+                        `/${currentPath.split("/")[2]}` === "/albums"
+                          ? "Remove"
+                          : "Delete"
+                      }
+                    />
                   </form>
                 </AlertDialogFooter>
               </AlertDialogContent>
@@ -261,13 +309,13 @@ function ImageCard({ image, text, editSelection, name, toggleFav, index }) {
 
 export default ImageCard;
 
-export function Deletebutton({ text }) {
+export function Deletebutton({ text, dataTour }) {
   const { pending } = useFormStatus();
   return (
-    <Button type="submit" disabled={pending}>
+    <Button data-tour={dataTour} type="submit" disabled={pending}>
       {pending ? (
         <>
-          <div className="w-8 h-8 border-4 border-gray-300 border-t-blue-500 rounded-full animate-spin"></div>
+          <div className="w-4 h-4 border-2 border-gray-300 border-t-blue-500 rounded-full animate-spin"></div>
         </>
       ) : (
         text || "Delete"

@@ -19,7 +19,7 @@ export async function updateName(formData) {
       },
       body: JSON.stringify({ label: name }),
     });
-    revalidatePath("/people")
+    revalidatePath("/services/people")
   } catch (error) {
     console.error(error);
   }
@@ -37,7 +37,7 @@ export async function updateImageForLabel(formData) {
       },
       body: JSON.stringify({ ImageUrl }),
     });
-    revalidatePath("/people")
+    revalidatePath("/services/people")
     const data = await res.json()
     return data
   } catch (error) {
@@ -60,9 +60,43 @@ export async function deleteImagesAction(formData) {
     if (!res.ok) {
       throw new Error(`Failed to delete image with status ${res.status}`);
     }
-    revalidatePath("/");
   } catch (error) {
     console.error("Error deleting image:", error);
+  } finally {
+    revalidatePath("/services");
+  }
+}
+
+export async function removeImagesFromAlbumAction(formData) {
+  const cookieStore = await cookies();
+
+  const imageId = formData.get("imageId");
+  const albumId = formData.get("albumId"); // 🔥 important
+
+  try {
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/album/images/${albumId}`,
+      {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          authorization: `Bearer ${cookieStore.get("session").value}`,
+        },
+        body: JSON.stringify({
+          imageIds: imageId, // backend already supports single/multiple
+        }),
+      }
+    );
+
+    if (!res.ok) {
+      throw new Error(`Failed with status ${res.status}`);
+    }
+
+    revalidatePath("/services");
+    return { success: true };
+  } catch (error) {
+    console.error("Error removing image from album:", error);
+    return { success: false, error: error.message };
   }
 }
 export async function createNewAlbum(formData) {
@@ -76,7 +110,7 @@ export async function createNewAlbum(formData) {
     formDataToSend.append("Name", Name);
     formDataToSend.append("Description", Description);
     if (photo && photo.size > 0) {
-      formDataToSend.append("images", photo);
+      formDataToSend.append("photo", photo);
     }
 
     const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/album`, {
@@ -94,7 +128,7 @@ export async function createNewAlbum(formData) {
       throw new Error(data?.message || "Failed to create album.");
     }
 
-    revalidatePath("/albums");
+    revalidatePath("/services/albums");
     return data;
   } catch (error) {
     console.error("Album creation failed", error);
@@ -124,7 +158,7 @@ export async function saveSharedAlbum(dataX) {
     }
 
     const data = await res.json();
-    revalidatePath("/albums");
+    revalidatePath("/services/albums");
 
     return data;
   } catch (error) {
@@ -145,7 +179,7 @@ export async function deleteAlbumAction(formData) {
         authorization: `Bearer ${cookieStore.get("session").value}`,
       },
     });
-    revalidatePath("/albums");
+    revalidatePath("/services/albums");
   } catch (error) {
     throw new Error(`Failed to delete Album `);
   }
@@ -170,15 +204,15 @@ export async function updateFavourite(formData) {
       throw new Error("Failed to update favourite");
     }
 
-    revalidatePath("/");
+    revalidatePath("/services");
   } catch (error) {
     console.error(error);
     throw new Error("Failed to update favourite");
   }
 }
 export async function saveNewImage(formData, id) {
-  const cookieStore = await cookies();
 
+  const cookieStore = await cookies();
   // Parse the people array from formData
   const peoples = JSON.parse(formData.get("People"));
 
@@ -190,11 +224,12 @@ export async function saveNewImage(formData, id) {
 
   // Append string fields
   data.append("LocationName", formData.get("LocationName"));
-  data.append("Description", "hello world");
+  data.append("Description", formData.get("Description"));
   data.append("Favourite", "false"); // must be string for consistent parsing
   data.append("Country", formData.get("Country"));
   data.append("detection", formData.get("detection"))
   data.append("People", JSON.stringify(peoples));
+  data.append("coordinates", JSON.stringify([formData.get("lat"),formData.get("long")]));
 
   try {
     const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/image/mass`, {
@@ -205,8 +240,8 @@ export async function saveNewImage(formData, id) {
       body: data,
     });
     const val = await res.json();
-    revalidatePath("/");
-    revalidatePath("/memory-map");
+    revalidatePath("/services");
+    revalidatePath("/services/memory-map");
 
     return val;
   } catch (error) {
@@ -307,7 +342,7 @@ export async function addGroup(formData, selectedUser, userId) {
       throw new Error("Failed to create group");
     }
 
-    revalidatePath("/friends");
+    revalidatePath("/services/friends");
   } catch (error) {
     console.error("Error adding group:", error);
   }
@@ -353,7 +388,7 @@ export async function handleGroupLeave(userId, groupId, isAdmin) {
       throw new Error("Failed to leave the group");
     }
     const data = await response.json();
-    revalidatePath("/friends");
+    revalidatePath("/services/friends");
     return data.updatedGroup;
   } catch (error) {
     console.error(error);
@@ -380,7 +415,7 @@ export async function removeUser(removePeople, groupId) {
       throw new Error("Failed toremove the user");
     }
     const data = await response.json();
-    revalidatePath("/friends");
+    revalidatePath("/services/friends");
 
     return data.updatedGroup;
   } catch (error) {
@@ -442,7 +477,7 @@ export async function addUser(addPeople, groupId) {
       throw new Error("Failed to add the user to group");
     }
     const data = await response.json();
-    revalidatePath("/friends");
+    revalidatePath("/services/friends");
     return data.updatedGroup;
   } catch (error) {
     console.error(error);
@@ -462,7 +497,7 @@ export async function handleGroupEdit(formData, groupId) {
     updatePayload.changeDescription = description;
   }
   try {
-    const apiBaseUrl = "http://localhost:2833";
+    const apiBaseUrl = "process.env.NEXT_PUBLIC_API_URL";
     const response = await fetch(
       `${apiBaseUrl}/message/group?groupId=${groupId}`,
       {
@@ -482,7 +517,7 @@ export async function handleGroupEdit(formData, groupId) {
     }
 
 
-    revalidatePath("/friends");
+    revalidatePath("/services/friends");
 
     return data.updatedGroup;
   } catch (error) {
@@ -511,7 +546,7 @@ export async function changeLabel(id, label, idBit, enabled) {
         credentials: "include",
       }
     );
-    revalidatePath("/friends");
+    revalidatePath("/services/friends");
     if (!response.ok) {
       throw new Error(`Failed to sign up: ${response.statusText}`);
     }
@@ -536,7 +571,7 @@ export async function toggleAutoSend(id, enabled, idBit) {
         credentials: "include",
       }
     );
-    revalidatePath("/friends");
+    revalidatePath("/services/friends");
     if (!response.ok) {
       throw new Error(`Failed to sign up: ${response.statusText}`);
     }
@@ -558,13 +593,14 @@ export async function deleteSharedImages(id, userId) {
         credentials: "include",
       }
     );
-    revalidatePath("/");
     if (!response.ok) {
       throw new Error(`Failed to sign up: ${response.statusText}`);
     }
   } catch (error) {
     console.error(error);
     throw error;
+  } finally {
+    revalidatePath("/services");
   }
 }
 export async function deleteManyImages(idArray) {
@@ -584,9 +620,10 @@ export async function deleteManyImages(idArray) {
 
       throw new Error(`Failed to delete image with status ${res.status}`);
     }
-    revalidatePath("/");
   } catch (error) {
     console.error(error);
+  } finally {
+    revalidatePath("/services");
   }
 }
 export async function generateShareLink(sharedById, imgIds) {
@@ -611,7 +648,9 @@ export async function generateShareLink(sharedById, imgIds) {
   }
 }
 export async function saveLinkImages(ids, userid) {
-  try {
+  try { 
+    console.log(userid,"userid");
+
     if (ids.length === 0) return
     const cookieStore = await cookies();
     const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/image/share/images`, {
@@ -622,9 +661,9 @@ export async function saveLinkImages(ids, userid) {
       },
       body: JSON.stringify({ ids, sharedById: userid }),
     });
-    if (!res.ok) {
-      throw new Error(data?.message || "Failed to save images");
-    }
+    // if (!res.ok) {
+    //   throw new Error("Failed to save images");
+    // }
     const data = await res.json();
   } catch (error) {
     console.error(error);
@@ -667,7 +706,7 @@ export async function generateShareLinkAlbum(albumId, shareById) {
       throw new Error(`Failed to sign up: ${response.statusText}`);
     }
     const data = await response.json();
-    const url = `http://localhost:3000/share?id=${data.data._id}&sharedId=${shareById}&type=album`;
+    const url = `http://localhost:3000/services/share?id=${data.data._id}&sharedId=${shareById}&type=album`;
     return url;
   } catch (error) {
     console.error(error);
@@ -714,8 +753,6 @@ export async function saveMassImages(formData) {
       console.error("Server response:", errText);
       throw new Error(`Upload failed: ${res.statusText}`);
     }
-
-
   } catch (error) {
     console.error("Upload error:", error.message);
   }
@@ -793,10 +830,36 @@ export async function updateImage(formData) {
       throw new Error(`Update failed: ${res.statusText}`);
     }
     const data = await res.json();
-    revalidatePath("/setting");
+    revalidatePath("/services/settings");
     return data;
   } catch (error) {
     console.error("Update failed:", error);
     throw error;
+  }
+}
+export async function updateUserNameAction(userId, name) {
+  try {
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/user/name/${userId}`,
+      {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ name }),
+        cache: "no-store",
+      }
+    );
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      throw new Error(data.error || "Failed to update name");
+    }
+
+    return data.message; // this is your updatedUser
+  } catch (err) {
+    console.error("Server Action Error:", err.message);
+    throw err;
   }
 }

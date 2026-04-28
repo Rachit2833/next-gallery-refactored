@@ -6,12 +6,22 @@ import AlbumCard from "../AlbumsComponent/AlbumCard"
 import ImageCard from "../ImageCard"
 import AlbumList from "./AlbumList"
 import SharedButtons from "./SharedButtons"
+import { cookies } from "next/headers"
 
 
 
 async function ShareImages({ params }) {
-   const res = await fetch(`https://next-gallery-refactored-backend-btrh-pvihnvhaj.vercel.app/image/share?id=${params.id}`) 
+   const cookieStore = await cookies();
+   const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/image/share?id=${params.id}`,
+      {
+         headers: {
+            "Content-Type": "application/json",
+            authorization: `Bearer ${cookieStore.get("session").value}`,
+         },
+      }
+   )
    const data = await res.json()
+   console.log(data);
    return (
       data.data ?
          <Card x-chunk="dashboard-06-chunk-0" className="min-h-[90vh] relative">
@@ -26,16 +36,16 @@ async function ShareImages({ params }) {
 
             <CardContent>
                <div className="relative grid md:grid-cols-3 grid-cols-2 gap-4">
-                  {params.type!=="album"?data.data.imageIds.map((item, i) => (
+                  {params.type !== "album" ? data.data.imageIds.map((item, i) => (
                      <ImageCard image={item} key={i} />
-                  )) : 
+                  )) :
                      <AlbumCard shared={true} item={data.data.albumId} />
-              }
+                  }
                </div>
             </CardContent>
 
          </Card>
-         :<>
+         : <>
             <Dialog open={true}>
                <DialogContent>
                   <DialogTitle>Link Expired</DialogTitle>

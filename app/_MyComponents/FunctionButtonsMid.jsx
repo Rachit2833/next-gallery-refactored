@@ -7,24 +7,26 @@ import { Folder, Link, Save, Share2, Trash } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import LeaveDialog from "./LeaveDialog";
-import LInkDialog from "./LInkDialog";
+import LinkDialog from "./SearchComponents/LInkDialog";
+
 function FunctionButtonsMid() {
-   const { selectedImages, setIsLoadingLink: setIsLoading, url, setUrl } = useUser();
+   const { selectedImages, setIsLoadingLink: setIsLoading, url, setUrl ,user } = useUser();
    const router = useRouter();
    const { toast } = useToast();
+   const ids= selectedImages.map(img => img.id);
    return (
       <form className="bg-gray-400 fixed bottom-8 right-4 z-10 rounded-full shadow-card flex p-1 flex-col gap-[4px] justify-center items-center w-fit">
-         {save && (
+         {Save && (
             <p
                onClick={async () => {
-                  await saveLinkImages(selectedImages);
+                  await saveLinkImages(ids);
                   toast({
                      title: "Images Saved Successfully",
                      description: "Friday, February 10, 2023 at 5:57 PM",
                      action: <ToastAction altText="Goto schedule to undo">Undo</ToastAction>,
                   });
                   setTimeout(() => {
-                     router.push("/");
+                     router.push("/services");
                   }, 2000);
                }}
                className="p-2 flex justify-center items-center rounded-full cursor-pointer transition-all duration-300 hover:scale-110 bg-red-400 hover:bg-red-600 shadow-lg"
@@ -32,17 +34,17 @@ function FunctionButtonsMid() {
                <Save className="text-white w-5 h-5" />
             </p>
          )}
-         {share && (
+         {Share2 && (
             <p className="p-2 flex justify-center items-center rounded-full cursor-pointer transition-all duration-300 hover:scale-110 bg-yellow-400 hover:bg-yellow-600 shadow-lg">
                <Share2 className="text-white w-5 h-5" />
             </p>
          )}
-         {link && (
-            <LInkDialog url={url}>
+         {Link && (
+            <LinkDialog url={url}>
                <DialogTrigger
                   onClick={async () => {
                      setIsLoading(true);
-                     const res = await generateShareLink(localStorage.getItem("userId"), selectedImages);
+                     const res = await generateShareLink(user._id, selectedImages);
                      setUrl(res);
                      setIsLoading(false);
                   }}
@@ -51,7 +53,7 @@ function FunctionButtonsMid() {
                      <Link className="text-white w-5 h-5" />
                   </p>
                </DialogTrigger>
-            </LInkDialog>
+            </LinkDialog>
          )}
          {album && (
             <Dialog>

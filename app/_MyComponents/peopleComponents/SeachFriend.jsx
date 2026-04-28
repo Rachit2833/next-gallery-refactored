@@ -8,8 +8,8 @@ import { set } from "zod";
 
 function SeachFriend({ group,item, }) {
 
-   const { setIsSelected, activeUser, isSelected, groupMenu, selectedInGroup, setSelectedInGroup } = useUser();
-   const id = item.userId._id !== localStorage.getItem("userId") ? item.userId._id : item.friendId._id 
+   const { setIsSelected, activeUser, isSelected, groupMenu, selectedInGroup, setSelectedInGroup ,user } = useUser();
+   const id = item.userId._id !== user._id ? item.userId._id : item.friendId._id 
    const searchParams = useSearchParams()
    const paramValue = searchParams.get("selected");
    const [isChecked ,setIsChecked]=useState(false)
@@ -23,8 +23,8 @@ function SeachFriend({ group,item, }) {
       }
     useEffect(()=>{
       if(item._id===paramValue){
-         const data = item.userId._id !== localStorage.getItem("userId") ? item.userId : item.friendId 
-         const autoSend = item.userId._id !== localStorage.getItem("userId") ? item.autoSend.friendId : item.autoSend.userId
+         const data = item.userId._id !== user._id ? item.userId : item.friendId 
+         const autoSend = item.userId._id !== user._id ? item.autoSend.friendId : item.autoSend.userId
          setIsSelected({...data,autoSend})
       }
     },[paramValue])
@@ -44,9 +44,9 @@ function SeachFriend({ group,item, }) {
          <div
             onClick={() =>{
                if(!groupMenu){
-                  const idBit = item.userId._id !== localStorage.getItem("userId") ?1:0
-                  const data = item.userId._id !== localStorage.getItem("userId") ? item.userId : item.friendId
-                  const autoSend = item.userId._id !== localStorage.getItem("userId") ? item.autoSend.friendId : item.autoSend.userId
+                  const idBit = item.userId._id !== user._id ?1:0
+                  const data = item.userId._id !== user._id ? item.userId : item.friendId
+                  const autoSend = item.userId._id !== user._id ? item.autoSend.friendId : item.autoSend.userId
                   setIsSelected({ ...data, autoSend,rId:item._id,idBit })
                }
                }}
@@ -61,7 +61,7 @@ function SeachFriend({ group,item, }) {
             </Avatar>
             <div className="flex flex-col justify-center h-full">
                <h1 className="text-[royalblue] cursor-pointer">
-                  {item.userId._id !== localStorage.getItem("userId") ? item.userId.name : item.friendId.name} 
+                  {item.userId._id !== user._id ? item.userId.name : item.friendId.name} 
  {/* Fallback if name is not available */}
                </h1>
                <p className="text-slate-500">

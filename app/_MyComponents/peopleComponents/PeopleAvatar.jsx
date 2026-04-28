@@ -15,11 +15,12 @@ async function PeopleAvatar() {
       },
    });
    const people = await response.json();
+   console.log(people);
    return (
       <>
          {people?.slice(0, 5).map((img, i) => {
             return <div key={i} className="flex flex-col items-center">
-               <Link href={`/people/${img._id}`}>
+               <Link href={`/services/people/${img._id}`}>
                   <Avatar
                      key={i}
 
@@ -29,7 +30,7 @@ async function PeopleAvatar() {
                         src={img.ImageUrl||image2.src}
                         fill
                         alt={`Friend ${i + 1}`} 
-                        placeholder={img.blurredImage||abc}
+                        placeholder={img.blurredImage==="N/A"?abc:img.blurredImage}
                         />
 
                      <AvatarFallback>CN</AvatarFallback>

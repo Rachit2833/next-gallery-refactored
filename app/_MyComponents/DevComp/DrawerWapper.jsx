@@ -25,7 +25,7 @@ function DrawerWapper({ group,inviteId }) {
                        })
                 
      }
-      router.push("/friends")
+      router.push("services/friends")
    },[])
    return (
       !data?.includes(localStorage.getItem('userId'))?

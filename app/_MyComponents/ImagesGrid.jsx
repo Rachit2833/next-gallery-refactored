@@ -3,6 +3,7 @@ import PasteCards from "./AlbumsComponent/PasteCards";
 import NoImagesDoodle from "./NoImagesDoodle";
 import { PagePagination } from "./Pagination";
 import ImageWrapper from "./ImageWrapper";
+import React from "react";
 
 async function ImagesGrid({ searchParams }) {
   const { year, cod, frId, query, page, limit,sort } = searchParams || {};
@@ -29,7 +30,7 @@ async function ImagesGrid({ searchParams }) {
 
   res = await res.json();
   return (
-    <>
+    <div data-tour="MainSlide" >
       {res?.images?.length > 0 ? (
         <>
           <ImageWrapper left={res?.leftPage} res={res?.images} cod={cod} />
@@ -39,7 +40,7 @@ async function ImagesGrid({ searchParams }) {
         <NoImagesDoodle />
       )}
       <PagePagination totalPagesLeft={res.leftPage} />
-    </>
+    </div>
   );
 }
 

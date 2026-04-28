@@ -13,6 +13,7 @@ async function AlbumList() {
          },
       });
    const data = await res.json();
+
    return (
          data?.albums.map((album, index) => (
            <>

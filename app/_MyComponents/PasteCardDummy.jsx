@@ -78,13 +78,7 @@ function PasteCardDummy({ index, setDrawerOpen, fileInput = true, urlBlob, onRem
         <p className="text-muted-foreground text-sm truncate">
           {location}
         </p>
-
-        <Input
-          name="Description"
-          readOnly
-          value={descriptionPlaceholder}
-          className="heading cursor-pointer h-8 !text-[1.25rem] focus:outline-none focus:ring-0 focus:border-transparent"
-        />
+        <p className="text-center">{descriptionPlaceholder}</p>
 
         <div className="text-xs text-muted-foreground mt-4 sm:block hidden">
           By <span className="font-semibold hover:cursor-pointer">Author Name</span> 4 days ago

@@ -6,7 +6,7 @@ import NoImagesDoodle from './NoImagesDoodle';
 import { PagePagination } from './Pagination';
 
 const FavouriteGridWrapper = ({ res }) => {
-  const { setFetchedImages } = useUser()
+  const { setFetchedImages ,user } = useUser()
   useEffect(() => {
     setFetchedImages(res.images)
   }, [])

@@ -7,7 +7,7 @@ import { useEffect, useOptimistic } from "react";
 import { updateFavourite } from "../_lib/actions";
 
 function ImageWrapper({ res, cod, left }) {
-  const { setFetchedImages, setImageLeft } = useUser();
+  const { setFetchedImages, setImageLeft ,user } = useUser();
   const [optimisticImages, optimisticChange] = useOptimistic(res, (prev, { bookingId, type }) => {
   
     if (type === "favorite") {

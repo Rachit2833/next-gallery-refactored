@@ -6,7 +6,7 @@ import SideSheet from './SideSheet';
 import { usePathname } from 'next/navigation';
 import { avatarImages } from '../_lib/avatar';
 
-const LayoutWrapper = ({ children,image }) => {
+const LayoutWrapper = ({ children }) => {
   const pathName = usePathname();
 
   const noLayoutRoutes = ['/login', '/sign-up', '/not-found'];

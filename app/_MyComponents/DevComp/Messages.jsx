@@ -16,7 +16,7 @@ import {
    ContextMenuTrigger,
 } from "@/components/ui/context-menu"
 function Messages({message}) {
-   const currentUserId = localStorage.getItem("userId")
+   const currentUserId = user._id
    return (
       <ContextMenu>
          <ContextMenuTrigger className={`p-2 rounded-lg max-w-[70%] break-words ${message?.senderId === currentUserId ? "bg-blue-500 text-white self-end ml-auto" : "bg-gray-200 text-black self-start mr-auto"}`}>

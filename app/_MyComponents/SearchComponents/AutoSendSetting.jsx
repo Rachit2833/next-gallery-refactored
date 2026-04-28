@@ -16,7 +16,7 @@ import { useUser } from "@/app/_lib/context";
 import { SubmitButton } from "./LeaveDialog";
 
 function AutoSendSetting({children}) {
-   const { isOpen, setIsOpen, isSelected, isEnabled,setIsEnabled, } = useUser()
+   const { isOpen, setIsOpen, isSelected, isEnabled,setIsEnabled,user } = useUser()
    const [open, setOpen] = useState(false);
 
    return (

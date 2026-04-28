@@ -1,5 +1,5 @@
 "use client"
-import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet"
+import { Sheet, SheetClose, SheetContent, SheetTitle } from "@/components/ui/sheet"
 import {
   Home,
   ImageIcon,
@@ -9,81 +9,49 @@ import {
   Users2
 } from "lucide-react"
 import Link from "next/link"
-import { usePathname, useRouter, useSearchParams } from "next/navigation"
-import { useEffect, useState } from "react"
-import { searchImages } from "../_lib/actions"
-import { useUser } from "../_lib/context"
+import { usePathname } from "next/navigation"
 
 
 function SideSheet({ open, onOpenChange }) {
-  const { searchVal, setSearchData,  } = useUser()
-  const [isLoading, setIsLoading] = useState(false)
   const pathName = usePathname()
-  const pathArray = pathName.split("/")
-  const uniqueArray = [...new Set(pathArray)]
-  const searchParams = useSearchParams()
-  const router = useRouter()
-
   const navigationItems = [
     {
       name: "Albums",
       icon: Package,
-      href: "services/albums",
+      href: "/services/albums",
     },
     {
       name: "People & Sharing",
       icon: Users2,
-      href: "services/people",
+      href: "/services/people",
     },
     {
       name: "Favourites",
       icon: Home,
-      href: "services/favourites",
+      href: "/services/favourites",
     },
     {
       name: "Memory-Map",
       icon: LineChart,
-      href: "services/memory-map",
+      href: "/services/memory-map",
     },
     {
       name: "Post",
       icon: ImageIcon,
-      href: "services/post",
+      href: "/services/post",
     },
   ]
 
 
-
-  useEffect(() => {
-    if (!searchVal) {
-      setSearchData(null)
-      setIsLoading(false)
-      const params = new URLSearchParams(searchParams)
-      params.delete("query")
-      router.replace(`${pathName}?${params}`, { scroll: false })
-      return
-    }
-
-    async function search() {
-      setIsLoading(true)
-      const res = await searchImages(searchVal)
-      setSearchData(res)
-      setIsLoading(false)
-    }
-
-    search()
-  }, [searchVal])
-
-
   return (
-    <aside className=" hidden sm:block  ">
-      <Sheet open={open} onOpenChange={onOpenChange}>
 
-        <SheetContent side="left" className="sm:max-w-xs">
-          <SheetTitle />
-          <nav className="grid gap-6 text-lg font-medium">
+    <Sheet open={open} onOpenChange={onOpenChange}>
+
+      <SheetContent side="left" className="sm:max-w-xs">
+        <SheetTitle className="sr-only">Navigation</SheetTitle>
+        <nav className="grid gap-6 text-lg font-medium">
+          <SheetClose asChild>
             <Link
-
               href="/"
               className={`flex items-center gap-4 px-2.5 hover:text-foreground ${pathName === "/"
                 ? "text-foreground"
@@ -93,9 +61,10 @@ function SideSheet({ open, onOpenChange }) {
               <Package2 />
               Home
             </Link>
-            {navigationItems.map((item, index) => (
+          </SheetClose>
+          {navigationItems.map((item, index) => (
+            <SheetClose asChild key={item.href}>
               <Link
-                key={index}
                 href={item.href}
                 className={`flex items-center gap-4 px-2.5 hover:text-foreground ${pathName.startsWith(item.href)
                   ? "text-foreground"
@@ -105,11 +74,12 @@ function SideSheet({ open, onOpenChange }) {
                 <item.icon className="h-5 w-5" />
                 {item.name}
               </Link>
-            ))}
-          </nav>
-        </SheetContent>
-      </Sheet>
-    </aside>
+            </SheetClose>
+          ))}
+        </nav>
+      </SheetContent>
+    </Sheet>
+
   )
 }
 

@@ -7,7 +7,7 @@ import MessageLoader from "../Loaders/MessageLoader";
 function Content({ sessionToken, decodedValue }) {
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(false);
-  const { isSelected } = useUser();
+  const { isSelected ,user } = useUser();
   useEffect(() => {
     let isMounted = true; 
 
@@ -18,7 +18,7 @@ function Content({ sessionToken, decodedValue }) {
       try {
         const userId = decodedValue.user.id;
         const res = await fetch(
-          `https://next-gallery-refactored-backend-btrh-pvihnvhaj.vercel.app/message?_id=${userId}&selectedID=${isSelected._id}`,
+          `process.env.NEXT_PUBLIC_API_URL/message?_id=${userId}&selectedID=${isSelected._id}`,
           {
             headers: {
               "Content-Type": "application/json",

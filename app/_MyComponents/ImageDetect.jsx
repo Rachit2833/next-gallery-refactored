@@ -52,7 +52,7 @@ function ImageDetect({name}) {
 
    const checkLabels = async () => {
       const identifiers = [];
-      const response = await fetch(`https://next-gallery-refactored-backend-btrh-pvihnvhaj.vercel.app/label/${id}`);
+      const response = await fetch(`process.env.NEXT_PUBLIC_API_URL/label/${id}`);
       const storedDescriptors = await response.json();
 
       storedDescriptors.map((data, i) => {

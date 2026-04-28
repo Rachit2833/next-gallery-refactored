@@ -1,14 +1,16 @@
 'use client'
 import React, { createContext, useState, useContext, useRef, useEffect } from "react";
 
-import { getLocationInfo } from "./actions";
-import { toast } from "@/hooks/use-toast";
+import { getLocationInfo, removeImagesFromAlbumAction } from "./actions";
+import { toast } from "@/hooks/use-toast"
 const UserContext = createContext();
 export const useUser = () => useContext(UserContext);
-export const UserProvider = ({ children }) => {
+export const UserProvider = ({ user, children }) => {
   const [selectedAvatar, setSelectedAvatar] = useState("/Avatars/photo-1676022763484-810091cd3eb5.avif");
+    const [country, setCountry] = useState("");
   const [selected, setSelected] = useState("Profile");
-  const [selectedTheme, setSelectedTheme] = useState( 0);
+  const [selectedTheme, setSelectedTheme] = useState(0);
+  const [fileBlob, setFileBlob] = useState();
   const [isDark, setIsDark] = useState(false);
   const [selectedSub, setSelectedSub] = useState(null);
   const [subOption, setSubOption] = useState(null);
@@ -46,25 +48,40 @@ export const UserProvider = ({ children }) => {
   const [isEnabled, setIsEnabled] = useState(null);
   const [isLoadingLink, setIsLoadingLink] = useState(false);
   const [isTest, setIsTest] = useState(false);
-    const [isAutoLocation, setIsAutoLocation] = useState(false)
-    const [isHydrated, setIsHydrated] = useState(false);
+  const [isLocationFetching, setIsLocationFetching] = useState(false)
+  const [isHydrated, setIsHydrated] = useState(false);
+  const [autoDetectImages, setAutoDetectImages] = useState(false);
+  const [isLocating, setIsLocating] = useState(false);
+  const [themeToggled, setThemeToggled] = useState(false);
+    const [isDrawerOpen, setDrawerOpen] = useState(false)
+      const [stepIndex, setStepIndex] = useState(0);
   const infoRef = useRef();
   const contentRef = useRef();
+  useEffect(() => {
+    const stored = localStorage.getItem("autoDetectImages");
+    if (stored !== null) {
+      setAutoDetectImages(stored === "true");
+    }
+  }, []);
+  useEffect(() => {
+    console.log("kbhdkahsb");
+    setThemeToggled(true);
+  }, [isDark]);
 
-useEffect(() => {
-  try {
-    const storedTheme = localStorage.getItem("theme");
-    const dark = localStorage.getItem("dark");
-    setIsDark(dark === "true");
-    setSelectedTheme(storedTheme ? parseInt(storedTheme) : 0);
-  } catch (e) {
-    console.error("localStorage error", e);
-  } finally {
-    setIsHydrated(true); // now allow render
-  }
-}, []);
+  useEffect(() => {
+    try {
+      const storedTheme = localStorage.getItem("theme");
+      const dark = localStorage.getItem("dark");
+      setIsDark(dark === "true");
+      setSelectedTheme(storedTheme ? parseInt(storedTheme) : 0);
+    } catch (e) {
+      console.error("localStorage error", e);
+    } finally {
+      setIsHydrated(true); // now allow render
+    }
+  }, []);
   const addNewLabel = async (data) => {
-    const res = await fetch('https://next-gallery-refactored-backend-btrh-pvihnvhaj.vercel.app/labels', {
+    const res = await fetch('process.env.NEXT_PUBLIC_API_URL/labels', {
       method: 'POST',
       body: JSON.stringify(data),
       headers: { 'Content-Type': 'application/json' },
@@ -107,7 +124,6 @@ useEffect(() => {
 
         const res = await getLocationInfo(formData);
         setLocation(`${res.city}, ${res.country}`);
-        setIsAutoLocation(true)
         return {
           name: `${res.city}, ${res.country}`,
           coordinates: [position.coords.latitude, position.coords.longitude]
@@ -120,7 +136,7 @@ useEffect(() => {
         setIsPending(false);
       });
   }
-  const handleDownload = async () => {
+  const handleDownload = async (url) => {
     toast({
       title: "Preparing download...",
       description: "Your download will start shortly.",
@@ -153,10 +169,26 @@ useEffect(() => {
     return Description || "No description";
   }
 
+    async function handleRemoveFromAlbum(formData) {
+      const res = await removeImagesFromAlbumAction(formData);
+  
+      if (res?.success) {
+        toast({ title: "Removed from album ✅" });
+      } else {
+        toast({
+          title: "Error",
+          description: res?.error || "Something went wrong",
+          variant: "destructive",
+        });
+      }
+    }
 
   return (
     <UserContext.Provider
       value={{
+        user,
+        setLat,setLong,
+        handleRemoveFromAlbum,
         selected, setSelected, selectedSub, setSelectedSub, subOption, setSubOption,
         selectedTheme, setSelectedTheme,
         getAltText,
@@ -226,8 +258,12 @@ useEffect(() => {
         personalDetails, setPersonalDetails,
         selectedAvatar, setSelectedAvatar,
         isDark, setIsDark,
-        isAutoLocation, setIsAutoLocation,
-        isHydrated, setIsHydrated
+        isLocationFetching, setIsLocationFetching,
+        isHydrated, setIsHydrated,
+        autoDetectImages, setAutoDetectImages,
+        isLocating, setIsLocating,
+        themeToggled, setThemeToggled,
+        isDrawerOpen, setDrawerOpen,  stepIndex, setStepIndex,fileBlob, setFileBlob,country, setCountry
       }}
     >
       {children}

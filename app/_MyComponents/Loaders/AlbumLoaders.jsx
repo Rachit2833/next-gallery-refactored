@@ -5,7 +5,7 @@ function AlbumLoaders() {
       <div className="grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-8 mt-2">
         {Array.from({length:6}).map((_,i)=>{
            return (
-              <Skeleton key={i} className="relative min-h-[20rem] rounded-xl border-4 w-full  sm:min-h-[24rem] lg:min-h-[30rem]">
+              <Skeleton key={i} className="relative min-h-[20rem] rounded-xl  w-full  sm:min-h-[24rem] lg:min-h-[30rem]">
                  <div className="absolute  w-4/5    z-10 top-6 sm:top-12 left-4 sm:left-8">
                     <Skeleton className=" w-full p-8" />
                     <Skeleton className=" w-full p-6 mt-2" />

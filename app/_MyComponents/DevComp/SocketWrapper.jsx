@@ -3,13 +3,13 @@ import { useUser } from "@/app/_lib/context";
 import { useEffect } from "react";
 import { io } from "socket.io-client";
 function SocketWrapper({ joinedGroup}) {
-   const currentUserId = localStorage.getItem("userId")
-   const { setSocket, setActiveUser, setMessages,  } = useUser()
+   const currentUserId = user._id
+   const { setSocket, setActiveUser, setMessages,user }= useUser()
 
 
    useEffect(() => {
 
-      const socket = io("https://next-gallery-refactored-backend-btrh-pvihnvhaj.vercel.app", { query: { userId: currentUserId } });
+      const socket = io("process.env.NEXT_PUBLIC_API_URL", { query: { userId: currentUserId } });
       setSocket(socket);
 
       socket.on("connect", () => console.log("Connected with socket id:", socket.id));

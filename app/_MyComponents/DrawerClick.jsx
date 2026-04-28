@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import {
   Card,
@@ -13,6 +13,7 @@ import {
   Dialog,
   DialogContent,
   DialogDescription,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger
@@ -27,36 +28,41 @@ import {
 } from "@/components/ui/drawer"
 import { Input } from "@/components/ui/input"
 import { Separator } from "@/components/ui/separator"
-import { Earth, PlusCircle } from "lucide-react"
+import { PlusCircle } from "lucide-react"
+import { useEffect, useState } from "react"
+import { getLocationInfo, saveMassImages } from "../_lib/actions"
 import { useUser } from "../_lib/context"
 import AddAlbumForm from "./AlbumsComponent/AddAlbumForm"
 import PasteModule from "./PasteModule"
 import ToggleButton from "./ToggleButton"
 import Uploadcard, { Earthbutton } from "./UploadCard"
-import { saveMassImages, getLocationInfo } from "../_lib/actions"
-import { Badge } from "@/components/ui/badge"
-import { SubmitButton } from "./SignUpForm"
 
-function DrawerClick({ name, formType = "Image" }) {
+function DrawerClick({ datatour, name, formType = "Image" }) {
   const {
     isOn,
     setIsOn,
     imagesPasted,
     setImagesPasted,
     getSeasons,
-    lat,
+    isLocationFetching, setIsLocationFetching,
+    location, setLocation, autoDetectImages,
+    isLocating, setIsLocating, isDrawerOpen, setDrawerOpen, stepIndex, setStepIndex, lat,
     long,
-    isPending,
-    isAutoLocation, setIsAutoLocation,
-    location, setLocation
-  } = useUser()
+    setLat,
+    setLong,
+    country,
+    setCountry
+    , user } = useUser()
 
-  const [isDrawerOpen, setDrawerOpen] = useState(false)
+
+
   const [uploadType, setUploadType] = useState(1)
   const [file, setFile] = useState([])
 
   const [globalDescription, setGlobalDescription] = useState(getSeasons || "")
   const [isSaving, setIsSaving] = useState(false)
+
+
 
   const handleFileChange = (e) => {
     const files = Array.from(e.target.files)
@@ -81,13 +87,16 @@ function DrawerClick({ name, formType = "Image" }) {
 
     formData.append("LocationName", location)
     formData.append("Description", globalDescription || "No description provided")
-    formData.append("Country", "India")
     formData.append("Favourite", "false")
     formData.append("detection", "true")
     formData.append("People", JSON.stringify([]))
+    formData.append("Country", country || "") // ✅ dynamic
+    formData.append("coordinates", JSON.stringify([formData.get("lat"),formData.get("long")]));
 
     try {
       await saveMassImages(formData)
+      file.forEach(f => URL.revokeObjectURL(f.imageUrl))
+      imagesPasted.forEach(f => URL.revokeObjectURL(f.imageUrl))
       setImagesPasted([])
       setFile([])
     } catch (err) {
@@ -99,27 +108,109 @@ function DrawerClick({ name, formType = "Image" }) {
   }
 
   const handleGetCoordinates = async () => {
+    if (isLocating || isLocationFetching) return;
+
     try {
+      setIsLocating(true);
+
       const position = await new Promise((resolve, reject) =>
         navigator.geolocation.getCurrentPosition(resolve, reject)
-      )
+      );
 
-      const formData = new FormData()
-      formData.append("latitude", position.coords.latitude)
-      formData.append("longitude", position.coords.longitude)
+      const formData = new FormData();
+      formData.append("latitude", position.coords.latitude);
+      formData.append("longitude", position.coords.longitude);
 
-      const res = await getLocationInfo(formData)
-      setLocation(`${res.city}, ${res.country}`)
-      setIsAutoLocation(true)
-    } catch (error) {
-      console.error("Geolocation error:", error)
+      const res = await getLocationInfo(formData);
+
+      setLocation(`${res.city}, ${res.country}`);
+
+      // ✅ ADD THESE
+      setLat(position.coords.latitude);
+      setLong(position.coords.longitude);
+      setCountry(res.country);
+
+      setIsLocationFetching(true);
+    } finally {
+      setIsLocating(false);
     }
+  };
+
+
+  const handleCancel = () => {
+    file.forEach(f => URL.revokeObjectURL(f.imageUrl))
+    imagesPasted.forEach(f => URL.revokeObjectURL(f.imageUrl))
+
+    setFile([])
+    setImagesPasted([])
+    setDrawerOpen(false)
   }
+
+
+  useEffect(() => {
+    if (!autoDetectImages) return; // 🔐 hard gate
+
+    let cancelled = false;
+    let permissionStatus = null;
+
+    const autoFetchLocation = async () => {
+      if (                    // menu not open
+        isLocationFetching ||       // already fetching
+        !navigator?.permissions    // unsupported browser
+      ) {
+        return;
+      }
+
+      try {
+        permissionStatus = await navigator.permissions.query({
+          name: "geolocation",
+        });
+
+        if (permissionStatus.state === "granted" && !cancelled) {
+          handleGetCoordinates();
+        }
+
+        // Handle prompt → granted while menu is open
+        permissionStatus.onchange = () => {
+          if (
+            permissionStatus.state === "granted" &&
+            !cancelled &&
+            !isLocationFetching
+          ) {
+            handleGetCoordinates();
+          }
+        };
+      } catch (err) {
+        console.error("Permission check failed", err);
+      }
+    };
+
+    autoFetchLocation();
+
+    return () => {
+      cancelled = true;
+      if (permissionStatus) {
+        permissionStatus.onchange = null;
+      }
+    };
+  }, [autoDetectImages, isOn]);
+
+
 
   return (
     <div className="relative">
-      <Drawer open={isDrawerOpen} onOpenChange={() => setDrawerOpen(!isDrawerOpen)}>
+      <Drawer
+        open={isDrawerOpen}
+        onOpenChange={(open) => {
+          if (stepIndex <= 0) {
+            setDrawerOpen(open);
+            setIsOn(false); // close dialog when drawer closes
+
+          }
+        }}
+      >
         <DrawerTrigger
+          data-tour={datatour}
           onClick={() => setDrawerOpen(true)}
           className="h-7 px-3 text-xs gap-1 bg-primary text-primary-foreground shadow hover:bg-primary/90 inline-flex items-center justify-center whitespace-nowrap rounded-md font-medium transition-colors"
         >
@@ -132,10 +223,11 @@ function DrawerClick({ name, formType = "Image" }) {
             <>
               <div className="w-full flex justify-between items-center gap-4 px-4 py-2 sm:px-8">
                 <button
+                  data-tour="singleUploadMode"
                   onClick={() => setUploadType(1)}
                   className={`flex-1 text-center cursor-pointer pb-1 transition-all duration-300 ease-in-out ${uploadType === 1
-                      ? "border-b-4 border-foreground text-foreground font-semibold"
-                      : "border-b-4 border-transparent text-muted-foreground"
+                    ? "border-b-4 border-foreground text-foreground font-semibold"
+                    : "border-b-4 border-transparent text-muted-foreground"
                     }`}
                 >
                   Single Upload
@@ -144,15 +236,21 @@ function DrawerClick({ name, formType = "Image" }) {
                 <div className="h-6 w-px bg-border" />
 
                 <button
+                  data-tour="multipleUploadMode"
                   onClick={() => setUploadType(2)}
                   className={`flex-1 text-center cursor-pointer pb-1 transition-all duration-300 ease-in-out ${uploadType === 2
-                      ? "border-b-4 border-foreground text-foreground font-semibold"
-                      : "border-b-4 border-transparent text-muted-foreground"
+                    ? "border-b-4 border-foreground text-foreground font-semibold"
+                    : "border-b-4 border-transparent text-muted-foreground"
                     }`}
                 >
                   Multiple Upload
                 </button>
 
+              </div>
+              <div className="h-10 w-full bg-red-700 flex items-center justify-center px-2 text-center">
+                <p className="text-sm text-white font-medium">
+                  Image uploads have been paused due to cloud costs, You can run the worker available on github locally to restart the services
+                </p>
               </div>
 
               <Separator />
@@ -166,97 +264,102 @@ function DrawerClick({ name, formType = "Image" }) {
                       Select Images from your Local Storage or Paste (Ctrl+V)
                     </DrawerTitle>
 
-                    <Dialog>
-                      <DialogTrigger className="absolute right-4 top-4 inline-flex items-center justify-center gap-2 h-9 px-4 py-2 bg-primary text-primary-foreground text-sm font-medium rounded-md shadow hover:bg-primary/90">
-                        Save
+                    <Dialog open={isOn} onOpenChange={setIsOn}>
+                      <DialogTrigger asChild>
+                        <Button size="sm">
+                          Save
+                        </Button>
                       </DialogTrigger>
 
-                      <DialogContent className="h-[40rem] overflow-auto">
+                      <DialogContent className="sm:max-w-lg">
                         <DialogHeader>
                           <DialogTitle>Save Images</DialogTitle>
                           <DialogDescription>
-                            This will save all images selected by you
+                            This will save all images selected by you.
                           </DialogDescription>
-
-                          {isOn && (
-                            <Card>
-                              <CardHeader>
-                                <CardTitle>Enter the Details for Images</CardTitle>
-                                <CardDescription>Common details for all images</CardDescription>
-                              </CardHeader>
-
-                              <CardContent>
-                                <Input
-                                  name="Title"
-                                  type="text"
-                                  placeholder="Describe Your Image"
-                                  value={globalDescription}
-                                  onChange={(e) => setGlobalDescription(e.target.value)}
-                                  className="w-full px-4 py-2 border rounded-md bg-muted text-muted-foreground outline-none"
-                                />
-
-                                <span className="my-4 block">Give Location Access</span>
-
-                                <div className="flex flex-col gap-4 my-4">
-                                  <div className="flex items-center gap-2">
-                                    <Input
-                                      name="Location"
-                                      type="text"
-                                      placeholder="Location Of Your Image"
-                                      onChange={(e) => setLocation(e.target.value)}
-                                      value={location}
-                                      disabled={isAutoLocation}
-                                      className="w-full px-4 py-2 border rounded-md bg-muted text-muted-foreground outline-none disabled:opacity-70 disabled:cursor-not-allowed"
-                                    />
-
-                                    <form action={handleGetCoordinates}>
-                                      <Earthbutton disabled={isAutoLocation} />
-                                    </form>
-                                  </div>
-
-                                  {isAutoLocation && (
-                                    <Badge
-                                      variant="outline"
-                                      className="flex items-center justify-between w-full px-3 py-1 bg-accent text-sm border"
-                                    >
-                                      📍 {location}
-                                      <button
-                                        type="button"
-                                        onClick={() => {
-                                          setLocation("")
-                                          setIsAutoLocation(false)
-                                        }}
-                                        className="ml-2 text-red-500 hover:text-red-700"
-                                      >
-                                        ✖
-                                      </button>
-                                    </Badge>
-                                  )}
-                                </div>
-                              </CardContent>
-                            </Card>
-                          )}
-
-                          <div className="flex flex-col sm:flex-row justify-between items-center gap-4 my-8">
-                            <ToggleButton />
-                            <div className="flex gap-3 w-full sm:w-auto justify-end">
-                              <Button
-                                variant="secondary"
-                                className="w-full sm:w-auto"
-                                onClick={() => setDrawerOpen(false)}
-                              >
-                                Cancel
-                              </Button>
-                              <Button
-                                className="w-full sm:w-auto"
-                                onClick={handleSave}
-                                disabled={isSaving}
-                              >
-                                {isSaving ? "Saving..." : "Save"}
-                              </Button>
-                            </div>
-                          </div>
                         </DialogHeader>
+
+                        {/* Body */}
+                        <div className="space-y-6">
+                          <Card>
+                            <CardHeader>
+                              <CardTitle className="text-base">
+                                Enter the Details for Images
+                              </CardTitle>
+                              <CardDescription>
+                                Common details for all images
+                              </CardDescription>
+                            </CardHeader>
+
+                            <CardContent className="space-y-4">
+                              <Input
+                                name="Title"
+                                type="text"
+                                placeholder="Describe your image"
+                                className="bg-muted text-muted-foreground"
+                                value={globalDescription}
+                                onChange={(e) => setGlobalDescription(e.target.value)}
+                              />
+
+                              <div className="space-y-2">
+                                <span className="text-sm font-medium text-muted-foreground">
+                                  Location
+                                </span>
+
+                                <div className="flex items-center gap-2">
+                                  <Input
+                                    name="Location"
+                                    type="text"
+                                    placeholder="Location of your image"
+                                    onChange={(e) => setLocation(e.target.value)}
+                                    value={location}
+                                    disabled={isLocationFetching}
+                                    className="bg-muted text-muted-foreground"
+                                  />
+
+                                  <form action={handleGetCoordinates}>
+                                    <Earthbutton disabled={isLocationFetching} loading={isLocating} />
+                                  </form>
+                                </div>
+
+                                {isLocationFetching && (
+                                  <Badge
+                                    variant="outline"
+                                    className="flex items-center justify-between"
+                                  >
+                                    📍 {location}
+                                    <button
+                                      type="button"
+                                      onClick={() => {
+                                        setLocation("")
+                                        setIsLocationFetching(false)
+                                      }}
+                                      className="ml-2 text-destructive"
+                                    >
+                                      ✖
+                                    </button>
+                                  </Badge>
+                                )}
+                              </div>
+                            </CardContent>
+                          </Card>
+                        </div>
+
+                        <DialogFooter>
+                          <Button
+                            variant="secondary"
+                            onClick={handleCancel}
+                          >
+                            Cancel
+                          </Button>
+
+                          <Button
+                            onClick={handleSave}
+                            disabled={isSaving}
+                          >
+                            {isSaving ? "Saving..." : "Save"}
+                          </Button>
+                        </DialogFooter>
                       </DialogContent>
                     </Dialog>
 
@@ -265,6 +368,7 @@ function DrawerClick({ name, formType = "Image" }) {
                     </DrawerDescription>
 
                     <Input
+
                       name="photo"
                       onChange={handleFileChange}
                       multiple

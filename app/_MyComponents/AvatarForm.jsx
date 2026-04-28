@@ -4,10 +4,11 @@ import React, { useState } from 'react';
 import AvatarPicker from './AvatarPicker';
 import { Input } from '@/components/ui/input';
 import { DialogFooter } from '@/components/ui/dialog';
-import { SubmitButton } from './SignUpForm';
+
 import { updateImage } from '../_lib/actions';
 import { toast } from "@/hooks/use-toast";
 import { Separator } from '@/components/ui/separator';
+import { SubmitButton } from './SearchComponents/LeaveDialog';
 
 const AvatarForm = ({ image, onClose }) => {
   const [selected, setSelected] = useState(null);

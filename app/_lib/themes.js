@@ -1,6 +1,6 @@
 export const themes = [
   {
-    id: 0,
+    id: "default",
     name: "Default",
     description: "A clean and minimal base theme.",
     lightImage: "/themes/defaultLight.webp",
@@ -9,26 +9,27 @@ export const themes = [
     darkClass: "default dark",
   },
   {
-    id: 1,
+    id: "sandsOfTime",
     name: "Sands of Time",
-    description: "Warm golden hues and soft shadows evoking the desert sun and timeless serenity.",
+    description:
+      "Warm golden hues and soft shadows evoking the desert sun and timeless serenity.",
     lightImage: "/themes/sandsOfTimeLight.webp",
     darkImage: "/themes/sandsOfTimeDark.webp",
     lightClass: "sandsOfTime",
     darkClass: "sandsOfTime dark",
   },
   {
-    id: 2,
+    id: "notebook",
     name: "Obsidian Draft",
-    description: "A monochrome theme for creators and coders — minimal, structured, and effortlessly modern.",
+    description:
+      "A monochrome theme for creators and coders — minimal, structured, and effortlessly modern.",
     lightImage: "/themes/notebookLight.webp",
     darkImage: "/themes/notebookDark.webp",
     lightClass: "notebook",
     darkClass: "notebook dark",
   },
-  
   {
-    id: 3,
+    id: "bubblegumPop",
     name: "Bubblegum Pop",
     description: "A candy-colored UI inspired by bubblegum dreams.",
     lightImage: "/themes/bubblegumLight.webp",
@@ -37,39 +38,39 @@ export const themes = [
     darkClass: "bubblegumPop dark",
   },
   {
-    id: 4,
+    id: "greenPower",
     name: "Green Power",
     description: "A sleek, vibrant UI theme powered by energizing greens.",
     lightImage: "/themes/greenPowerLight.webp",
-    darkImage: "/themes/grrenPowerDark.webp", // Typo in filename: grrenPowerDark.webp
+    darkImage: "/themes/greenPowerDark.webp",
     lightClass: "greenPower",
     darkClass: "greenPower dark",
   },
   {
-    id: 5,
+    id: "doom",
     name: "Neon Inferno",
     description: "A high-energy theme with bold contrasts.",
-    lightImage: "/themes/doomLight.webp", // ← Make sure this file exists
-    darkImage: "/themes/doomDark.webp",   // ← Make sure this file exists
+    lightImage: "/themes/doomLight.webp",
+    darkImage: "/themes/doomDark.webp",
     lightClass: "doom",
     darkClass: "doom dark",
   },
   {
-    id: 6,
+    id: "boldTech",
     name: "Bold Tech",
-    description: "A fresh and energetic UI with Techy Vibes.",
+    description: "A fresh and energetic UI with tech-forward vibes.",
     lightImage: "/themes/techLight.webp",
     darkImage: "/themes/techDark.webp",
     lightClass: "boldTech",
     darkClass: "boldTech dark",
   },
   {
-    id: 7,
+    id: "pastel",
     name: "Pastel",
     description: "A soft and calming palette with subtle pastel tones.",
     lightImage: "/themes/pastelLight.webp",
     darkImage: "/themes/pastelDark.webp",
     lightClass: "pastel",
     darkClass: "pastel dark",
-  }
+  },
 ];

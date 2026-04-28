@@ -7,10 +7,12 @@ import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { useUser } from "../_lib/context";
+import { useTheme } from "next-themes";
 
 export function ThemeCard({ theme, onSelect }) {
+    const { setTheme } = useTheme()
   const [mode, setMode] = useState("light");
-  const { selectedTheme, setSelectedTheme } = useUser()
+  const { selectedTheme, setSelectedTheme ,user } = useUser()
   const imageUrl = mode === "dark" ? theme.darkImage : theme.lightImage;
 
   return (
@@ -51,8 +53,9 @@ export function ThemeCard({ theme, onSelect }) {
           )}
         </div>
         <Button
-          disabled={Number(selectedTheme) === theme.id}
+          disabled={selectedTheme === theme.id}
           onClick={() => {
+            setTheme(theme.lightClass)
             localStorage.setItem("theme", theme.id)
             setSelectedTheme(theme.id)
           }}
