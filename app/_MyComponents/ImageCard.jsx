@@ -160,13 +160,6 @@ const albumId = params?.id;
               <p>{image?.Location?.name}</p>
               <p className="text-center">{image?.Description}</p>
               <footer className="text-xs text-muted-foreground mt-4 sm:block hidden">
-                <p>
-                  By{" "}
-                  <span className="font-semibold cursor-pointer hover:underline">
-                    { }
-                  </span>{" "}
-                  {logTimeDifference("2024-09-29T10:00:00")}
-                </p>
               </footer>
             </div>
           </ContextMenuTrigger>

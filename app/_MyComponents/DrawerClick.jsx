@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/card"
 import {
   Dialog,
+  DialogClose,
   DialogContent,
   DialogDescription,
   DialogFooter,
@@ -22,6 +23,7 @@ import {
   Drawer,
   DrawerContent,
   DrawerDescription,
+  DrawerFooter,
   DrawerHeader,
   DrawerTitle,
   DrawerTrigger
@@ -53,6 +55,7 @@ function DrawerClick({ datatour, name, formType = "Image" }) {
     country,
     setCountry
     , user } = useUser()
+
 
 
 
@@ -91,7 +94,7 @@ function DrawerClick({ datatour, name, formType = "Image" }) {
     formData.append("detection", "true")
     formData.append("People", JSON.stringify([]))
     formData.append("Country", country || "") // ✅ dynamic
-    formData.append("coordinates", JSON.stringify([formData.get("lat"),formData.get("long")]));
+    formData.append("coordinates", JSON.stringify([formData.get("lat"), formData.get("long")]));
 
     try {
       await saveMassImages(formData)
@@ -204,8 +207,6 @@ function DrawerClick({ datatour, name, formType = "Image" }) {
         onOpenChange={(open) => {
           if (stepIndex <= 0) {
             setDrawerOpen(open);
-            setIsOn(false); // close dialog when drawer closes
-
           }
         }}
       >
@@ -218,15 +219,19 @@ function DrawerClick({ datatour, name, formType = "Image" }) {
           {name}
         </DrawerTrigger>
 
-        <DrawerContent className={formType === "Album" ? "min-h-[25rem]" : "min-h-[45rem]"}>
+        <DrawerContent
+          className={
+            formType === "Album" ? "min-h-[25rem]" : "min-h-[45rem]"
+          }
+        >
           {formType === "Image" ? (
             <>
+              {/* Tabs */}
               <div className="w-full flex justify-between items-center gap-4 px-4 py-2 sm:px-8">
                 <button
-                  data-tour="singleUploadMode"
                   onClick={() => setUploadType(1)}
-                  className={`flex-1 text-center cursor-pointer pb-1 transition-all duration-300 ease-in-out ${uploadType === 1
-                    ? "border-b-4 border-foreground text-foreground font-semibold"
+                  className={`flex-1 text-center pb-1 ${uploadType === 1
+                    ? "border-b-4 border-foreground font-semibold"
                     : "border-b-4 border-transparent text-muted-foreground"
                     }`}
                 >
@@ -236,155 +241,165 @@ function DrawerClick({ datatour, name, formType = "Image" }) {
                 <div className="h-6 w-px bg-border" />
 
                 <button
-                  data-tour="multipleUploadMode"
                   onClick={() => setUploadType(2)}
-                  className={`flex-1 text-center cursor-pointer pb-1 transition-all duration-300 ease-in-out ${uploadType === 2
-                    ? "border-b-4 border-foreground text-foreground font-semibold"
+                  className={`flex-1 text-center pb-1 ${uploadType === 2
+                    ? "border-b-4 border-foreground font-semibold"
                     : "border-b-4 border-transparent text-muted-foreground"
                     }`}
                 >
                   Multiple Upload
                 </button>
-
-              </div>
-              <div className="h-10 w-full bg-red-700 flex items-center justify-center px-2 text-center">
-                <p className="text-sm text-white font-medium">
-                  Image uploads have been paused due to cloud costs, You can run the worker available on github locally to restart the services
-                </p>
               </div>
 
               <Separator />
 
               {uploadType === 1 ? (
-                <Uploadcard isDrawerOpen={isDrawerOpen} setDrawerOpen={setDrawerOpen} />
+                <Uploadcard
+                  isDrawerOpen={isDrawerOpen}
+                  setDrawerOpen={setDrawerOpen}
+                />
               ) : (
-                <>
-                  <DrawerHeader className="relative px-4">
-                    <DrawerTitle className="text-center text-base sm:text-lg">
-                      Select Images from your Local Storage or Paste (Ctrl+V)
-                    </DrawerTitle>
+                <Dialog>
+                  <>
+                    {/* Header */}
+                    <DrawerHeader className="px-4">
+                      <DrawerTitle className="text-center text-base sm:text-lg">
+                        Select Images from your Local Storage or Paste
+                      </DrawerTitle>
 
-                    <Dialog open={isOn} onOpenChange={setIsOn}>
-                      <DialogTrigger asChild>
-                        <Button size="sm">
-                          Save
-                        </Button>
-                      </DialogTrigger>
+                      <DrawerDescription className="text-center text-sm mt-2">
+                        Description and Location are editable below
+                      </DrawerDescription>
 
-                      <DialogContent className="sm:max-w-lg">
-                        <DialogHeader>
-                          <DialogTitle>Save Images</DialogTitle>
-                          <DialogDescription>
-                            This will save all images selected by you.
-                          </DialogDescription>
-                        </DialogHeader>
+                      <Input
+                        onChange={handleFileChange}
+                        multiple
+                        type="file"
+                        className="sm:w-[35rem] mx-auto mt-4 w-full px-0 py-0 border rounded-md bg-muted text-muted-foreground
+                      file:px-4 file:py-2 file:border-none file:bg-accent file:text-accent-foreground file:mr-4 file:rounded-l-md"
+                      />
+                    </DrawerHeader>
 
-                        {/* Body */}
-                        <div className="space-y-6">
-                          <Card>
-                            <CardHeader>
-                              <CardTitle className="text-base">
-                                Enter the Details for Images
-                              </CardTitle>
-                              <CardDescription>
-                                Common details for all images
-                              </CardDescription>
-                            </CardHeader>
+                    {/* Grid */}
+                    <div className="max-h-[30rem] overflow-auto px-2 py-2 border border-border rounded-md mt-4 bg-background">
+                      <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                        <PasteModule
+                          additionalData={file}
+                          setFile={setFile}
+                        />
+                      </div>
+                    </div>
 
-                            <CardContent className="space-y-4">
+                    {/* Footer */}
+                    <DrawerFooter className="border-t pt-4 mt-2">
+                      {(file.length > 0 || imagesPasted.length > 0) && (
+                        <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 w-full sm:justify-end sm:max-w-md ml-auto">
+
+                          {/* Reset (secondary) */}
+                          <Button
+                            variant="outline"
+                            onClick={handleCancel}
+                            className="w-full sm:w-auto h-10"
+                          >
+                            Reset
+                          </Button>
+
+                          {/* Primary CTA */}
+                          <DialogTrigger asChild>
+                            <Button className="w-full sm:w-auto h-10 px-6">
+                              Review & Save
+                            </Button>
+                          </DialogTrigger>
+
+                        </div>
+                      )}
+                    </DrawerFooter>
+                  </>
+
+                  {/* Dialog Content */}
+                  <DialogContent className="sm:max-w-lg">
+                     <DialogTitle>Save Images</DialogTitle>
+                      <DialogDescription>
+                        This will save all images selected by you.
+                      </DialogDescription>
+
+                    <div className="space-y-6">
+                      <Card>
+                        <CardHeader>
+                          <CardTitle className="text-base">
+                            Enter the Details for Images
+                          </CardTitle>
+                          <CardDescription>
+                            Common details for all images
+                          </CardDescription>
+                        </CardHeader>
+
+                        <CardContent className="space-y-4">
+                          <Input
+                            value={globalDescription}
+                            onChange={(e) =>
+                              setGlobalDescription(e.target.value)
+                            }
+                            placeholder="Describe your image"
+                            className="bg-muted text-muted-foreground"
+                          />
+
+                          <div className="space-y-2">
+                            <span className="text-sm text-muted-foreground">
+                              Location
+                            </span>
+
+                            <div className="flex gap-2">
                               <Input
-                                name="Title"
-                                type="text"
-                                placeholder="Describe your image"
+                                value={location}
+                                onChange={(e) =>
+                                  setLocation(e.target.value)
+                                }
                                 className="bg-muted text-muted-foreground"
-                                value={globalDescription}
-                                onChange={(e) => setGlobalDescription(e.target.value)}
                               />
 
-                              <div className="space-y-2">
-                                <span className="text-sm font-medium text-muted-foreground">
-                                  Location
-                                </span>
+                              <form action={handleGetCoordinates}>
+                                <Earthbutton
+                                  disabled={isLocationFetching}
+                                  loading={isLocating}
+                                />
+                              </form>
+                            </div>
 
-                                <div className="flex items-center gap-2">
-                                  <Input
-                                    name="Location"
-                                    type="text"
-                                    placeholder="Location of your image"
-                                    onChange={(e) => setLocation(e.target.value)}
-                                    value={location}
-                                    disabled={isLocationFetching}
-                                    className="bg-muted text-muted-foreground"
-                                  />
-
-                                  <form action={handleGetCoordinates}>
-                                    <Earthbutton disabled={isLocationFetching} loading={isLocating} />
-                                  </form>
-                                </div>
-
-                                {isLocationFetching && (
-                                  <Badge
-                                    variant="outline"
-                                    className="flex items-center justify-between"
-                                  >
-                                    📍 {location}
-                                    <button
-                                      type="button"
-                                      onClick={() => {
-                                        setLocation("")
-                                        setIsLocationFetching(false)
-                                      }}
-                                      className="ml-2 text-destructive"
-                                    >
-                                      ✖
-                                    </button>
-                                  </Badge>
-                                )}
-                              </div>
-                            </CardContent>
-                          </Card>
-                        </div>
-
-                        <DialogFooter>
-                          <Button
-                            variant="secondary"
-                            onClick={handleCancel}
-                          >
-                            Cancel
-                          </Button>
-
-                          <Button
-                            onClick={handleSave}
-                            disabled={isSaving}
-                          >
-                            {isSaving ? "Saving..." : "Save"}
-                          </Button>
-                        </DialogFooter>
-                      </DialogContent>
-                    </Dialog>
-
-                    <DrawerDescription className="text-center text-sm mt-2">
-                      Description and Location are editable below
-                    </DrawerDescription>
-
-                    <Input
-
-                      name="photo"
-                      onChange={handleFileChange}
-                      multiple
-                      className="sm:w-[35rem] mx-auto mt-4 w-full px-0 py-0 border rounded-md bg-muted text-muted-foreground
-                     file:px-4 file:py-2 file:rounded-none file:border-none file:bg-accent 
-                     file:text-accent-foreground file:m-0 file:mr-4 file:rounded-l-md file:shadow-none"
-                      type="file"
-                    />
-                  </DrawerHeader>
-
-                  <div className="max-h-[30rem] overflow-auto px-2 py-2 border border-border rounded-md mt-4 bg-background">
-                    <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 gap-4">
-                      <PasteModule additionalData={file} setFile={setFile} />
+                            {isLocationFetching && (
+                              <Badge className="flex justify-between">
+                                📍 {location}
+                                <button
+                                  onClick={() => {
+                                    setLocation("");
+                                    setIsLocationFetching(false);
+                                  }}
+                                >
+                                  ✖
+                                </button>
+                              </Badge>
+                            )}
+                          </div>
+                        </CardContent>
+                      </Card>
                     </div>
-                  </div>
-                </>
+
+                    <DialogFooter>
+                      <DialogClose asChild>
+                        <Button variant="secondary">
+                          Cancel
+                        </Button>
+                      </DialogClose>
+
+                      <Button
+                        onClick={handleSave}
+                        disabled={isSaving}
+                      >
+                        {isSaving ? "Saving..." : "Save"}
+                      </Button>
+                    </DialogFooter>
+                  </DialogContent>
+                </Dialog>
               )}
             </>
           ) : formType === "Album" ? (
@@ -393,7 +408,7 @@ function DrawerClick({ datatour, name, formType = "Image" }) {
         </DrawerContent>
       </Drawer>
     </div>
-  )
+  );
 }
 
 export default DrawerClick

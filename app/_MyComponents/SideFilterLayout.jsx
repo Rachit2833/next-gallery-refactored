@@ -38,6 +38,11 @@ function SideFilterLayout({ datatour, year, text, formType }) {
     }),
   ];
 
+  const hideDownload =
+    pathname === "/services/" ||
+    pathname === "/favourites" ||
+    pathname === "/services/albums";
+
   const handleDownload = async () => {
     if (selectedImages.length === 0) {
       toast({
@@ -87,7 +92,7 @@ function SideFilterLayout({ datatour, year, text, formType }) {
             {/* Sort Dropdown */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button  size="sm" className="h-7 gap-1">
+                <Button size="sm" className="h-7 gap-1">
                   <ListFilter className="h-3.5 w-3.5" />
                   <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
                     Filter
@@ -111,24 +116,26 @@ function SideFilterLayout({ datatour, year, text, formType }) {
             </DropdownMenu>
 
             {/* Download Button */}
-            <Button
-              onClick={handleDownload}
-              size="sm"
-              variant="outline"
-              disabled={selectedImages.length === 0}
-              className={`
-    h-7 gap-1
-    ${selectedImages.length === 0
-                  ? "  h-7 gap-1 disabled:border-2 disabled:border-dotted disabled:border-primary"
-                  : ""}
-  `}
-            >
+            {!hideDownload && (
+              <Button
+                onClick={handleDownload}
+                size="sm"
+                variant="outline"
+                disabled={selectedImages.length === 0}
+                className={`border rounded-md bg-muted text-muted-foreground outline-none
+      h-7 gap-1
+      ${selectedImages.length === 0
+                    ? "disabled:border-2 disabled:border-dotted disabled:border-primary "
+                    : ""}
+    `}
+              >
+                <Download className="h-3.5 w-3.5" />
+                <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
+                  Download
+                </span>
+              </Button>
+            )}
 
-              <Download className="h-3.5 w-3.5" />
-              <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
-                Download
-              </span>
-            </Button>
 
             {/* Add Form Button */}
             {!pathname.startsWith('/albums/') && <DrawerClick datatour={datatour} name={text} formType={formType} />}

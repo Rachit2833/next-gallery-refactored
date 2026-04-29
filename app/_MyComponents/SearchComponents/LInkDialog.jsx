@@ -28,6 +28,7 @@ function LinkDialog({ children }) {
       setCopied(true)
       setTimeout(() => setCopied(false), 2000)
    }
+   console.log(url,"url");
 
    return (
       <Dialog>
