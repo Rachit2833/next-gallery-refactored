@@ -21,7 +21,7 @@ async function ShareImages({ params }) {
       }
    )
    const data = await res.json()
-   console.log(data);
+   console.log(data,"khjfbdskhf");
    return (
       data.data ?
          <Card x-chunk="dashboard-06-chunk-0" className="min-h-[90vh] relative">

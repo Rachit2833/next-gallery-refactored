@@ -163,7 +163,6 @@ function AlbumCard({ item, shared }) {
             <form
               action={async () => {
                 try {
-                  delete item._id
                   delete item.__v
                   await saveSharedAlbum(item)
 
@@ -200,14 +199,14 @@ function AlbumCard({ item, shared }) {
           )}
 
           {/* VISIT */}
-          <Button
+          {shared && (<Button
             aria-label="Visit album"
             onClick={() => router.push(`/services/albums/${item._id}`)}
             className={`${overlayButton} px-5 flex items-center gap-2`}
           >
             Visit
             <ChevronRight className={iconClass} />
-          </Button>
+          </Button>)}
         </div>
       </Card>
     </article>

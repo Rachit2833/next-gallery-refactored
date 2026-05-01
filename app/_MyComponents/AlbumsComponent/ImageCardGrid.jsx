@@ -26,15 +26,15 @@ async function ImageCardGrid({ cookieStore,id, year, sort = "-_id",page }) {
 
   return (
     <>
-      {res?.images.length !== 0 ? (
-        <PasteCards res={res.images} />
+      {res?.images?.length !== 0 ? (
+        <PasteCards res={res?.images} />
       ) : (
         <NoImagesDoodle />
       )}
 
 
-      {res?.images.length !== 0 && (
-        <PagePagination totalPagesLeft={res.pagination.totalPagesLeft} />
+      {res?.images?.length !== 0 && (
+        <PagePagination totalPagesLeft={res?.pagination?.totalPagesLeft} />
       )}
     </>
   )
