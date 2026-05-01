@@ -9,12 +9,13 @@ import { useUser } from "../_lib/context";
 
 
 function MainSlide({ val, albumComponent,card, params}) {
-const {selectedImages,  } = useUser();
+const {selectedImages,user  } = useUser()
 const {page,year,frId,cod,query,sort}=params
+
    return (
 <>
 
-            <Card x-chunk="dashboard-06-chunk-0"  className="w-full max-w-screen-2xl mx-auto overflow-hidden">
+            <Card x-chunk="dashboard-06-chunk-0"  className="w-full max-w-screen-2xl mx-auto ">
              {selectedImages.length>0?<IconButtons val={val} albumComponent={albumComponent} />:null}
 
                <CardHeader>

@@ -8,7 +8,7 @@ import { SubmitButton } from "./LeaveDialog"
 import { set } from "zod"
 
 function AddPopOver({ children, users }) {
-   const { groupSelection, setIsSelected, setGroupSelection, selectedInGroup, setSelectedInGroup, isSelected } = useUser()
+   const { groupSelection, setIsSelected, setGroupSelection, selectedInGroup, setSelectedInGroup, isSelected ,user } = useUser()
    const [open, setOpen] = useState(false)
    function openChnage(){
       setSelectedInGroup([])

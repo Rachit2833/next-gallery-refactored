@@ -28,7 +28,7 @@ function CameraUi() {
    const videoRef = useRef();
    const canvasRef = useRef();
    const [detected, setDetected] = useState(false);
-   const { openCamera, setOpenCamera, videoSrc, setVideoSrc } = useUser()
+   const { openCamera, setOpenCamera, videoSrc, setVideoSrc ,user } = useUser()
 
 
    const checkLabel = async () => {
@@ -119,8 +119,8 @@ function CameraUi() {
                .withFaceExpressions();
 
             const canvas = canvasRef.current;
-            canvas.width = videoRef.current.videoWidth;
-            canvas.height = videoRef.current.videoHeight;
+            canvas.width = videoRef.current?.videoWidth;
+            canvas.height = videoRef.current?.videoHeight;
             const context = canvas.getContext("2d");
             context.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -235,20 +235,20 @@ function CameraUi() {
                      setUrlBlob(null);
                   }}
                   className={`${urlBlob ? "block" : "hidden"}`}
-                  variant="outline"
+                  
                >
                   Cancel
                </Button>
                <Button
                   onClick={handleClick}
                   className={`${openCamera && !urlBlob ? "block" : "hidden"}`}
-                  variant="outline"
+                
                >
                   Capture
                </Button>
                <Button
                   onClick={!openCamera ? handleCameraOpen : handleCameraClose}
-                  variant="outline"
+                
                >
                   {!openCamera ? "Open Camera" : "Close Camera"}
                </Button>

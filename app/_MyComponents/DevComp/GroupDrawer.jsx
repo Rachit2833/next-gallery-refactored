@@ -46,7 +46,7 @@ function GroupDrawer({inviteId,children,group}) {
                 </form>
                   <DrawerClose asChild>
                      <Button onClick={()=>{setIsOpen(false)
-                        router.push("/friends")}
+                        router.push("services/friends")}
                      } variant="outline">Cancel</Button>
                   </DrawerClose>
                </DrawerFooter>

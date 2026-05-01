@@ -17,18 +17,15 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useEffect } from 'react';
-import { useUser } from '../_lib/context';
 
 function NavBar() {
   const pathname = usePathname();
-  const { setSelectedImages, setOpenCamera, setVideoSrc } = useUser();
 
-  useEffect(() => {
-    setSelectedImages([]);
-    setOpenCamera(false);
-    setVideoSrc(null);
-  }, [pathname]);
+  // useEffect(() => {
+  //   setSelectedImages([]);
+  //   setOpenCamera(false);
+  //   setVideoSrc(null);
+  // }, [pathname]);
 
   const navigationItems = [
     { name: 'Albums', icon: Album, href: '/services/albums' },
@@ -37,62 +34,75 @@ function NavBar() {
     { name: 'Memory-Map', icon: Map, href: '/services/memory-map' },
     { name: 'Post', icon: Camera, href: '/services/post' },
   ];
+  const isHomeActive =
+    pathname === '/services' || pathname === '/services/';
 
   return (
-    <aside className="fixed inset-y-0 left-0 z-10 hidden w-14 flex-col border-r bg-background sm:flex">
-      {/* Top Nav */}
-      <nav className="flex flex-col items-center gap-4 px-2 py-4">
-        {/* Home */}
-        <Link
-          href="/services/"
-          className={`group flex h-9 w-9 shrink-0 items-center justify-center gap-2 rounded-full ${
-            pathname === '/services/' || pathname === '/services'
-              ? 'bg-primary text-primary-foreground'
-              : 'hover:bg-muted text-muted-foreground'
-          } transition-colors`}
-        >
-          <Home className="h-4 w-4 transition-all group-hover:scale-110" />
-          <span className="sr-only">Home</span>
-        </Link>
 
-        {/* Other Nav Items */}
-        <TooltipProvider>
-          {navigationItems.map((item, index) => {
+    <aside
+      aria-label="Primary sidebar"
+      className="fixed inset-y-0 left-0 z-10 hidden w-14 flex-col border-r bg-background sm:flex"
+    >
+      <TooltipProvider>
+        {/* Top navigation */}
+        <nav
+          aria-label="Main navigation"
+          className="flex flex-col items-center gap-4 px-2 py-4"
+        >
+          {/* Home */}
+          <Link
+            href="/services"
+            aria-current={isHomeActive ? 'page' : undefined}
+            className={`group flex h-9 w-9 items-center justify-center rounded-full transition-colors ${isHomeActive
+                ? 'bg-primary text-primary-foreground'
+                : 'text-muted-foreground hover:bg-muted'
+              }`}
+          >
+            <Home className="h-4 w-4 transition-transform group-hover:scale-110" />
+            <span className="sr-only">Home</span>
+          </Link>
+
+          {/* Other nav items */}
+          {navigationItems.map(item => {
             const isActive = pathname.startsWith(item.href);
+
             return (
-              <Tooltip key={index}>
+              <Tooltip key={item.href}>
                 <TooltipTrigger asChild>
                   <Link
                     href={item.href}
-                    className={`group flex h-9 w-9 shrink-0 items-center justify-center gap-2 rounded-full ${
-                      isActive
+                    aria-current={isActive ? 'page' : undefined}
+                    className={`group flex h-9 w-9 items-center justify-center rounded-full transition-colors ${isActive
                         ? 'bg-primary text-primary-foreground'
-                        : 'hover:bg-muted text-muted-foreground'
-                    } transition-colors`}
+                        : 'text-muted-foreground hover:bg-muted'
+                      }`}
                   >
-                    <item.icon className="h-4 w-4 transition-all group-hover:scale-110" />
+                    <item.icon className="h-4 w-4 transition-transform group-hover:scale-110" />
                     <span className="sr-only">{item.name}</span>
                   </Link>
                 </TooltipTrigger>
-                <TooltipContent side="right">{item.name}</TooltipContent>
+                <TooltipContent side="right">
+                  {item.name}
+                </TooltipContent>
               </Tooltip>
             );
           })}
-        </TooltipProvider>
-      </nav>
-
-      {/* Bottom Nav */}
-      <nav className="mt-auto flex flex-col items-center gap-4 px-2 py-4">
-        <TooltipProvider>
+        </nav>
+        <nav
+          aria-label="Settings"
+          className="mt-auto flex flex-col items-center gap-4 px-2 py-4"
+        >
           <Tooltip>
             <TooltipTrigger asChild>
               <Link
-                href="/settings"
-                className={`flex h-9 w-9 items-center justify-center rounded-full transition-colors ${
-                  pathname.startsWith('/settings')
+                href="/services/settings"
+                aria-current={
+                  pathname.startsWith('/services/settings') ? 'page' : undefined
+                }
+                className={`flex h-9 w-9 items-center justify-center rounded-full transition-colors ${pathname.startsWith('/services/settings')
                     ? 'bg-primary text-primary-foreground'
                     : 'text-muted-foreground hover:bg-muted hover:text-foreground'
-                }`}
+                  }`}
               >
                 <Settings className="h-5 w-5" />
                 <span className="sr-only">Settings</span>
@@ -100,8 +110,8 @@ function NavBar() {
             </TooltipTrigger>
             <TooltipContent side="right">Settings</TooltipContent>
           </Tooltip>
-        </TooltipProvider>
-      </nav>
+        </nav>
+      </TooltipProvider>
     </aside>
   );
 }

@@ -1,36 +1,24 @@
 import { UserProvider } from "../_lib/context";
 import { cookies } from "next/headers";
 import BodyWrapper from "../_MyComponents/BodyWrapper";
+import { verifyUserSession } from "../_lib/user.auth";
 export const metadata = {
   title: {
     template: "%s / NextGallery",
     default: " Welcome / NextGallery",
   },
   description: "A modern photo gallery application for organizing and viewing your memories.",
-  // keywords: ["photo gallery", "image management", "albums", "memories", "Next.js gallery"],
-  // authors: [{ name: "Rachit2833", url: "https://github.com/Rachit2833" }],
-  // creator: "Rachit Rawat",
-  // themeColor: "#ffffff",
 };
 export default async function RootLayout({ children, params }) {
-  const cookieStore = await cookies();
-  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/user/verify-user`, {
-    method: "POST",
-    headers: {
-      authorization: `Bearer ${cookieStore.get("session")?.value}`,
-    },
-    credentials: "include",
-    cache: "no-store",
-  });
-  const user = await res.json();
-
-
+  const cookieStore = await cookies()
+  const user =await verifyUserSession(cookieStore)
   return (
 
-
-      <BodyWrapper params={params} user={user?.user}>
+    <UserProvider user={user}>
+      <BodyWrapper params={params} >
         {children}
       </BodyWrapper>
+    </UserProvider>
 
   );
 }

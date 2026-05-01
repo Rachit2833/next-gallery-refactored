@@ -18,7 +18,7 @@ import LeaveDialog from "../SearchComponents/LeaveDialog";
 function ChatHeader({ }) {
    const title="Are you sure to leave this group?"
    const description="This will remove you from this group and this action cannot be undone "
-   const { isSelected, setIsSelected, isInfoOpen, setIsInfoOpen, infoRef,contentRef } = useUser()
+   const { isSelected, setIsSelected, isInfoOpen, setIsInfoOpen, infoRef,contentRef ,user } = useUser()
    const groupId=isSelected?._id
    async function handleAction(){
          await handleGroupLeave(localStorage.getItem('userId'), groupId)

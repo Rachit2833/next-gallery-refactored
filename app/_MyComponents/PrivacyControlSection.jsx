@@ -1,4 +1,5 @@
 "use client";
+
 import {
   Card,
   CardHeader,
@@ -11,71 +12,112 @@ import { useUser } from "../_lib/context";
 import { useEffect, useState } from "react";
 
 const PrivacyControlSection = ({ privacySettings }) => {
-  const { personalDetails, setPersonalDetails } = useUser();
+  const {
+    personalDetails,
+    setPersonalDetails,
+    user,
+    autoDetectImages,
+    setAutoDetectImages,
+  } = useUser();
 
-  const [shareDetails, setShareDetails] = useState(
-    privacySettings?.details ?? false
-  );
-  const [locationAccess, setLocationAccess] = useState(
-    privacySettings?.location ?? false
-  );
-  const [locationPermission, setLocationPermission] = useState("prompt"); // 'granted' | 'denied' | 'prompt'
+  const [mounted, setMounted] = useState(false);
+
+  // UI-only state
+  const [shareDetails, setShareDetails] = useState(false);
+  const [locationPermission, setLocationPermission] = useState("prompt");
+  const [locationAccess, setLocationAccess] = useState(false);
   const [locationError, setLocationError] = useState("");
 
-  // Check geolocation permission on load
+  /* ----------------------------
+   * Mount guard
+   * ---------------------------- */
   useEffect(() => {
-    if (typeof navigator !== "undefined" && navigator?.permissions) {
-      navigator.permissions
-        .query({ name: "geolocation" })
-        .then((result) => {
-          setLocationPermission(result.state);
-
-          if (result.state === "granted") {
-            setLocationAccess(true);
-          }
-
-          result.onchange = () => {
-            setLocationPermission(result.state);
-          };
-        })
-        .catch(() => {
-          setLocationPermission("prompt");
-        });
-    }
+    setMounted(true);
   }, []);
 
-  // Handle toggle logic
+  /* ----------------------------
+   * Sync profile privacy
+   * ---------------------------- */
+  useEffect(() => {
+    if (!mounted) return;
+    setPersonalDetails(user?.seoPrivacy ?? false);
+  }, [mounted, user?.seoPrivacy, setPersonalDetails]);
+
+  useEffect(() => {
+    if (!mounted) return;
+    setShareDetails(privacySettings?.details ?? false);
+  }, [mounted, privacySettings?.details]);
+
+  /* ----------------------------
+   * Read browser permission (signal only)
+   * ---------------------------- */
+  useEffect(() => {
+    if (!mounted || !navigator?.permissions) return;
+
+    navigator.permissions
+      .query({ name: "geolocation" })
+      .then((result) => {
+        setLocationPermission(result.state);
+
+        // 🔑 One-time sync: if permission is already granted,
+        // allow location usage by default (user can turn it off)
+        if (result.state === "granted") {
+          setLocationAccess((prev) => prev || true);
+        }
+
+        result.onchange = () => {
+          setLocationPermission(result.state);
+
+          // If browser revokes permission → force-disable
+          if (result.state !== "granted") {
+            setLocationAccess(false);
+            setAutoDetectImages(false);
+          }
+        };
+      })
+      .catch(() => setLocationPermission("prompt"));
+  }, [mounted, setAutoDetectImages]);
+
+  /* ----------------------------
+   * Handle Location toggle (USER INTENT)
+   * ---------------------------- */
   const handleLocationToggle = async (checked) => {
     setLocationError("");
 
-    if (checked) {
-      // Ask for permission only if not already granted
-      if (locationPermission !== "granted") {
-        try {
-          await new Promise((resolve, reject) => {
-            navigator.geolocation.getCurrentPosition(resolve, reject);
-          });
-          setLocationAccess(true);
-          setLocationPermission("granted");
-        } catch (err) {
-          setLocationAccess(false);
-          setLocationPermission("denied");
-          setLocationError("Location permission denied. Enable it in browser settings.");
-        }
-      } else {
-        setLocationAccess(true);
-      }
-    } else {
+    // User turns OFF location usage
+    if (!checked) {
       setLocationAccess(false);
+      setAutoDetectImages(false);
+      return;
+    }
+
+    // User turns ON → request permission
+    try {
+      await new Promise((resolve, reject) => {
+        navigator.geolocation.getCurrentPosition(resolve, reject);
+      });
+
+      setLocationPermission("granted");
+      setLocationAccess(true);
+    } catch {
+      setLocationPermission("denied");
+      setLocationAccess(false);
+      setAutoDetectImages(false);
+      setLocationError(
+        "Location access is disabled. Enable it from your browser settings to use this feature."
+      );
     }
   };
 
+  /* ----------------------------
+   * Prevent hydration mismatch
+   * ---------------------------- */
+  if (!mounted) return null;
+
   return (
-    <Card className="w-full max-w-3xl border border-border bg-card shadow-md rounded-2xl">
+    <Card className="w-full max-w-3xl rounded-2xl">
       <CardHeader>
-        <CardTitle className="text-xl text-foreground">
-          Privacy Controls
-        </CardTitle>
+        <CardTitle className="text-xl">Privacy Controls</CardTitle>
         <p className="text-sm text-muted-foreground">
           Manage how your data is used and what others can see.
         </p>
@@ -85,74 +127,88 @@ const PrivacyControlSection = ({ privacySettings }) => {
         {/* SEO Visibility */}
         <div className="flex items-start justify-between gap-4">
           <div>
-            <Label
-              htmlFor="seo-visibility"
-              className="font-medium text-foreground"
-            >
-              Allow Search Engines
-            </Label>
+            <Label className="font-medium">Allow Search Engines</Label>
             <p className="text-sm text-muted-foreground max-w-sm">
               Let search engines index your profile for discoverability.
             </p>
           </div>
           <Switch
-            id="seo-visibility"
             checked={personalDetails}
             onCheckedChange={setPersonalDetails}
-            className="data-[state=checked]:bg-primary"
           />
         </div>
 
-        {/* Personal Info Visibility */}
+        {/* Personal Info */}
         <div className="flex items-start justify-between gap-4">
           <div>
-            <Label
-              htmlFor="show-details"
-              className="font-medium text-foreground"
-            >
-              Share Personal Info
-            </Label>
+            <Label className="font-medium">Share Personal Info</Label>
             <p className="text-sm text-muted-foreground max-w-sm">
-              Control whether your name and profile details are visible to
-              others.
+              Control whether your name and profile details are visible to others.
             </p>
           </div>
           <Switch
-            id="show-details"
             checked={shareDetails}
             onCheckedChange={setShareDetails}
-            className="data-[state=checked]:bg-primary"
           />
         </div>
 
         {/* Location Access */}
         <div className="flex items-start justify-between gap-4">
           <div>
-            <Label
-              htmlFor="location-access"
-              className="font-medium text-foreground"
-            >
-              Enable Location Access
-            </Label>
+            <Label className="font-medium">Enable Location Access</Label>
             <p className="text-sm text-muted-foreground max-w-sm">
-              Allow us to use your location to personalize content and features.
+              We use your location to organize memories by place and improve
+              timelines.
             </p>
-            {locationError && (
-              <p className="text-sm text-destructive mt-1">{locationError}</p>
-            )}
-            {locationPermission === "granted" && !locationError && (
+
+            {locationPermission === "granted" && (
               <p className="text-sm text-green-600 mt-1">
-                Location permission is granted.
+                Browser permission granted.
+              </p>
+            )}
+
+            {locationPermission === "granted" && !locationAccess && (
+              <p className="text-xs text-muted-foreground mt-1">
+                Permission is granted, but location usage is disabled in app
+                settings.
+              </p>
+            )}
+
+            {locationPermission === "denied" && (
+              <p className="text-sm text-destructive mt-1">
+                Location permission denied in browser settings.
+              </p>
+            )}
+
+            {locationError && (
+              <p className="text-sm text-destructive mt-1">
+                {locationError}
               </p>
             )}
           </div>
 
           <Switch
-            disabled={true}
-            id="location-access"
             checked={locationAccess}
             onCheckedChange={handleLocationToggle}
-            className="data-[state=checked]:bg-primary"
+          />
+        </div>
+
+        {/* Auto Location for Images */}
+        <div className="flex items-start justify-between gap-4">
+          <div>
+            <Label className="font-medium">
+              Auto-detect Location for Images
+            </Label>
+            <p className="text-sm text-muted-foreground max-w-sm">
+              Automatically attach location data to images. Requires location
+              access to be enabled.
+            </p>
+          </div>
+
+          <Switch
+            checked={autoDetectImages}
+            disabled={!locationAccess}
+            onCheckedChange={setAutoDetectImages}
           />
         </div>
       </CardContent>

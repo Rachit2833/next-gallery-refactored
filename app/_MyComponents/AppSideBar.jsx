@@ -28,8 +28,8 @@ const AppSideBar = () => {
     selectedSub,
     setSelectedSub,
     subOption,
-    setSubOption,
-  } = useUser();
+    setSubOption
+  ,user } = useUser();
 
   const [open, setOpen] = useState(false);
 

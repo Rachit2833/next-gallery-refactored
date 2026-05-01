@@ -6,7 +6,7 @@ import { ChevronDownCircle, ChevronUpCircle, CheckCircle } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 
 function LabelSelector({ children, item }) {
-   const { isOpen, setIsOpen, isSelected } = useUser();
+   const { isOpen, setIsOpen, isSelected ,user } = useUser();
    const isSelectedItem = isSelected?.autoSend?.descriptorId === item._id;
    const isExpanded = isOpen === item._id;
    return (

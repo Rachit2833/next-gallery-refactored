@@ -34,7 +34,6 @@ export default function RefreshButton() {
       <Button
         aria-label="refresh"
         size="icon"
-        variant="outline"
         onClick={handleRefresh}
         className={`h-7 w-7 transition-opacity duration-200 ${
           isPending ? 'opacity-50 cursor-not-allowed' : ''

@@ -25,7 +25,7 @@ import {
 } from "@/components/ui/drawer";
 import { Button } from "@/components/ui/button";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { Suspense, useMemo, useState } from "react";
+import { Suspense, useEffect, useMemo, useState } from "react";
 import { Marker, Popup } from "react-leaflet";
 import Filter from "../Filter";
 import MapSideImageLoader from "../Loaders/MapSideImageLoader";
@@ -53,6 +53,11 @@ function MapView({ imageCard, Location, sideField, param }) {
   const [showDrawer, setShowDrawer] = useState(false);
   const [showSummaryDrawer, setShowSummaryDrawer] = useState(false);
   const [activeMarker, setActiveMarker] = useState(null);
+  const [width, setWidth] = useState(0);
+
+  useEffect(() => {
+    setWidth(window.innerWidth);
+  }, []);
 
   const filterArray = [
     { label: "All", value: "All" },
@@ -61,20 +66,24 @@ function MapView({ imageCard, Location, sideField, param }) {
     { label: "5 yrs", value: 5 },
   ];
 
-  const LocationsCod = useMemo(() => Location.data[0].Location, [Location]);
+
+
+  const LocationsCod = useMemo(() => Location.data[0]?.Location, [Location]);
 
   const handleParams = (filterValue) => {
     const params = new URLSearchParams(searchParams.toString());
     params.set("cod", filterValue);
     router.replace(`${pathname}?${params.toString()}`, { scroll: false });
 
-    if (window.innerWidth >= 1280) {
+    if (width >= 1280) {
       setShowSheet(true);
     } else {
       setShowDrawer(true);
     }
     setActiveMarker(filterValue);
   };
+
+
 
   const handleClose = () => {
     const params = new URLSearchParams(searchParams.toString());
@@ -98,19 +107,27 @@ function MapView({ imageCard, Location, sideField, param }) {
           {/* Map (always full width on mobile, spans 4 cols on xl) */}
           <article className="col-span-1 xl:col-span-4">
             <Map>
-              {LocationsCod.map((item, i) => (
-                <Marker
-                  key={i}
-                  position={[item.coordinates[0], item.coordinates[1]]}
-                  draggable={false}
-                  icon={customIcon}
-                  eventHandlers={{
-                    click: () => handleParams(item.name),
-                  }}
-                >
-                  {activeMarker === item.name && <Popup>{item.name}</Popup>}
-                </Marker>
-              ))}
+              {LocationsCod
+                ?.filter(
+                  (item) =>
+                    Array.isArray(item.coordinates) &&
+                    item.coordinates.length === 2 &&
+                    item.coordinates[0] != null &&
+                    item.coordinates[1] != null
+                )
+                .map((item, i) => (
+                  <Marker
+                    key={i}
+                    position={[item.coordinates[1], item.coordinates[0]]}
+                    draggable={false}
+                    icon={customIcon}
+                    eventHandlers={{
+                      click: () => handleParams(item.name),
+                    }}
+                  >
+                    {activeMarker === item.name && <Popup>{item.name}</Popup>}
+                  </Marker>
+                ))}
             </Map>
           </article>
 
@@ -118,14 +135,14 @@ function MapView({ imageCard, Location, sideField, param }) {
           <aside className="hidden xl:block col-span-2">
             <Card className="h-full">
               <CardContent className="m-4 p-0 space-y-4">
-              <div className=" sm:flex  items-center">
-                <Filter
-                  setIsOpen={() => {}}
-                  paramName="yearRange"
-                  year={yearRange}
-                  values={filterArray}
-                  defaultValue="All"
-                />
+                <div className=" sm:flex  items-center">
+                  <Filter
+                    setIsOpen={() => { }}
+                    paramName="yearRange"
+                    year={yearRange}
+                    values={filterArray}
+                    defaultValue="All"
+                  />
                 </div>
                 <Suspense key={[yearRange, paramLoc]} fallback={<MapSideOptionLoader />}>
                   {sideField}

@@ -7,7 +7,7 @@ import React, { useEffect, useState } from "react";
 import { set } from "zod";
 
 function GroupHolder({ group, item, }) {
-   const { setIsSelected, activeUser, isSelected, groupMenu, selectedInGroup, setSelectedInGroup } = useUser();
+   const { setIsSelected, activeUser, isSelected, groupMenu, selectedInGroup, setSelectedInGroup ,user } = useUser();
    const pathName = usePathname()
    const searchParams = useSearchParams()
    const router = useRouter()

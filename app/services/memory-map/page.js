@@ -2,6 +2,7 @@ import { cookies } from "next/headers";
 import MapSideImages from "@/app/_MyComponents/MapComponents/MapSideImages";
 import MapSideOption from "@/app/_MyComponents/MapComponents/MapSideOption";
 import MapWrapper from "@/app/_MyComponents/MapComponents/MapWrapper";
+import { Suspense } from "react";
 
 export const metadata = {
   title: "Memory Map",
@@ -22,14 +23,15 @@ export default async function page({searchParams}) {
     }
   );
   const Location = await res.json();
+  console.log(Location);
   return (
-    <>
+    <Suspense fallback={<>Loading..</>}>
       <MapWrapper
         param={searchURLParams}
         Location={Location}
-        sideField={<MapSideOption year={searchURLParams.yearRange} />}
-        imageCard={<MapSideImages search={searchURLParams.cod} />}
+        sideField={<MapSideOption cookieStore={cookieStore} year={searchURLParams.yearRange} />}
+        imageCard={<MapSideImages cookieStore={cookieStore} search={searchURLParams.cod} />}
       />
-    </>
+    </Suspense>
   );
 }

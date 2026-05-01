@@ -26,6 +26,7 @@ function SideProfile({ res }) {
                   await updateName(formData)
                   setIsNameInput(false)
                   }}>
+
                   <input
                      defaultValue={res.label}
                      name="labelName"
@@ -70,7 +71,7 @@ export function SubmitButton() {
       type="submit"
       variant="ghost" // you can also try "default" or "secondary"
       size="sm"
-      className="bg-background ml-4 border text-accent-foreground hover:bg-accent/80 disabled:opacity-50"
+      className="bg-background ml-4 border  hover:bg-accent/80 disabled:opacity-50"
     >
       {pending ? "Updating..." : "Done"}
     </Button>

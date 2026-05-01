@@ -23,7 +23,7 @@ function Filter({ values, paramName, defaultValue, year, setIsOpen }) {
   };
 
   return (
-    <div className="flex justify-center">
+    <div data-tour="Yearfilter" className="flex justify-center">
       {values.map((item, i) => {
         const isActive = String(item.value) === String(activeFilter);
 
@@ -37,7 +37,7 @@ function Filter({ values, paramName, defaultValue, year, setIsOpen }) {
               setActiveFilter(item.value);
               // setIsOpen?.(true); // optional if you want
             }}
-            className={cn("capitalize", !isActive && "bg-transparent")}
+            className={cn("capitalize", !isActive && " border rounded-md bg-muted text-muted-foreground outline-none")}
           >
             {item.label}
           </Button>

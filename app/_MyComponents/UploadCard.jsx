@@ -3,214 +3,377 @@
 import imgs from "@/public/Images/dune.jpg";
 import { Button } from "@/components/ui/button";
 import {
-   DrawerClose,
-   DrawerDescription,
-   DrawerFooter,
-   DrawerHeader,
-   DrawerTitle,
+  DrawerClose,
+  DrawerDescription,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerTitle,
 } from "@/components/ui/drawer";
 import { Input } from "@/components/ui/input";
 import { Earth } from "lucide-react";
 import Image from "next/image";
-import { useState } from "react";
-import { useFormStatus } from "react-dom";
-import { saveNewImage } from "../_lib/actions";
+import { useEffect, useState } from "react";
+import { getLocationInfo, saveNewImage } from "../_lib/actions";
 import { useUser } from "../_lib/context";
 import { Deletebutton } from "./ImageCard";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { useToast } from "@/hooks/use-toast";
+import { useFormStatus } from "react-dom";
+
+/* ----------------------------------------
+   Utils
+---------------------------------------- */
 
 function getSeason() {
-   const now = new Date();
-   const month = now.getMonth();
-   const year = now.getFullYear();
-   let season;
-   if (month === 11 || month <= 1) season = "Winter";
-   else if (month >= 2 && month <= 4) season = "Spring";
-   else if (month >= 5 && month <= 7) season = "Summer";
-   else season = "Fall";
-   return `${season} ${year}`;
+  const now = new Date();
+  const month = now.getMonth();
+  const year = now.getFullYear();
+
+  if (month === 11 || month <= 1) return `Winter ${year}`;
+  if (month >= 2 && month <= 4) return `Spring ${year}`;
+  if (month >= 5 && month <= 7) return `Summer ${year}`;
+  return `Fall ${year}`;
 }
 
+/* ----------------------------------------
+   Component
+---------------------------------------- */
+
 function Uploadcard({
-   setDrawerOpen,
-   fileInput = true,
-   onClick,
-   urlBlob,
-   people = [],
+  setDrawerOpen,
+  fileInput = true,
+  urlBlob,
+  people = [],
 }) {
-   const [file, setFile] = useState();
-   const [fileBlob, setFileBlob] = useState();
-   const descriptionPlaceholder = getSeason();
-   const { isAutoLocation, setIsAutoLocation,location, setLocation, lat, long, isPending, getCoordinates } =
-      useUser();
+  const [file, setFile] = useState();
+ // ✅ NEW
+  const [hasShownDeniedToast, setHasShownDeniedToast] = useState(false);
 
-   async function urlToBlob(url) {
+  const descriptionPlaceholder = getSeason();
+
+  const {
+    isLocationFetching,
+    setIsLocationFetching,
+    location,
+    setLocation,
+    lat,
+    long,
+    user,
+    autoDetectImages,
+    fileBlob,
+    setFileBlob,
+    isLocating,
+    setIsLocating,
+setLat,setLong,country, setCountry
+  } = useUser();
+ 
+
+  const { toast } = useToast();
+
+  useEffect(() => {
+    setHasShownDeniedToast(false);
+  }, [file]);
+
+  useEffect(() => {
+    if (!file || !autoDetectImages) return;
+
+    let cancelled = false;
+
+    const autoFetchLocation = async () => {
+      if (isLocationFetching || !navigator?.permissions) return;
+
       try {
-         const response = await fetch(url);
-         if (!response.ok) throw new Error(`Failed to fetch file`);
-         return await response.blob();
-      } catch (error) {
-         console.error("Error converting URL to Blob:", error);
+        const permission = await navigator.permissions.query({
+          name: "geolocation",
+        });
+
+        if (permission.state === "granted" && !cancelled) {
+          handleGetCoordinates();
+        }
+
+        if (
+          permission.state === "denied" &&
+          !hasShownDeniedToast &&
+          !cancelled
+        ) {
+          setHasShownDeniedToast(true);
+          toast({
+            title: "Location access denied",
+            description: "You can enter location manually.",
+          });
+        }
+      } catch (err) {
+        console.error("Permission check failed", err);
       }
-   }
+    };
 
-   const handleLocationBlur = (e) => setLocation(e.target.value);
+    autoFetchLocation();
+    return () => (cancelled = true);
+  }, [file, autoDetectImages]);
 
-   async function onSubmit() {
-      const formData = new FormData();
+  async function urlToBlob(url) {
+    try {
+      const res = await fetch(url);
+      if (!res.ok) throw new Error("Failed to fetch image");
+      return await res.blob();
+    } catch (e) {
+      console.error(e);
+      return null;
+    }
+  }
 
-      if (people.length > 0 && !people.includes("unknown")) {
-         formData.append("detection", false);
-         formData.append("People", JSON.stringify(people));
-      } else {
-         formData.append("detection", true);
-         formData.append("People", JSON.stringify([]));
+  /* ----------------------------------------
+     Location
+  ---------------------------------------- */
+
+  const handleGetCoordinates = async () => {
+    if (isLocating || isLocationFetching) return;
+
+    if (!navigator.geolocation) {
+      toast({
+        title: "Geolocation not supported",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      setIsLocating(true);
+
+      const position = await new Promise((res, rej) =>
+        navigator.geolocation.getCurrentPosition(res, rej, {
+          timeout: 10000,
+        })
+      );
+
+      const fd = new FormData();
+      fd.append("latitude", String(position.coords.latitude));
+      fd.append("longitude", String(position.coords.longitude));
+
+      const loc = await getLocationInfo(fd);
+
+      if (!loc?.city || !loc?.country)
+        throw new Error("Invalid location");
+
+      setLocation(`${loc.city}, ${loc.country}`);
+      setCountry(loc.country); // ✅ dynamic country
+      setLat(position.coords.latitude)
+      setLong(position.coords.longitude)
+      setIsLocationFetching(true);
+
+    } catch (e) {
+      toast({
+        title: "Unable to fetch location",
+        description: e.message,
+        variant: "destructive",
+      });
+    } finally {
+      setIsLocating(false);
+    }
+  };
+
+  /* ----------------------------------------
+     Submit
+  ---------------------------------------- */
+
+  async function onSubmit(formData) {
+    try {
+      const description =
+        formData.get("Description")?.toString().trim() || "";
+
+      formData.set("Description", description);
+
+      const peopleData =
+        people.length > 0 && !people.includes("unknown")
+          ? people
+          : [];
+
+      formData.set(
+        "detection",
+        peopleData.length ? "false" : "true"
+      );
+
+      formData.set("People", JSON.stringify(peopleData));
+
+      if (fileInput && !fileBlob) {
+        throw new Error("Please select an image");
       }
 
       if (fileInput) {
-         formData.append("photo", fileBlob);
+        formData.set("photo", fileBlob);
       } else {
-         const blob = await urlToBlob(urlBlob);
-         formData.append("photo", blob);
+        const blob = await urlToBlob(urlBlob);
+        if (!blob) throw new Error("Image load failed");
+        formData.set("photo", blob);
       }
 
-      formData.append("LocationName", location);
-      formData.append("Country", "India");
+      await saveNewImage(formData, user._id);
 
-      await saveNewImage(formData, localStorage.getItem("userId"));
+      toast({
+        title: "Upload successful",
+      });
+
       setDrawerOpen(false);
-   }
+    } catch (e) {
+      toast({
+        title: "Upload failed",
+        description: e.message,
+        variant: "destructive",
+      });
+    }
+  }
 
-   return (
-      <div className="w-full px-4 sm:px-6 md:px-10 max-w-xl mx-auto">
-         <DrawerHeader>
-            <DrawerTitle className="text-center text-base sm:text-lg">
-               Select Images from your Local Storage
-            </DrawerTitle>
-            <DrawerDescription className="text-center text-sm">
-               Description and Location can be Editable from the Input Fields Below
-            </DrawerDescription>
-         </DrawerHeader>
+  /* ----------------------------------------
+     JSX
+  ---------------------------------------- */
 
-         <DrawerFooter>
-            <div className="w-full flex justify-center">
-               <Card className="rounded-lg shadow-md p-2 sm:p-4 w-full max-w-md bg-card text-card-foreground">
-                  <div className="rounded-t-lg overflow-hidden">
-                     <Image
-                        width={352}
-                        height={240}
-                        src={fileInput && file ? file : urlBlob || imgs}
-                        alt="Preview"
-                        className="w-full h-[15rem] object-cover"
-                     />
-                  </div>
+  return (
+    <div className="w-full px-4 sm:px-6 md:px-10 max-w-xl mx-auto">
+      <DrawerHeader>
+        <DrawerTitle className="text-center">
+          Select Images
+        </DrawerTitle>
+        <DrawerDescription className="text-center">
+          Edit description & location
+        </DrawerDescription>
+      </DrawerHeader>
 
-                  <div className="mt-2 space-y-3">
-                     {/* Location + Earth Button */}
-                     <form
-                        className="flex flex-row gap-2 items-center w-full"
-                        action={getCoordinates}
-                     >
-                        <Input
-                           className="w-full px-4 py-2 border rounded-md bg-muted text-muted-foreground outline-none"
-                           name="LocationName"
-                           onChange={handleLocationBlur}
-                           value={location}
-                           disabled={isAutoLocation}
-                           placeholder="Enter location"
-                        />
-                        <Earthbutton disabled={isAutoLocation} />
-                     </form>
-                     {isAutoLocation && (
-                        <Badge
-                          disabled={isAutoLocation}
-                           variant="outline"
-                           className="flex items-center justify-between w-full px-3 py-1 bg-accent text-sm border"
-                        >
-                           📍 {location}
-                           <button
-                              type="button"
-                              onClick={() => {
-                                 setLocation("")
-                                 setIsAutoLocation(false)
-                              }}
-                              className="ml-2 text-red-500 hover:text-red-700"
-                           >
-                              ✖
-                           </button>
-                        </Badge>
-                     )}
-                     {/* Description */}
-                     <Input
-                        name="Description"
-                        className="w-full px-4 py-2 border rounded-md bg-muted text-muted-foreground outline-none"
-                        defaultValue={descriptionPlaceholder}
-                     />
+      <DrawerFooter>
+        <form action={onSubmit} className="grid gap-4">
 
-                     <div className="text-xs text-muted-foreground hidden sm:block mt-4">
-                        By{" "}
-                        <span className="font-semibold cursor-pointer hover:underline">
-                           Author Name
-                        </span>{" "}
-                        · 4 days ago
-                     </div>
-                  </div>
-               </Card>
+          <Card className="p-3 space-y-3">
+            <Image
+              width={352}
+              height={240}
+              src={fileInput && file ? file : urlBlob || imgs}
+              alt="Preview"
+              className="w-full h-[15rem] object-cover rounded-md"
+            />
+
+            {/* Location */}
+            <div className="flex gap-2">
+              <Input
+                name="LocationName"
+                value={location}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  setLocation(value);
+
+                  // ✅ extract country from manual input
+                  const parts = value.split(",");
+                  if (parts.length > 1) {
+                    setCountry(parts[parts.length - 1].trim());
+                  } else {
+                    setCountry("");
+                  }
+                }}
+                placeholder="Enter location"
+                className="w-full border rounded-md bg-muted text-muted-foreground outline-none"
+              />
+
+              <Button
+                type="button"
+                onClick={handleGetCoordinates}
+                disabled={isLocating || isLocationFetching}
+              >
+                {isLocating ? (
+                  <div className="w-4 h-4 border-2 border-muted border-t-primary rounded-full animate-spin" />
+                ) : (
+                  <Earth className="w-4 h-4" />
+                )}
+              </Button>
             </div>
 
-            {/* Upload form */}
-            <form action={onSubmit} className="mt-6 w-full grid gap-3">
-               {fileInput && (
-                  <Input
-                     name="photo"
-                     onChange={(e) => {
-                        if (e.target.files[0]) {
-                           setFile(URL.createObjectURL(e.target.files[0]));
-                           setFileBlob(e.target.files[0]);
-                        }
-                     }}
-                     className="w-full px-0 py-0  border  rounded-md bg-muted text-muted-foreground
-             file:px-4 file:py-2 file:rounded-none file:border-none file:bg-accent 
-             file:text-accent-foreground file:m-0 file:mr-4 file:rounded-l-md file:shadow-none"
-                     type="file"
-                     id="picture"
-                  />
-               )}
+            {isLocationFetching && (
+              <Badge className="flex justify-between">
+                📍 {location}
+                <button
+                  type="button"
+                  onClick={() => {
+                    setLocation("");
+                    setCountry(""); // ✅ reset country
+                    setIsLocationFetching(false);
+                  }}
+                >
+                  ✖
+                </button>
+              </Badge>
+            )}
 
-               {/* Hidden fields */}
-               <input name="LocationName" value={location || ""} className="hidden" readOnly />
-               <input name="lat" value={lat || ""} className="hidden" readOnly />
-               <input name="long" value={long || ""} className="hidden" readOnly />
-               <input name="Country" value="India" className="hidden" readOnly />
+            {/* Description */}
+            <Input
+              name="Description"
+              defaultValue={descriptionPlaceholder}
+              className="w-full border rounded-md bg-muted text-muted-foreground outline-none"
+            />
+          </Card>
 
-               {/* Submit button */}
-               <Deletebutton text={"Submit"} />
+          {/* File */}
+          {fileInput && (
+            <Input
+              type="file"
+              accept="image/*"
+  className="mx-auto mt-4 w-full px-0 py-0 border rounded-md bg-muted text-muted-foreground
+                     file:px-4 file:py-2 file:rounded-none file:border-none file:bg-accent 
+                     file:text-accent-foreground file:m-0 file:mr-4 file:rounded-l-md file:shadow-none"
+             onChange={(e) => {
+                const f = e.target.files?.[0];
 
-               <DrawerClose
-                  onClick={() => setDrawerOpen(false)}
-                  className="border border-border inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 h-9 px-4 py-2 bg-background text-foreground shadow"
-               >
-                  Cancel
-               </DrawerClose>
-            </form>
-         </DrawerFooter>
-      </div>
-   );
+                if (!f) return;
+
+                if (!f.type.startsWith("image/")) {
+                  toast({
+                    title: "Invalid file",
+                    description: "Only image files are allowed.",
+                    variant: "destructive",
+                  });
+                  return;
+                }
+
+                setFile(URL.createObjectURL(f));
+                setFileBlob(f);
+              }}
+            />
+          )}
+
+          {/* Hidden */}
+          <input name="lat" value={lat || ""} hidden readOnly />
+          <input name="long" value={long || ""} hidden readOnly />
+          <input name="Country" value={country || ""} hidden readOnly /> {/* ✅ FIXED */}
+
+          {/* Submit */}
+          <Deletebutton
+            text="Submit"
+            disabled={fileInput && !fileBlob}
+          />
+
+          <DrawerClose className="border rounded-md h-9">
+            Cancel
+          </DrawerClose>
+        </form>
+      </DrawerFooter>
+    </div>
+  );
 }
 
 export default Uploadcard;
 
-// ✅ Earth button with spinner
-export function Earthbutton({disabled}) {
-   const { pending } = useFormStatus();
-   return (
-      <Button type="submit" disabled={pending||disabled} className="h-9 px-3">
-         {pending ? (
-            <div className="w-4 h-4 border-2 border-muted border-t-primary rounded-full animate-spin" />
-         ) : (
-            <Earth className="w-4 h-4" />
-         )}
-      </Button>
-   );
+
+export function Earthbutton({ disabled, loading }) {
+  const { pending } = useFormStatus();
+
+  return (
+    <Button
+      data-tour="LocationButton"
+      type="submit"
+      disabled={pending || disabled}
+    >
+      {pending || loading ? (
+        <div className="w-4 h-4 border-2 border-muted border-t-primary rounded-full animate-spin" />
+      ) : (
+        <Earth className="w-4 h-4" />
+      )}
+    </Button>
+  );
 }

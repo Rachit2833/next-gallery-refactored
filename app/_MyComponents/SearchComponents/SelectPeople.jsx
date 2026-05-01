@@ -5,7 +5,7 @@ import { Separator } from "@/components/ui/separator";
 
 function SelectPeople({ item }) {
 
-   const { selectedInGroup, setSelectedInGroup } = useUser();
+   const { selectedInGroup, setSelectedInGroup ,user } = useUser();
 
    const isSelected = selectedInGroup.includes(item._id);
 

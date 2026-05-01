@@ -6,7 +6,7 @@ import { useUser } from "@/app/_lib/context";
 import { SubmitButton } from "../SearchComponents/LeaveDialog";
 
 function LabelImages({ val}) {
-   const { isOpen, setIsOpen } = useUser()
+   const { isOpen, setIsOpen ,user } = useUser()
    const [images, setImages] = useState([]);
    const [loading, setLoading] = useState(true);
    const [error, setError] = useState(null);
@@ -16,7 +16,7 @@ function LabelImages({ val}) {
    const imageUrls = ["https://images.unsplash.com/photo-1731331443866-8f6f72027157?w=900&auto=format&fit=crop&q=60",];
 
 
-   const url = `https://next-gallery-refactored-backend-btrh-pvihnvhaj.vercel.app/image?frId=${isOpen}`;
+   const url = `process.env.NEXT_PUBLIC_API_URL/image?frId=${isOpen}`;
 
 
    useEffect(() => {

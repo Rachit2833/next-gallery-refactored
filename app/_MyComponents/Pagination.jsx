@@ -15,7 +15,7 @@ export function PagePagination({ totalPagesLeft }) {
    const router = useRouter()
    const searchParams = useSearchParams()
    const pathname = usePathname()
-   const { selectedImages } = useUser()
+   const { selectedImages ,user } = useUser()
 
    const currentPage = parseInt(searchParams.get("page") || "1", 10)
 
@@ -33,7 +33,7 @@ export function PagePagination({ totalPagesLeft }) {
       "pointer-events-none opacity-50 bg-muted text-muted-foreground"
 
    return (
-      <Pagination className="sticky bottom-6 z-10 w-full">
+      <Pagination data-tour="Pagination" className="sticky bottom-6 w-full z-50">
          <PaginationContent
             className="p-3 bg-muted border rounded-xl shadow-sm flex-nowrap overflow-x-auto whitespace-nowrap space-x-2 scrollbar-thin scrollbar-thumb-muted-foreground/20 scrollbar-track-transparent"
          >

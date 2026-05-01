@@ -21,7 +21,7 @@ function ImageModel() {
     fetchedImages,
     imageLeft,
     personalDetails,
-  } = useUser();
+    user } = useUser();
 
   const params = useSearchParams();
   const router = useRouter();
@@ -67,6 +67,7 @@ function ImageModel() {
         >
           {/* Image */}
           <Image
+            key={modelImages?._id}
             priority
             src={modelImages?.ImageUrl || image1}
             alt={getAltText(modelImages, personalDetails)}
@@ -95,7 +96,7 @@ function ImageModel() {
                 size="icon"
                 className="absolute top-1/2 right-3 -translate-y-1/2 z-10 h-8 w-8 p-1 bg-black/60 text-white hover:bg-black/80"
                 disabled={
-                  imageNum === fetchedImages.length - 1 && imageLeft === 0
+                  imageNum === fetchedImages?.length - 1 && imageLeft === 0
                 }
               >
                 <ChevronRight className="w-4 h-4" />

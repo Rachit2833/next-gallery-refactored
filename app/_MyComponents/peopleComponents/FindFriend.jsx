@@ -8,7 +8,7 @@ import { set } from "zod";
 
 function FindFriend({ group, item, }) {
 
-   const { setIsSelected, activeUser, isSelected, groupMenu, selectedInGroup, setSelectedInGroup } = useUser();
+   const { setIsSelected, activeUser, isSelected, groupMenu, selectedInGroup, setSelectedInGroup ,user } = useUser();
    const searchParams = useSearchParams()
    const paramValue = searchParams.get("selected");
    const [isChecked, setIsChecked] = useState(false)
@@ -42,9 +42,9 @@ function FindFriend({ group, item, }) {
          <div
             onClick={() => {
                if (!groupMenu) {
-                  const idBit = item.userId._id !== localStorage.getItem("userId") ? 1 : 0
-                  const data = item.userId._id !== localStorage.getItem("userId") ? item.userId : item.friendId
-                  const autoSend = item.userId._id !== localStorage.getItem("userId") ? item.autoSend.friendId : item.autoSend.userId
+                  const idBit = item.userId._id !== user._id ? 1 : 0
+                  const data = item.userId._id !== user._id ? item.userId : item.friendId
+                  const autoSend = item.userId._id !== user._id ? item.autoSend.friendId : item.autoSend.userId
                   setIsSelected({ ...data, autoSend, rId: item._id, idBit })
 
                }
@@ -60,7 +60,7 @@ function FindFriend({ group, item, }) {
             </Avatar>
             <div className="flex flex-col justify-center h-full">
                <h1 className="text-[royalblue] cursor-pointer">
-                  {item.user._id !== localStorage.getItem("userId") ? item.user.name : item.friend.name}
+                  {item.user._id !== user._id ? item.user.name : item.friend.name}
                   {/* Fallback if name is not available */}
 
                </h1>

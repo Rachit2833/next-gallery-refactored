@@ -9,9 +9,9 @@ import { addGroup } from "@/app/_lib/actions";
 import { SubmitButton } from "../SignUpForm";
 
 function From2() {
-   const { selectedInGroup, setSelectedInGroup } = useUser();
+   const { selectedInGroup, setSelectedInGroup ,user } = useUser();
    const [imageSelected, setImageSelected] = useState(null);
-   const userId = localStorage.getItem("userId")
+   const userId = user._id
    useEffect(()=>{
      if(!selectedInGroup.includes(userId))
       { 

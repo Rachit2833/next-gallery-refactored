@@ -11,7 +11,7 @@ async function MessageList({ query,decodedValue }) {
    const sessionToken = cookieStore.get("session")?.value;
    const userId = decodedValue?.user?.id;
 
-   const searchPeopleResponse = await fetch(`https://next-gallery-refactored-backend-btrh-pvihnvhaj.vercel.app/friends?id=${userId}`, {
+   const searchPeopleResponse = await fetch(`process.env.NEXT_PUBLIC_API_URL/friends?id=${userId}`, {
       headers: {
          "Content-Type": "application/json",
          authorization: `Bearer ${sessionToken}`,
@@ -19,7 +19,7 @@ async function MessageList({ query,decodedValue }) {
    });
 
    const searchResults = await searchPeopleResponse.json();
-   const groupResponse = await fetch(`https://next-gallery-refactored-backend-btrh-pvihnvhaj.vercel.app/message/group?_id=${userId}`, {
+   const groupResponse = await fetch(`process.env.NEXT_PUBLIC_API_URL/message/group?_id=${userId}`, {
       headers: {
          "Content-Type": "application/json",
          authorization: `Bearer ${sessionToken}`,

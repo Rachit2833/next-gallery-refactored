@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 
 export async function middleware(req) {
-  
+   
   const token = req.cookies.get("session")?.value;
   const { pathname } = req.nextUrl;
   if (token) {

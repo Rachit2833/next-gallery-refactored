@@ -4,11 +4,12 @@ import { useUser } from "@/app/_lib/context";
 import SeachFriend from "./SeachFriend";
 import { useEffect, useState, useMemo } from "react";
 import GroupHolder from "./GroupsHolder";
-import FindFriend from "./FIndFriend";
+import FindFriend from "./FindFriend";
+
 
 function FriendListWrapper({ res, isSelected, grpData, userId }) {
    const [searchData, setSearchData] = useState(null);
-   const { joinedGroup, setJoinedGroup, isInputing, setIsInputing } = useUser();
+   const { joinedGroup, setJoinedGroup, isInputing, setIsInputing ,user } = useUser();
    const abc = res.data;
 
    // Memoized array of group IDs to prevent unnecessary re-renders
@@ -31,7 +32,7 @@ function FriendListWrapper({ res, isSelected, grpData, userId }) {
          try {
 
             const response = await fetch(
-               `https://next-gallery-refactored-backend-btrh-pvihnvhaj.vercel.app/user/searchPeople?_id=${userId}&query=${isInputing}`,
+               `process.env.NEXT_PUBLIC_API_URL/user/searchPeople?_id=${userId}&query=${isInputing}`,
                { headers: { "Content-Type": "application/json" } }
             );
 

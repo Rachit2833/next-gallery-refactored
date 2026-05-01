@@ -107,7 +107,7 @@ const faceRecognizer = async () => {
      };
 
      // Send the payload to your backend
-     await fetch("https://next-gallery-refactored-backend-btrh-pvihnvhaj.vercel.app/", {
+     await fetch("process.env.NEXT_PUBLIC_API_URL/", {
        method: "POST",
        body: JSON.stringify(payload),
        headers: { "Content-Type": "application/json" },

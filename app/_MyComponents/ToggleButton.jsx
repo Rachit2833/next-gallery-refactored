@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useUser } from '../_lib/context';
 
 function ToggleButton() {
-   const { isOn, setIsOn } = useUser() // Track the slider state
+   const { isOn, setIsOn ,user } = useUser() // Track the slider state
 
    const handleToggle = () => {
       setIsOn(!isOn);

@@ -16,9 +16,9 @@ import AddPopOver from "../SearchComponents/AddPopOver";
 import { PopoverTrigger } from "@/components/ui/popover";
 import { Input } from "@/components/ui/input";
 import AutoSendSetting from "../SearchComponents/AutoSendSetting";
-import LinkDialog from "../SearchComponents/LinkDialog";
 import { useToast } from "@/hooks/use-toast";
 import { ToastAction } from "@/components/ui/toast";
+import LinkDialog from "../SearchComponents/LInkDialog";
 
 function ContentWrapper({ menu, children, data, userdata, AutoSendMenu }) {
    const {
@@ -33,7 +33,7 @@ function ContentWrapper({ menu, children, data, userdata, AutoSendMenu }) {
       groupSelection,
       setGroupSelection,
       selectedImages, setIsLoadingLink: setIsLoading, url, setUrl
-   } = useUser();
+   ,user } = useUser();
   const {toast} =useToast()
 
    const [editableField, setEditableField] = useState(null);
@@ -113,14 +113,14 @@ function ContentWrapper({ menu, children, data, userdata, AutoSendMenu }) {
                   <SubmitButton size="sm" buttonText={<Check />} variant="default" />
                </form>
             )}
-            {isSelected?.admin?.includes(localStorage.getItem("userId")) && <Edit className="cursor-pointer text-gray-600 hover:text-black" onClick={() => handleEdit("name", isSelected.name)} />}
+            {isSelected?.admin?.includes(user._id) && <Edit className="cursor-pointer text-gray-600 hover:text-black" onClick={() => handleEdit("name", isSelected.name)} />}
          </div>
 
          <div className="h-4 bg-gray-500"></div>
 
          <div className="my-6 px-6">
             {isSelected?.admin && <p className="text-xl font-semibold">Group Description</p>}
-            {isSelected?.admin?.includes(localStorage.getItem("userId")) && <Edit className="cursor-pointer text-gray-600 hover:text-black" onClick={() => handleEdit("description", isSelected.description)} />}
+            {isSelected?.admin?.includes(user._id) && <Edit className="cursor-pointer text-gray-600 hover:text-black" onClick={() => handleEdit("description", isSelected.description)} />}
             {editableField !== "description" ? (
                <p className="truncate py-4 break-words">{isSelected.description}</p>
             ) : (
@@ -132,7 +132,7 @@ function ContentWrapper({ menu, children, data, userdata, AutoSendMenu }) {
             {isSelected?.autoSend?.enabled ? <AutoSendSetting>{menu}</AutoSendSetting> : <LinkDialog><DialogTrigger   onClick={async () => {
                                 try {
                                    setIsLoading(true);
-                                   const res = await generateGroupInvite(isSelected._id, localStorage.getItem("userId"));
+                                   const res = await generateGroupInvite(isSelected._id, user._id);
                                    setUrl(res);
                                    setIsLoading(false);
                                    toast({
@@ -160,7 +160,7 @@ function ContentWrapper({ menu, children, data, userdata, AutoSendMenu }) {
                            <PlusCircleIcon />
                         </PopoverTrigger>
                      </AddPopOver>
-                     {isSelected?.admin?.includes(localStorage.getItem("userId")) && selectedInGroup.length > 0 && (
+                     {isSelected?.admin?.includes(user._id) && selectedInGroup.length > 0 && (
                         <LeaveDialog action={handleRemoveUsers} title="Are you sure you want to remove these members?" description="This will remove the selected members from the group.">
                            <DialogTrigger className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600">Remove</DialogTrigger>
                         </LeaveDialog>

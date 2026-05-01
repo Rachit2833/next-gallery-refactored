@@ -5,7 +5,7 @@ import { cookies } from "next/headers";
 import Image from "next/image";
 import Link from "next/link";
 async function PeopleAvatarFull() {
-    const abc = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAADCAIAAAA7ljmRAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAMklEQVR4nAEnANj/AAwNOwENPwEAMQQDNwD+///L2eTO2ub+//8A/v395ejt5enu/v39Q/QXhr/juNAAAAAASUVORK5CYII="
+   const abc = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAADCAIAAAA7ljmRAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAMklEQVR4nAEnANj/AAwNOwENPwEAMQQDNwD+///L2eTO2ub+//8A/v395ejt5enu/v39Q/QXhr/juNAAAAAASUVORK5CYII="
    const cookieStore = await cookies()
    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/labels`, {
 
@@ -19,18 +19,18 @@ async function PeopleAvatarFull() {
       <>
          {people?.map((img, i) => {
             return <div key={i} className="flex flex-col items-center">
-               <Link href={`/people/${img._id}`}>
+               <Link href={`/services/people/${img._id}`}>
                   <Avatar
                      key={i}
 
                      className="sm:h-24 border-2  sm:w-24 h-16 w-16 flex justify-center items-center"
                   >
                      <Image
-                        src={img.ImageUrl||image2.src}
+                        src={img.ImageUrl || image2.src}
                         fill
-                        alt={`Friend ${i + 1}`} 
-                        placeholder={img.blurredImage||abc}
-                        />
+                        alt={`Friend ${i + 1}`}
+                        placeholder={img.blurredImage === "N/A" ? abc : img.blurredImage}
+                     />
 
                      <AvatarFallback>CN</AvatarFallback>
                   </Avatar>

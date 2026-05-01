@@ -14,7 +14,7 @@ import { handleGroupLeave } from "@/app/_lib/actions";
 function GroupMembers({ isSelected, item, groupSelection,isAdmin }) {
    const title = "Are you sure to leave this group?"
    const description = "This will remove you from this group and this action cannot be undone "
-   const { setIsSelected, activeUser, selectedInGroup, setSelectedInGroup } = useUser();
+   const { setIsSelected, activeUser, selectedInGroup, setSelectedInGroup ,user } = useUser();
    const searchParams = useSearchParams();
    const paramValue = searchParams.get("selected");
    const [isChecked, setIsChecked] = useState(false);
@@ -35,7 +35,7 @@ function GroupMembers({ isSelected, item, groupSelection,isAdmin }) {
       <>
          <div className="flex items-center mb-2 p-2 gap-2 justify-between w-full h-16 relative">
           <div className="flex gap-4">
-               {groupSelection && localStorage.getItem("userId") !== item._id? 
+               {groupSelection && user._id !== item._id? 
                   <input
                      value={item._id}
                      checked={isChecked}
@@ -55,14 +55,14 @@ function GroupMembers({ isSelected, item, groupSelection,isAdmin }) {
 
                <div className="flex flex-col justify-center h-full">
                   <h1 className="text-[royalblue] cursor-pointer">
-                     {item._id===localStorage.getItem("userId")?"You":item.name || "Unknown"}
+                     {item._id===user._id?"You":item.name || "Unknown"}
                   </h1>
                   <p className="text-slate-500 truncate max-w-[200px]">
                      A million dreams are keepin' me awake
                   </p>
                </div>
           </div>
-            {isAdmin && item._id !== localStorage.getItem("userId") ? <SubTrigger selId={item._id} /> : <LeaveDialog  title={title} description={description} action={handleAction} >
+            {isAdmin && item._id !== user._id ? <SubTrigger selId={item._id} /> : <LeaveDialog  title={title} description={description} action={handleAction} >
                <DialogTrigger className="py-2">
                   <LogOut />
                </DialogTrigger>
