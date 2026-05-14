@@ -1,9 +1,9 @@
 
 import { Suspense } from "react";
-import AlbumGrid from "../../_MyComponents/AlbumsComponent/AlbumGrid";
-import AlbumLoaders from "../../_MyComponents/Loaders/AlbumLoaders";
-import SideFilterLayout from "../../_MyComponents/SideFilterLayout";
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import AlbumLoaders from "../_MyComponents/Loaders/AlbumLoaders";
+import AlbumGrid from "../_MyComponents/AlbumsComponent/AlbumGrid";
 export const metadata = {
   title: "Albums",
   description: "Browse, organize, and manage your photo albums to relive your cherished moments on NextGallery.",
