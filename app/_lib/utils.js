@@ -41,4 +41,4 @@ async function getImageBlurred(src) {
 
 
 
-module.exports = { saveImage,getImageBlurred };
+export { saveImage, getImageBlurred };
